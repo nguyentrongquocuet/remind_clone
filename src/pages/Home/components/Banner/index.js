@@ -1,9 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./Banner.css";
 const Banner = (props) => {
-  useEffect(() => {
-    console.log(props.children);
-  }, [props]);
   return (
     <div className="banner__wrapper">
       <div style={props.style.banner} className="banner">

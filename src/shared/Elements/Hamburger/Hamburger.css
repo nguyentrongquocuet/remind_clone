@@ -1,8 +1,14 @@
 .hamburger {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   cursor: pointer;
 }
+
 .hamburger__slice {
   display: inline-block;
   width: 1.2rem;
@@ -11,3 +17,4 @@
   border-radius: 2px;
   margin-top: 3px;
 }
+/*# sourceMappingURL=Hamburger.css.map */

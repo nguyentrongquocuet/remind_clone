@@ -1,6 +1,7 @@
 * {
   margin: 0;
   box-sizing: border-box;
+  outline: none !important;
 }
 body {
   margin: 0;
@@ -10,9 +11,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  background-color: #f2f3f5;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.center {
+  margin: 0 auto;
+  text-align: center;
 }

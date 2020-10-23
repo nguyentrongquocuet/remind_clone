@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
 import Header from "../../shared/components/Header";
 import Banner from "./components/Banner";
 import Content from "./components/Content";
 import Button from "../../shared/Elements/Button";
+import { Context } from "../../shared/Util/context";
 import "./Home.css";
+import Modal from "../../shared/Elements/Modal";
+import SignUpForm from "../../shared/components/SignUpForm";
 const Home = () => {
+  const setMode = () => setSignUp((prev) => !prev);
+  const { setSignUp, isInSignUpMode } = useContext(Context);
   return (
     <div className="home__wrapper">
+      <Modal
+        className="authform center"
+        style={{ wrapper: { position: "absolute" } }}
+        open={isInSignUpMode}
+        onClose={(e, r) => {
+          setMode();
+        }}
+      >
+        <SignUpForm header={<h1 className="form__header">SignUp</h1>} />
+      </Modal>
+
       <div className="home">
         <Header />
         <Banner
@@ -30,9 +46,10 @@ const Home = () => {
               </p>
               <br />
               <Button
-                to="/signup"
                 className="banner__signup"
-                style={{ padding: "1em 6em" }}
+                style={{ color: "black", padding: "1em 6em" }}
+                onClick={setMode}
+                default
               >
                 Signup
               </Button>
