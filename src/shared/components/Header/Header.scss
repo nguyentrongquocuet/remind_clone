@@ -21,6 +21,9 @@
 .header__nav__e {
   margin-right: 1rem;
 }
+.header__actions {
+  margin-left: auto;
+}
 .header__actions__e {
   margin-left: 1.5rem;
 }
@@ -43,7 +46,7 @@
   margin: 1.5rem 0;
 }
 
-.header__actions__e:last-child {
+.header__actions__e.hamburger {
   display: none;
 }
 

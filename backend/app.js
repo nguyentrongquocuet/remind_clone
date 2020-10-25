@@ -15,7 +15,11 @@ app.use((req, res, next) => {
   );
   next();
 });
-
+app.use((req, res, next) => {
+  console.log(req.body);
+  console.log(req.statusCode);
+  next();
+});
 app.use("/api/auth", authRouter);
 
 module.exports = app;

@@ -1,11 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Card, CardActions, CardContent, TextField } from "@material-ui/core";
+import { CardActions, CardContent, TextField } from "@material-ui/core";
 import Button from "../../Elements/Button";
+import Card from "../../Elements/Card";
 import "./LoginForm.css";
 
 const SignUpForm = (props) => {
-  const { register, handleSubmit, getValues, errors } = useForm({
+  const { register, handleSubmit, errors, formState } = useForm({
     mode: "onChange",
     defaultValues: {
       email: "",
@@ -16,7 +17,6 @@ const SignUpForm = (props) => {
 
   const onSubmit = (data, e) => {
     e.preventDefault();
-    console.log(getValues());
     props.login(data);
   };
 
@@ -34,7 +34,7 @@ const SignUpForm = (props) => {
             className="no-pad"
             name="email"
             inputRef={register({
-              required: "Password is required!",
+              required: "Email is required!",
               pattern: {
                 value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
                 message: "Invalid email address format",
@@ -59,7 +59,11 @@ const SignUpForm = (props) => {
         </CardContent>
 
         <CardActions className="no-pad">
-          <Button type="submit" style={{ width: "100%" }}>
+          <Button
+            disabled={!formState.isValid}
+            type="submit"
+            style={{ width: "100%" }}
+          >
             Login
           </Button>
         </CardActions>

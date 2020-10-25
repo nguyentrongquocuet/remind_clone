@@ -7,26 +7,31 @@ const Button = (props) => {
   const StyledButton = styled(MUiButton)({
     ...props.style,
   });
-  if (props.to) {
+  if (props.href) {
     return (
-      <Link
+      <StyledButton
+        {...props}
         type={props.type}
         style={{ ...props.style, color: props.default ? "white" : "none" }}
         className={`button ${props.className}`}
-        to={props.to}
+        href={props.href}
       >
         {props.children}
-      </Link>
+      </StyledButton>
     );
   }
   return (
     <StyledButton
       // style={props.style}
+      {...props}
       type={props.type}
       className={`button ${props.className}`}
       onClick={props.onClick}
       color={props.color}
-      style={{ ...props.style, color: props.default ? "white" : "none" }}
+      style={{
+        ...props.style,
+        color: props.default ? "white" : "none",
+      }}
     >
       {props.children}
     </StyledButton>
