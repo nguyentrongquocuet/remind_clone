@@ -1,0 +1,23 @@
+main {
+  width: 100%;
+}
+.sidebar__element {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  &__header {
+    padding: 0.5rem 0;
+  }
+}
+.sidebar__element__e {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  div:first-child,
+  img:first-child {
+    margin-right: 1rem;
+  }
+  padding: 0.5rem 0;
+}

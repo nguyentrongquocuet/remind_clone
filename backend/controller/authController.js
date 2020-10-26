@@ -21,10 +21,26 @@ exports.login = (req, res) => {
       email,
       password,
     };
-    const token = jwt.sign(payload, "hellofrombackend", {
-      expiresIn: "1h",
-    });
-    return res.status(200).json({ token });
+    db.query(
+      `SELECT * FROM user_info WHERE user_id=?`,
+      [result[0].id],
+      (error, result) => {
+        if (error) {
+          throw error;
+        }
+        console.log(result);
+        const token = jwt.sign(payload, "hellofrombackend", {
+          expiresIn: 3600,
+        });
+        return res.status(200).json({
+          token,
+          expiresIn: 3600,
+          userData: {
+            ...result[0],
+          },
+        });
+      }
+    );
   });
 };
 //SignUp with {email, password, repassword, firstname, lastname}

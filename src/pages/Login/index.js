@@ -3,19 +3,18 @@ import { useHistory } from "react-router-dom";
 import UserService from "../../services/UserService";
 import { Context } from "../../shared/Util/context";
 import LoginForm from "../../shared/components/LoginForm";
-import "./Login.css";
+import "./Login.scss";
 import Header from "../../shared/components/Header";
 import Button from "../../shared/Elements/Button";
 const Login = () => {
-  let history = useHistory();
   const { login } = useContext(Context);
+  let history = useHistory();
   //login with {email, password}
   const submitFormHandler = async (data) => {
     try {
-      await UserService.login(data);
-      login();
-      history.push("/");
-      alert("login successfully");
+      const authData = await (await UserService.login(data)).data;
+      login(authData);
+      history.push("/classes/1");
     } catch (error) {
       if (error.response) {
         alert(error.response.data);

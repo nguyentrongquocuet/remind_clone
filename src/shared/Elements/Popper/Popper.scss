@@ -1,0 +1,11 @@
+.popper__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0.5rem;
+}
+.popper__element {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}

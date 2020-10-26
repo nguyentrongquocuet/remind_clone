@@ -1,6 +1,6 @@
 import React from "react";
 import MUiModal from "@material-ui/core/Modal";
-import "./Modal.css";
+import "./Modal.scss";
 const Modal = (props) => {
   const content = (
     <MUiModal

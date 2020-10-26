@@ -3,7 +3,6 @@ const port = process.env.SERVER_PORT || 5000;
 const sql = require("./backend/Database/db");
 require("dotenv").config();
 const db = sql.init();
-console.log(db);
 if (db instanceof Error) {
   throw db;
 }

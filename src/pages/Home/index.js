@@ -1,26 +1,41 @@
-import React, { useContext, useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { useLocation, useHistory } from "react-router-dom";
 
 import Header from "../../shared/components/Header";
 import Banner from "./components/Banner";
 import Content from "./components/Content";
 import Button from "../../shared/Elements/Button";
 import { Context } from "../../shared/Util/context";
-import "./Home.css";
+import "./Home.scss";
 import Modal from "../../shared/Elements/Modal";
 import SignUpForm from "../../shared/components/SignUpForm";
 const Home = () => {
+  let history = useHistory();
   let location = useLocation();
   const setMode = () => setSignUp((prev) => !prev);
-  const { setSignUp, isInSignUpMode } = useContext(Context);
+  const { setSignUp, isInSignUpMode, login } = useContext(Context);
   useEffect(() => {
     if (location.search === "?signup=true") {
       setMode();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const signUpSuccessHandler = () => {
-    setMode();
+  const signUpSuccessHandler = async (data) => {
+    // setMode();
+    try {
+      const authData = await login({
+        email: data.email,
+        password: data.password,
+      }).data;
+
+      login(authData);
+      history.push("/classes/1");
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data);
+        console.log(error.response);
+      }
+    }
   };
   return (
     <div className="home__wrapper">
@@ -33,8 +48,8 @@ const Home = () => {
         }}
       >
         <SignUpForm
-          onSuccess={() => {
-            signUpSuccessHandler();
+          onSuccess={(data) => {
+            signUpSuccessHandler(data);
           }}
           header={<h1 className="form__header">SignUp</h1>}
         />

@@ -7,7 +7,7 @@ import Hamberger from "../../Elements/Hamburger";
 import Modal from "../../Elements/Modal";
 import { headerNavigationElements } from "../../Util/headerNavElements";
 
-import "./Header.css";
+import "./Header.scss";
 const Header = (props) => {
   const { setSignUp } = useContext(Context);
   const setMode = () => {

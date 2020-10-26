@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./Hamburger.css";
+import "./Hamburger.scss";
 const Hamburger = (props) => {
   return (
     <p className={`hamburger ${props.className}`} onClick={props.onClick}>

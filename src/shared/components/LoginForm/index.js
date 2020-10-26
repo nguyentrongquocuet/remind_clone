@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { CardActions, CardContent, TextField } from "@material-ui/core";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
-import "./LoginForm.css";
+import "./LoginForm.scss";
 
 const SignUpForm = (props) => {
   const { register, handleSubmit, errors, formState } = useForm({

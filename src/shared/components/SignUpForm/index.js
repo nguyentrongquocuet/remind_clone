@@ -1,16 +1,12 @@
 import React, { useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { CardActions, CardContent, TextField } from "@material-ui/core";
 import UserService from "../../../services/UserService";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
-import "./SignUpForm.css";
+import "./SignUpForm.scss";
 
 const SignUpForm = (props) => {
-  let history = useHistory();
-  console.log("render");
-
   const { register, handleSubmit, watch, errors, formState } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -24,15 +20,13 @@ const SignUpForm = (props) => {
     async (data) => {
       console.log(data);
       try {
-        const response = await UserService.signup(data);
-        console.log(response);
-        history.push("/");
-        props.onSuccess();
+        await UserService.signup(data);
+        props.onSuccess(data);
       } catch (error) {
         console.log(error);
       }
     },
-    [history, props]
+    [props]
   );
   const onSubmit = (data, e) => {
     e.preventDefault();

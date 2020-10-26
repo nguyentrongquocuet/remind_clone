@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import MUiCard from "@material-ui/core/Card";
-import "./Card.css";
+import "./Card.scss";
 
 export default styled(({ className, style, children }) => (
   <MUiCard className={className}>{children}</MUiCard>
