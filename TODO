@@ -1,4 +1,5 @@
-☐ createBrowserHistory
-☐ axios 
-☐ useForm
-☐ login using mysql
+createBrowserHistory
+axios 
+useForm
+login using mysql
+☐ autoAuth

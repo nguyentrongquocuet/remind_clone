@@ -9,6 +9,7 @@ import { Context } from "../../shared/Util/context";
 import "./Home.scss";
 import Modal from "../../shared/Elements/Modal";
 import SignUpForm from "../../shared/components/SignUpForm";
+import UserService from "../../services/UserService";
 const Home = () => {
   let history = useHistory();
   let location = useLocation();
@@ -22,15 +23,17 @@ const Home = () => {
   }, []);
   const signUpSuccessHandler = async (data) => {
     // setMode();
+    console.log(data);
     try {
-      const authData = await login({
+      const authData = await UserService.login({
         email: data.email,
         password: data.password,
-      }).data;
-
-      login(authData);
+      });
+      console.log(authData);
+      login(authData.data);
       history.push("/classes/1");
     } catch (error) {
+      alert(error);
       if (error.response) {
         alert(error.response.data);
         console.log(error.response);

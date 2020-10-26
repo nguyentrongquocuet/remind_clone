@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   BrowserRouter as Router,
@@ -16,26 +16,62 @@ const saveToLocalStorage = (obj) => {
     localStorage.setItem(entry[0], JSON.stringify(entry[1]));
   }
 };
+const deleteFromLocalStorage = (obj) => {
+  for (const entry of Object.entries(obj)) {
+    localStorage.removeItem(entry[0]);
+  }
+};
+const getFromLocalStorage = (...key) => {
+  if (key.length <= 0) return {};
+  let out = {};
+  for (const k of key) {
+    out[k] = JSON.parse(localStorage.getItem(k));
+  }
+  return out;
+};
 function App() {
+  console.log("rendering");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isInSignUpMode, setIsInSignUpMode] = useState(false);
   const [authData, setAuthData] = useState();
+
+  useEffect(() => {
+    const autoAuth = () => {
+      const { token, expiresIn, userData } = getFromLocalStorage(
+        "token",
+        "expiresIn"
+      );
+      console.log();
+      if (!token) console.log("notoken");
+      else {
+        if (Date.parse(expiresIn) - new Date() < 0) {
+          console.log("token has expired");
+          return;
+        }
+      }
+    };
+    autoAuth();
+  }, []);
   const login = (authData) => {
     setIsLoggedIn(true);
     console.log(authData);
-    setAuthData(authData);
-    saveToLocalStorage(authData);
+    const expiresIn = new Date(Date.now() + authData.expiresIn * 1000);
+
+    const newAuthData = { ...authData, expiresIn: expiresIn };
+    setAuthData(newAuthData);
+    saveToLocalStorage(newAuthData);
     alert("login successfully");
   };
   const logout = () => {
     setIsLoggedIn(false);
+    deleteFromLocalStorage(authData);
   };
   const setSignUp = () => {
     setIsInSignUpMode((prev) => !prev);
   };
   return (
     <Context.Provider
-      value={{ isLoggedIn, login, logout, setSignUp, isInSignUpMode }}
+      value={{ authData, isLoggedIn, login, logout, setSignUp, isInSignUpMode }}
     >
       <Router>
         <Switch>

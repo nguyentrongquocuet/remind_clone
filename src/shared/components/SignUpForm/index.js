@@ -23,7 +23,7 @@ const SignUpForm = (props) => {
         await UserService.signup(data);
         props.onSuccess(data);
       } catch (error) {
-        console.log(error);
+        alert(error.response.data);
       }
     },
     [props]

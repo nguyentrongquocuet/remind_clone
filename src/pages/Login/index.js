@@ -12,8 +12,8 @@ const Login = () => {
   //login with {email, password}
   const submitFormHandler = async (data) => {
     try {
-      const authData = await (await UserService.login(data)).data;
-      login(authData);
+      const authData = await UserService.login(data);
+      login(authData.data);
       history.push("/classes/1");
     } catch (error) {
       if (error.response) {

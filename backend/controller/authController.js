@@ -22,7 +22,7 @@ exports.login = (req, res) => {
       password,
     };
     db.query(
-      `SELECT * FROM user_info WHERE user_id=?`,
+      `SELECT * FROM user_info WHERE id=?`,
       [result[0].id],
       (error, result) => {
         if (error) {
@@ -59,8 +59,8 @@ exports.signup = (req, res) => {
     if (error) {
       throw error;
     }
-    if (result.length > 0 && result[0].id) {
-      return res.status(200).json("Email has been used");
+    if (result.length > 0) {
+      return res.status(401).json("Email has been used");
     }
     try {
       db.query(
@@ -70,8 +70,8 @@ exports.signup = (req, res) => {
           const id = result.insertId;
           console.log("add to user", result);
           db.query(
-            `INSERT INTO user_info (first_name, last_name,userId) VALUES(?,?,?)`,
-            [firstname, lastname, id],
+            `INSERT INTO user_info (id,first_name, last_name) VALUES(?,?,?)`,
+            [id, firstname, lastname],
             (error, result) => {
               console.log("add to user_info", result);
               res.status(200).json("SignUp Success");
