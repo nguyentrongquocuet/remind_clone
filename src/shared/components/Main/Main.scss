@@ -1,0 +1,30 @@
+.main__main {
+  flex-grow: 1;
+  padding-top: 1rem;
+  background-color: #fafafa;
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.main__main__header {
+  padding-left: 1rem;
+}
+.class-info {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  // flex-direction: column;
+}
+
+.text-info {
+  margin-left: 1rem;
+  p {
+    width: fit-content;
+    &:first-child {
+      font-size: 18px;
+      line-height: 25px;
+    }
+    &:nth-child(2) {
+      font-size: 13px;
+    }
+  }
+}

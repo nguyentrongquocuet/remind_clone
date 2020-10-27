@@ -50,3 +50,34 @@ div.divbutton {
   color: #0274de;
   cursor: pointer;
 }
+
+.secondary {
+  color: #6b6e72;
+}
+
+.uppercase {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 17px;
+  text-transform: uppercase;
+}
+
+.alter-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: violet;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
+  transition: 0.25s;
+  text-transform: uppercase;
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.item--active {
+  background-color: #ebecef;
+  color: black;
+}

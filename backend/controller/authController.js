@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const SECRET_KEY = require("../configs/jwt");
 
 const { validationResult } = require("express-validator");
 //login with {email, password}
@@ -29,7 +30,7 @@ exports.login = (req, res) => {
           throw error;
         }
         console.log(result);
-        const token = jwt.sign(payload, "hellofrombackend", {
+        const token = jwt.sign(payload, SECRET_KEY, {
           expiresIn: 3600,
         });
         return res.status(200).json({
@@ -83,4 +84,22 @@ exports.signup = (req, res) => {
       throw error;
     }
   });
+};
+exports.authenticate = async (req, res) => {
+  const { email, password } = req.decodedToken;
+  const db = req.app.get("db");
+  db.query(
+    "SELECT * FROM user WHERE email=? AND password =?",
+    [email, password],
+    (error, result) => {
+      if (error) return res.status(500).json("Server error");
+      if (result.length <= 0) return res.status(401).json("Invalid Token");
+      const id = result[0].id;
+      db.query("SELECT * FROM user_info WHERE id=?", [id], (error, result) => {
+        if (error) return res.status(500).json("Server error");
+        console.log(result[0]);
+        return res.status(200).json(result[0]);
+      });
+    }
+  );
 };

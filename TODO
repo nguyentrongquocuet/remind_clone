@@ -1,5 +1,6 @@
-createBrowserHistory
-axios 
-useForm
-login using mysql
-☐ autoAuth
+✔ createBrowserHistory @done(20-10-27 16:06)
+✔ axios @done(20-10-27 16:06)
+✔ useForm @done(20-10-27 16:06)
+✔ login using mysql @done(20-10-27 16:06)
+✔ autoAuth @done(20-10-27 16:06)
+☐ class's main

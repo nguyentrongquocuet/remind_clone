@@ -1,5 +1,5 @@
 import React from "react";
-import "./SidebarElement.scss";
+import "./SidebarPart.scss";
 const SidebarElement = (props) => {
   return (
     <div className="sidebar__element">

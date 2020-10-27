@@ -1,8 +1,14 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import "./ClassItem.scss";
 const ClassItem = ({ icon, id, name, onClick }) => {
   return (
-    <div onClick={onClick} className="sidebar__element__e classitem">
+    <NavLink
+      to={`/classes/${id}`}
+      onClick={onClick}
+      className="sidebar__element__e classitem"
+      activeClassName="item--active"
+    >
       <img
         className="small circle"
         src={
@@ -12,7 +18,7 @@ const ClassItem = ({ icon, id, name, onClick }) => {
         alt={name}
       />
       <p>{name}</p>
-    </div>
+    </NavLink>
   );
 };
 

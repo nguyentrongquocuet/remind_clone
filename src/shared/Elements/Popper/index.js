@@ -15,7 +15,9 @@ const Popper = (props) => {
       anchorEl={props.anchorEl}
       placement={props.placement}
     >
-      <div className="popper__content">{props.children}</div>
+      <div className={`popper__content ${props.className}`}>
+        {props.children}
+      </div>
     </MUIMopper>
   );
 };

@@ -31,7 +31,7 @@ const Home = () => {
       });
       console.log(authData);
       login(authData.data);
-      history.push("/classes/1");
+      // history.push("/classes/1");
     } catch (error) {
       alert(error);
       if (error.response) {

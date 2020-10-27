@@ -1,12 +1,20 @@
-import React, { useContext } from "react";
-import { Context } from "../../shared/Util/context";
+import React, { useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
-import { useParams } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import "./Class.scss";
+import ClassMain from "./Main";
+import ClassSidebar from "./Sidebar";
 const Class = () => {
+  let history = useHistory();
+  useEffect(() => {
+    console.log(1111111111111);
+    history.push("/classes/1");
+  }, []);
+
   return (
     <div className="main">
-      <Sidebar />
+      <ClassSidebar />
+      <ClassMain />
     </div>
   );
 };

@@ -14,7 +14,7 @@ const Login = () => {
     try {
       const authData = await UserService.login(data);
       login(authData.data);
-      history.push("/classes/1");
+      // history.push("/classes/1");
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
