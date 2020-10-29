@@ -1,0 +1,11 @@
+.user-search {
+  display: flex;
+  align-items: center;
+  .input__wrapper {
+    margin-right: 0.5rem;
+    .input {
+      height: 100%;
+      color: var(--secondary) !important;
+    }
+  }
+}

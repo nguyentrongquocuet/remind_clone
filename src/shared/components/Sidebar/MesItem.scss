@@ -1,0 +1,11 @@
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  span:first-child {
+    color: black;
+  }
+  span:nth-child(2) {
+    color: var(--secondary);
+  }
+}

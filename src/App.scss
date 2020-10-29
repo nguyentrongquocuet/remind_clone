@@ -11,23 +11,23 @@ button {
 }
 
 a {
-  color: #0274de;
+  color: var(--primary);
   text-decoration: none;
 }
 a:hover {
-  color: #00182d;
+  color: var(--linkhover);
 }
 ul {
   list-style: none;
 }
 
 div.divbutton {
-  border: 1px solid #0274de;
+  border: 1px solid var(--primary);
   cursor: pointer;
-  color: #0274de;
+  color: var(--primary);
   transition: 0.25s;
   &:hover {
-    background-color: #0274de;
+    background-color: var(--primary);
     color: white !important;
   }
 }
@@ -47,12 +47,12 @@ div.divbutton {
 }
 
 .action {
-  color: #0274de;
+  color: var(--primary);
   cursor: pointer;
 }
 
 .secondary {
-  color: #6b6e72;
+  color: var(--secondary);
 }
 
 .uppercase {
@@ -78,6 +78,9 @@ div.divbutton {
 }
 
 .item--active {
-  background-color: #ebecef;
+  background-color: var(--blockhover);
   color: black;
+}
+.shadow--left {
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.3);
 }

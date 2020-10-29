@@ -41,7 +41,7 @@ const ClassMain = (props) => {
   );
 
   return (
-    <Main header={header}>
+    <Main header={header} className="shadow--left">
       {/* //TODO ADD MAIN OF MAIN */}
       <main className="main">
         {/* Messages tab also has sidebar and side main */}

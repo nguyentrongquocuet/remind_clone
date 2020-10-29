@@ -1,7 +1,7 @@
 main {
   width: 100%;
 }
-.sidebar__element {
+.sidebar__part {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -10,7 +10,7 @@ main {
     padding: 0.5rem 0;
   }
 }
-.sidebar__element__e {
+.sidebar__part__e {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -19,5 +19,11 @@ main {
   img:first-child {
     margin-right: 1rem;
   }
-  padding: 0.5rem 0;
+  padding: 0.5rem 0 0.5rem 0.5rem;
+  &.action:hover {
+    .divbutton {
+      background-color: var(--primary);
+      color: white;
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import "./Banner.css";
+import "./Banner.scss";
 const Banner = (props) => {
   return (
     <div className="banner__wrapper">

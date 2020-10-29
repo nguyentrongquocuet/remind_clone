@@ -16,7 +16,7 @@
   padding: 1rem 0;
   position: relative;
   top: 0;
-  border-bottom: 1px solid #dcdee2;
+  border-bottom: 1px solid var(--headborder);
 }
 
 .messages__sidebar {
@@ -32,14 +32,12 @@
 }
 .sidebar__header__info {
   p.fullname {
-    word-wrap: break-word;
-    overflow-wrap: anywhere;
     cursor: pointer;
     display: flex;
     align-items: center;
+    // max-width: 6.25rem;
+    // text-overflow: ellipsis;
+    // overflow: hidden;
+    // white-space: nowrap;
   }
-}
-
-main {
-  padding-left: 0.5rem;
 }

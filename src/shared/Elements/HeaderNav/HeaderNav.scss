@@ -1,5 +1,5 @@
 .boxlink--active {
-  border-bottom: 2px solid #0274de;
+  border-bottom: 2px solid var(--primary);
   color: black;
 }
 .nav__link {
@@ -8,5 +8,5 @@
   margin: 0 0.5rem;
 }
 .nav {
-  border-bottom: 1px solid #dcdee2;
+  border-bottom: 1px solid var(--headborder);
 }

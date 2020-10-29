@@ -1,8 +1,7 @@
 .main__main {
   flex-grow: 1;
   padding-top: 1rem;
-  background-color: #fafafa;
-  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.3);
+  background-color: var(--mainbackground);
 }
 
 .main__main__header {

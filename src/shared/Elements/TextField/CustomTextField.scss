@@ -1,16 +1,16 @@
 .input__wrapper {
   &:hover {
-    border-color: #0274de;
+    border-color: var(--primary);
   }
 }
 .input {
   padding: 0.5rem !important;
   font-size: 13px !important;
   height: 100%;
-  border: 1px solid #6b6e72 !important;
+  border: 1px solid var(--inputborder) !important;
   border-radius: 4px !important;
 
   &:focus {
-    border-color: #0274de !important;
+    border-color: var(--primary) !important;
   }
 }

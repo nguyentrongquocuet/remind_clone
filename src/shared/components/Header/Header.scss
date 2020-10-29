@@ -40,7 +40,7 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
-  background-color: #3784dd;
+  background-color: va(--headernavbackground);
 }
 .full .header__nav__e {
   margin: 1.5rem 0;

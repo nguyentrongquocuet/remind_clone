@@ -67,7 +67,7 @@ const ClassSidebar = (props) => {
   );
   const main = (
     <>
-      <div className="sidebar__element__e action">
+      <div className="sidebar__part__e action">
         <div className="small divbutton circle">+</div>
         <span> Create a class</span>
       </div>
@@ -79,7 +79,7 @@ const ClassSidebar = (props) => {
   );
   const parts = (
     <SidebarPart
-      header={<p className="sidebar__element__header uppercase">CLASS OWNED</p>}
+      header={<p className="sidebar__part__header uppercase">CLASS OWNED</p>}
       main={main}
     />
   );
