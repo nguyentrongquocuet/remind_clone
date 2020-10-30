@@ -8,7 +8,7 @@ const Sidebar = ({ header, parts, classNames }) => {
       <header className={`${classNames ? classNames.header : ""} `}>
         {header}
       </header>
-      <main>{parts}</main>
+      <main className="sidebar__main__scroll">{parts}</main>
     </aside>
   );
 };

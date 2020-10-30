@@ -1,13 +1,13 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import "./MesItem.scss";
-const MessItem = ({ avatar, path, name, onClick, message, time }) => {
+const MessItem = ({ avatar, path, name, onClick, message, time, active }) => {
   return (
     <NavLink
       to={`${path}`}
       onClick={onClick}
       className="sidebar__part__e classitem"
-      activeClassName="item--active"
+      activeClassName={active ? "item--active" : ""}
     >
       <img
         className="medium circle"
@@ -17,7 +17,7 @@ const MessItem = ({ avatar, path, name, onClick, message, time }) => {
         }
         alt={name}
       />
-      <div className="message">
+      <div className="messitem">
         <span>{name}</span>
         <span>{message}</span>
       </div>

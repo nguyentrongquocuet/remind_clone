@@ -2,10 +2,23 @@
   flex-grow: 1;
   padding-top: 1rem;
   background-color: var(--mainbackground);
+  display: flex;
+  flex-direction: column;
 }
-
+.main__wrapper {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  overflow: hidden;
+}
+.messages__main {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 3.5;
+}
 .main__main__header {
   padding-left: 1rem;
+  border-bottom: 1px solid var(--headborder);
 }
 .class-info {
   display: flex;

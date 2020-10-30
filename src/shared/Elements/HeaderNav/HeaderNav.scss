@@ -3,10 +3,14 @@
   color: black;
 }
 .nav__link {
+  flex-grow: 1;
+  text-align: center;
   display: inline-block;
   padding: 0.5rem 1rem;
   margin: 0 0.5rem;
 }
 .nav {
+  width: 100%;
+  display: flex;
   border-bottom: 1px solid var(--headborder);
 }

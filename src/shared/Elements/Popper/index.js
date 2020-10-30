@@ -6,7 +6,7 @@ const Popper = (props) => {
     <MUIMopper
       style={{
         borderRadius: "4px",
-        backgroundColor: props.backgroundColor || "white",
+        backgroundColor: props.backgroundColor || "transparent",
         color: props.color || "black",
         width: props.width || "max-content",
       }}

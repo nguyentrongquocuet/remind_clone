@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Button as MUiButton } from "@material-ui/core/";
 import { styled } from "@material-ui/core/styles";
 import "./Button.scss";

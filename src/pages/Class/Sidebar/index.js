@@ -1,12 +1,11 @@
 import React, { useState, useContext } from "react";
-import { Link, useHistory, useParams } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Sidebar from "../../../shared/components/Sidebar";
-import SidebarPart from "../../../shared/components/Sidebar/SidebarPart";
-import ClassItem from "../../../shared/components/Sidebar/ClassItem";
 import Popper from "../../../shared/Elements/Popper";
 import { Context } from "../../../shared/Util/context";
+import MessagePanel from "../../../shared/components/MessagePanel";
 const ClassSidebar = (props) => {
   let history = useHistory();
   const { logout, userData } = useContext(Context);
@@ -55,7 +54,7 @@ const ClassSidebar = (props) => {
           className="popper__element"
           onClick={() => {
             logout();
-            history.push("/");
+            // history.push("/");
           }}
           style={{ cursor: "pointer " }}
         >
@@ -65,24 +64,19 @@ const ClassSidebar = (props) => {
       </Popper>
     </>
   );
-  const main = (
-    <>
-      <div className="sidebar__part__e action">
-        <div className="small divbutton circle">+</div>
-        <span> Create a class</span>
-      </div>
-      {dummyClasses.map((c) => (
-        <ClassItem key={c.id} name={c.name} id={c.id} />
-      ))}
-      {/* <ClassItem name="hello"></ClassItem> */}
-    </>
-  );
-  const parts = (
-    <SidebarPart
-      header={<p className="sidebar__part__header uppercase">CLASS OWNED</p>}
-      main={main}
-    />
-  );
+  // const main = (
+  //   <>
+  //     <div className="sidebar__part__e action">
+  //       <div className="small divbutton circle">+</div>
+  //       <span> Create a class</span>
+  //     </div>
+  //     {dummyClasses.map((c) => (
+  //       <ClassItem key={c.id} name={c.name} id={c.id} />
+  //     ))}
+  //     {/* <ClassItem name="hello"></ClassItem> */}
+  //   </>
+  // );
+  const parts = <MessagePanel />;
   return (
     <Sidebar
       header={header}
@@ -92,7 +86,7 @@ const ClassSidebar = (props) => {
         wrapper: "class__sidebar",
         header: "class__sidebar__header",
       }}
-    ></Sidebar>
+    />
   );
 };
 

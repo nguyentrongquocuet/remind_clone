@@ -1,11 +1,52 @@
-.message {
+.messitem {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  font-size: 0.9rem;
+  font-weight: 350;
   span:first-child {
     color: black;
   }
   span:nth-child(2) {
     color: var(--secondary);
+    font-size: 0.8em;
+  }
+}
+.classitem {
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  &:hover {
+    background-color: var(--blockhover);
+  }
+}
+
+main {
+  width: 100%;
+}
+.sidebar__part {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  &__header {
+    padding: 0.5rem 0;
+  }
+}
+.sidebar__part__e {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  div:first-child,
+  img:first-child {
+    margin-right: 1rem;
+  }
+  padding: 0.5rem 0 0.5rem 0.5rem;
+  &.action:hover {
+    .divbutton {
+      background-color: var(--primary);
+      color: white;
+    }
   }
 }

@@ -8,9 +8,10 @@ const HeaderNav = ({ elements }) => {
         <NavLink
           key={e.to}
           exact
-          activeClassName="boxlink--active"
+          activeClassName={"boxlink--active"}
           className="nav__link uppercase secondary"
           to={e.to || "#"}
+          onClick={e.onClick}
         >
           {e.text}
         </NavLink>

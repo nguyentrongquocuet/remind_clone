@@ -1,21 +1,18 @@
 .user-search {
   display: flex;
   align-items: center;
+  width: 100%;
+  padding-top: 1rem;
   .input__wrapper {
     margin-right: 0.5rem;
+    width: 100%;
     .input {
       height: 100%;
+      width: 100%;
       color: var(--secondary) !important;
     }
   }
 }
-.allmessages {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
-  overflow-y: scroll;
-}
-.message__input {
-  display: flex;
-  align-items: center;
+.messages__list {
+  padding-top: 1rem;
 }
