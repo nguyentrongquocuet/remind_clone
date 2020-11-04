@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
 const SECRET_KEY = require("../configs/jwt");
 
 const { validationResult } = require("express-validator");
@@ -21,7 +20,9 @@ exports.login = (req, res) => {
     const payload = {
       email,
       password,
+      userId: result[0].id,
     };
+    console.log(result[0].id);
     db.query(
       `SELECT * FROM user_info WHERE id=?`,
       [result[0].id],
@@ -33,6 +34,7 @@ exports.login = (req, res) => {
         const token = jwt.sign(payload, SECRET_KEY, {
           expiresIn: 3600,
         });
+        req.app.get("io").emit("hello", "welcome to remind");
         return res.status(200).json({
           token,
           expiresIn: 3600,
@@ -63,26 +65,22 @@ exports.signup = (req, res) => {
     if (result.length > 0) {
       return res.status(401).json("Email has been used");
     }
-    try {
-      db.query(
-        `INSERT INTO user (email, password) VALUES (?, ?)`,
-        [email, password],
-        (error, result) => {
-          const id = result.insertId;
-          console.log("add to user", result);
-          db.query(
-            `INSERT INTO user_info (id,first_name, last_name) VALUES(?,?,?)`,
-            [id, firstname, lastname],
-            (error, result) => {
-              console.log("add to user_info", result);
-              res.status(200).json("SignUp Success");
-            }
-          );
-        }
-      );
-    } catch (error) {
-      throw error;
-    }
+    db.query(
+      `INSERT INTO user (email, password) VALUES (?, ?)`,
+      [email, password],
+      (error, result) => {
+        const id = result.insertId;
+        console.log("add to user", result);
+        db.query(
+          `INSERT INTO user_info (id,firstName, lastName) VALUES(?,?,?)`,
+          [id, firstname, lastname],
+          (error, result) => {
+            console.log("add to user_info", result);
+            res.status(200).json("SignUp Success");
+          }
+        );
+      }
+    );
   });
 };
 exports.authenticate = async (req, res) => {

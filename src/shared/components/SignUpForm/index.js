@@ -16,6 +16,7 @@ const SignUpForm = (props) => {
     },
     reValidateMode: "onChange",
   });
+
   const signup = useCallback(
     async (data) => {
       console.log(data);
@@ -28,9 +29,20 @@ const SignUpForm = (props) => {
     },
     [props]
   );
+
   const onSubmit = (data, e) => {
     e.preventDefault();
     signup(data);
+  };
+
+  const valdations = {
+    email: {
+      required: "Email is required!",
+      pattern: {
+        value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]{2,})*$/,
+        message: "Invalid email address format",
+      },
+    },
   };
 
   return (
@@ -48,13 +60,7 @@ const SignUpForm = (props) => {
             style={{ marginBottom: "1rem" }}
             className="no-pad"
             name="email"
-            inputRef={register({
-              required: "Email is required!",
-              pattern: {
-                value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]{2,})*$/,
-                message: "Invalid email address format",
-              },
-            })}
+            inputRef={register(valdations.email)}
             helperText={errors.email ? errors.email.message : null}
           />
           <TextField
@@ -88,7 +94,7 @@ const SignUpForm = (props) => {
             label="Password"
             fullWidth
             variant="outlined"
-            style={{ marginBottom: "1rem" }}
+            // style={{ marginBottom: "1rem" }}
             className="no-pad"
             name="password"
             inputRef={register({

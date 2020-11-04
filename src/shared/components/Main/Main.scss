@@ -19,6 +19,7 @@
 .main__main__header {
   padding-left: 1rem;
   border-bottom: 1px solid var(--headborder);
+  box-shadow: 0px 2px #f7f7f7;
 }
 .class-info {
   display: flex;
@@ -29,7 +30,7 @@
 
 .text-info {
   margin-left: 1rem;
-  p {
+  span {
     width: fit-content;
     &:first-child {
       font-size: 18px;

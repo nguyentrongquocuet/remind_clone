@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   .input__wrapper {
-    margin-right: 0.5rem;
     .input {
       height: 100%;
       color: var(--secondary) !important;
@@ -13,9 +12,25 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 .message__input {
   display: flex;
   align-items: center;
+}
+
+.imagePreview {
+  height: 100%;
+  img {
+    position: relative;
+  }
+  .preview {
+    height: calc(100vh - 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  // display: flex;
+  // align-items: center;
+  // margin-top: 5rem;
 }

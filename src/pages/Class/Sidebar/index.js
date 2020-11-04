@@ -1,14 +1,16 @@
 import React, { useState, useContext } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Sidebar from "../../../shared/components/Sidebar";
 import Popper from "../../../shared/Elements/Popper";
 import { Context } from "../../../shared/Util/context";
-import MessagePanel from "../../../shared/components/MessagePanel";
-const ClassSidebar = (props) => {
-  let history = useHistory();
-  const { logout, userData } = useContext(Context);
+const MessagePanel = React.lazy(() =>
+  import("../../../shared/components/MessagePanel")
+);
+
+const ClassSidebar = ({ loading }) => {
+  const { dispatch, globalState } = useContext(Context);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [dummyClasses] = useState([
@@ -36,9 +38,11 @@ const ClassSidebar = (props) => {
         )}
       </Link>
       <div className="sidebar__header__info">
-        <p className="secondary">Good</p>
+        <p className="secondary">
+          Good {new Date().getHours() >= 17 ? "Afternoon" : "Morning"}
+        </p>
         <p className="fullname" onClick={handleClick}>
-          Trong Quoc Nguyen
+          {globalState.userData.firstName + " " + globalState.userData.lastName}
           <KeyboardArrowDownIcon />
         </p>
       </div>
@@ -53,7 +57,7 @@ const ClassSidebar = (props) => {
         <div
           className="popper__element"
           onClick={() => {
-            logout();
+            dispatch({ type: "LOGOUT" });
             // history.push("/");
           }}
           style={{ cursor: "pointer " }}
@@ -64,19 +68,7 @@ const ClassSidebar = (props) => {
       </Popper>
     </>
   );
-  // const main = (
-  //   <>
-  //     <div className="sidebar__part__e action">
-  //       <div className="small divbutton circle">+</div>
-  //       <span> Create a class</span>
-  //     </div>
-  //     {dummyClasses.map((c) => (
-  //       <ClassItem key={c.id} name={c.name} id={c.id} />
-  //     ))}
-  //     {/* <ClassItem name="hello"></ClassItem> */}
-  //   </>
-  // );
-  const parts = <MessagePanel />;
+  const parts = <MessagePanel loading={loading} />;
   return (
     <Sidebar
       header={header}

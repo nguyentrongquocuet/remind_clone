@@ -9,9 +9,9 @@ import { headerNavigationElements } from "../../Util/headerNavElements";
 
 import "./Header.scss";
 const Header = (props) => {
-  const { setSignUp } = useContext(Context);
+  const { dispatch } = useContext(Context);
   const setMode = () => {
-    setSignUp((prev) => !prev);
+    dispatch({ type: "TOGGLE_SIGNUP" });
   };
   const [modalVisibility, setModalVisibility] = useState(false);
   if (props.noChild) {
@@ -33,10 +33,13 @@ const Header = (props) => {
           style={{ backgroundColor: "#3784dd" }}
           open={modalVisibility}
           onClose={() => setModalVisibility(false)}
-          className={{ content: "full" }}
+          classNames={{ content: "full" }}
           closeButton
         >
-          <ul className="header__nav__list flex-align">
+          <ul
+            className="header__nav__list flex-align"
+            style={{ pointerEvents: "all" }}
+          >
             {headerNavigationElements.map((e) => {
               if (e.text === "Signup") return null;
               return (

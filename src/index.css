@@ -33,9 +33,9 @@ html {
   --secondary: #6b6e72;
   --linkhover: #00182d;
   --bodybackground: #f2f3f5;
-  --homebackground: #f6f6f6;
+  --homebackground: #ffffff;
   --headernavbackground: #3784dd;
-  --mainBackground: #fafafa;
+  --mainBackground: #ffffff;
   --blockhover: #abecef;
   --buttonhover: #0267c5;
   --hamburger: #2f75c1;
@@ -63,4 +63,18 @@ code {
 .center {
   margin: 0 auto;
   text-align: center;
+}
+#root {
+  overflow: hidden;
+}
+.loading {
+  width: 100%;
+  overflow-y: hidden !important;
+}
+.break-word-ellipsis {
+  display: inline-block;
+  max-width: 150px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }

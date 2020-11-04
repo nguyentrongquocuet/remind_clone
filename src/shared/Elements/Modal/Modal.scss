@@ -7,13 +7,19 @@
   height: 100%;
   min-height: 100vh;
 }
+.modal__header {
+  pointer-events: all;
+  display: flex;
+}
 
 .modal__close {
-  position: absolute;
+  pointer-events: all;
+  // position: absolute;
   z-index: 2;
   font-size: 2rem;
-  right: 1rem;
+  // right: 1rem;
   cursor: pointer;
+  margin-left: auto;
 }
 .authform {
   max-width: 600px;

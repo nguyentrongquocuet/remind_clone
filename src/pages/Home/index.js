@@ -1,23 +1,26 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, Suspense } from "react";
 import { useLocation, useHistory } from "react-router-dom";
-
+import { Context } from "../../shared/Util/context";
+import Loading from "../../shared/components/Loading";
 import Header from "../../shared/components/Header";
 import Banner from "./components/Banner";
 import Content from "./components/Content";
 import Button from "../../shared/Elements/Button";
-import { Context } from "../../shared/Util/context";
-import "./Home.scss";
-import Modal from "../../shared/Elements/Modal";
-import SignUpForm from "../../shared/components/SignUpForm";
 import UserService from "../../services/UserService";
+import "./Home.scss";
+const Modal = React.lazy(() => import("../../shared/Elements/Modal"));
+
+const SignUpForm = React.lazy(() =>
+  import("../../shared/components/SignUpForm")
+);
+
 const Home = () => {
-  let history = useHistory();
   let location = useLocation();
-  const setMode = () => setSignUp((prev) => !prev);
-  const { setSignUp, isInSignUpMode, login } = useContext(Context);
+  const { dispatch, globalState } = useContext(Context);
   useEffect(() => {
+    console.log(location.search);
     if (location.search === "?signup=true") {
-      setMode();
+      dispatch({ type: "TOGGLE_SIGNUP" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -29,8 +32,20 @@ const Home = () => {
         email: data.email,
         password: data.password,
       });
-      console.log(authData);
-      login(authData.data);
+      dispatch({
+        1: {
+          type: "SET_TOKEN",
+          payload: authData.data.token,
+        },
+        2: {
+          type: "SET_USER_DATA",
+          payload: authData.data.userData,
+        },
+        3: {
+          type: "LOGIN_SUCCESS",
+        },
+      });
+      // login(authData.data);
       // history.push("/classes/1");
     } catch (error) {
       alert(error);
@@ -42,24 +57,30 @@ const Home = () => {
   };
   return (
     <div className="home__wrapper">
-      <Modal
-        className={{ wrapper: "authform center" }}
-        style={{ wrapper: { position: "absolute" } }}
-        open={isInSignUpMode}
-        onClose={(e, r) => {
-          setMode();
-        }}
-      >
-        <SignUpForm
-          onSuccess={(data) => {
-            signUpSuccessHandler(data);
+      <Suspense fallback={<Loading />}>
+        <Modal
+          classNames={{ wrapper: "center", content: "form__modal" }}
+          style={{ wrapper: { position: "absolute" } }}
+          open={globalState.toggleSignup || false}
+          onClose={(e, r) => {
+            dispatch({ type: "TOGGLE_SIGNUP" });
           }}
-          header={<h1 className="form__header">SignUp</h1>}
-        />
-      </Modal>
-
+        >
+          <div className="signupform__wrapper">
+            <Suspense fallback={<Loading />}>
+              <SignUpForm
+                onSuccess={(data) => {
+                  signUpSuccessHandler(data);
+                }}
+                header={<h1 className="form__header">SignUp</h1>}
+              />
+            </Suspense>
+          </div>
+        </Modal>
+      </Suspense>
       <div className="home">
         <Header />
+
         <Banner
           style={{
             banner: {
@@ -83,15 +104,14 @@ const Home = () => {
               <Button
                 className="banner__signup"
                 style={{ color: "black", padding: "1em 6em" }}
-                onClick={setMode}
+                onClick={() => dispatch({ type: "TOGGLE_SIGNUP" })}
                 default
               >
                 Signup
               </Button>
             </React.Fragment>
           }
-        ></Banner>
-        <Content />
+        />
       </div>
     </div>
   );

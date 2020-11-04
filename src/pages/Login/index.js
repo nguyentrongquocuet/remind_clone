@@ -7,13 +7,27 @@ import "./Login.scss";
 import Header from "../../shared/components/Header";
 import Button from "../../shared/Elements/Button";
 const Login = () => {
-  const { login } = useContext(Context);
-  let history = useHistory();
+  const { dispatch } = useContext(Context);
   //login with {email, password}
+  console.log(dispatch);
   const submitFormHandler = async (data) => {
     try {
       const authData = await UserService.login(data);
-      login(authData.data);
+      console.log(authData);
+      dispatch({
+        1: {
+          type: "SET_TOKEN",
+          payload: authData.data.token,
+        },
+        2: {
+          type: "SET_USER_DATA",
+          payload: authData.data.userData,
+        },
+        3: {
+          type: "LOGIN_SUCCESS",
+        },
+      });
+
       // history.push("/classes/1");
     } catch (error) {
       if (error.response) {

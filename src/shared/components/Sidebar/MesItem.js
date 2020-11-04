@@ -1,13 +1,26 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./MesItem.scss";
-const MessItem = ({ avatar, path, name, onClick, message, time, active }) => {
+const MessItem = ({
+  avatar,
+  path,
+  name,
+  onClick,
+  message,
+  time,
+  // active,
+  ...props
+}) => {
+  console.log("path", path);
+  const history = useHistory();
+  console.log("history", props.history);
   return (
     <NavLink
-      to={`${path}`}
-      onClick={onClick}
+      to={`/classes/${path}`}
+      // onClick={onClick}
       className="sidebar__part__e classitem"
-      activeClassName={active ? "item--active" : ""}
+      activeClassName={"item--active"}
     >
       <img
         className="medium circle"
@@ -17,9 +30,9 @@ const MessItem = ({ avatar, path, name, onClick, message, time, active }) => {
         }
         alt={name}
       />
-      <div className="messitem">
-        <span>{name}</span>
-        <span>{message}</span>
+      <div title={name} className="messitem">
+        <span className="break-word-ellipsis">{name}</span>
+        <span className="break-word-ellipsis">{message}</span>
       </div>
     </NavLink>
   );

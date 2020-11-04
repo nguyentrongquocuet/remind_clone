@@ -2,6 +2,8 @@
   width: 100%;
   padding: 0 48px;
   background-color: var(--homebackground);
+  overflow: hidden;
+  height: 100vh;
 }
 
 .home {
@@ -38,6 +40,18 @@
 }
 .form__header {
   margin-bottom: 4rem;
+}
+
+.form__modal {
+  height: 100%;
+  // pointer-events: none;
+  .signupform__wrapper {
+    // pointer-events: none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 @media screen and (max-width: 800px) {
   .home__wrapper {

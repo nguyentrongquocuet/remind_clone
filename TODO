@@ -3,4 +3,10 @@
 ✔ useForm @done(20-10-27 16:06)
 ✔ login using mysql @done(20-10-27 16:06)
 ✔ autoAuth @done(20-10-27 16:06)
-☐ class's main
+✔ class's main @done(20-10-30 23:13)
+☐ sửa lại preview ảnh
+☐ bỏ css inline
+☐ bỏ !important
+☐ tham gia lớp, tạo lớp
+☐ xử lý khi chưa có lớp
+☐ chức năng nhắn tin - socketio

@@ -7,7 +7,7 @@ const Modal = (props) => {
       open={props.open}
       onClose={props.onClose}
       container={document.getElementById("modal-hook")}
-      className={props.className.wrapper}
+      className={props.classNames.wrapper || ""}
       style={{
         ...props.style.wrapper,
         position: "absolute",
@@ -15,12 +15,19 @@ const Modal = (props) => {
         outline: "none",
       }}
     >
-      <div style={props.style.content} className={`${props.className.content}`}>
-        {props.closeButton && (
-          <span onClick={props.onClose} className="modal__close">
-            X
-          </span>
-        )}
+      <div
+        style={{ ...props.style.content, pointerEvents: "none" }}
+        className={`${props.classNames.content}`}
+      >
+        <div className="modal__header">
+          {props.header}
+          {props.closeButton && (
+            <span onClick={props.onClose} className="modal__close">
+              X
+            </span>
+          )}
+        </div>
+
         {props.children}
       </div>
     </MUiModal>

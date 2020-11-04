@@ -7,12 +7,12 @@ const getLocalData = () => {
     "userData"
   );
   if (!token) {
-    local.deleteFromLocalStorage({ token, expiresIn, userData });
-    return;
+    localStorage.clear();
+    return null;
   } else {
     if (Date.parse(expiresIn) - new Date() < 0) {
-      local.deleteFromLocalStorage({ token, expiresIn, userData });
-      return;
+      localStorage.clear();
+      return null;
     }
   }
   return { token, expiresIn, userData };
@@ -28,16 +28,21 @@ export class UserService {
     const data = getLocalData();
     console.log("from service", data);
 
-    if (!data) return;
+    if (!data) {
+      localStorage.clear();
+      return;
+    }
     let newUserData;
     try {
       console.log("token", data.token);
 
-      newUserData = await BaseService.post("auth/auth", { token: data.token });
+      newUserData = await BaseService.post("auth/auth", null, {
+        headers: { Authorization: `Bearer ${data.token}` },
+      });
       local.saveToLocalStorage({ userData: newUserData.data });
       return { ...data, userData: newUserData.data };
     } catch (error) {
-      local.deleteFromLocalStorage(data);
+      localStorage.clear();
       alert(error.response.data);
     }
   };
