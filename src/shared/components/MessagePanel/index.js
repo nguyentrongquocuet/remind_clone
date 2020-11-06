@@ -1,76 +1,28 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Suspense } from "react";
 import ClassService from "../../../services/ClassService";
+import { Context } from "../../Util/context";
+import Button from "../../Elements/Button";
 import HeaderNav from "../../Elements/HeaderNav";
 import TextField from "../../Elements/TextField";
-import { Context } from "../../Util/context";
 import Loading from "../Loading";
 import MessItem from "../Sidebar/MesItem";
+import Modal from "../../Elements/Modal";
+import AddIcon from "@material-ui/icons/Add";
+import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import "./MessagePanel.scss";
-const dummyClasses = [
-  // {
-  //   id: 1,
-  //   name: "quoc1",
-  // },
-  // {
-  //   id: 3,
-  //   name: "quoc3",
-  // },
-  // {
-  //   id: 4,
-  //   name: "quoc4",
-  // },
-  // {
-  //   id: 5,
-  //   name: "quoc5",
-  // },
-];
-const dummyClasses2 = [
-  // {
-  //   id: 1,
-  //   name: "quoc1",
-  // },
-  // {
-  //   id: 3,
-  //   name: "quoc3",
-  // },
-  // {
-  //   id: 4,
-  //   name: "quoc4",
-  // },
-  // {
-  //   id: 5,
-  //   name: "quoc5",
-  // },
-  // {
-  //   id: 6,
-  //   name: "quoc6",
-  // },
-  // {
-  //   id: 7,
-  //   name: "quoc7",
-  // },
-  // {
-  //   id: 8,
-  //   name: "quoc8",
-  // },
-  // {
-  //   id: 9,
-  //   name: "quoc9",
-  // },
-  // {
-  //   id: 10,
-  //   name: "quoc10",
-  // },
-  // {
-  //   id: 11,
-  //   name: "quoc11",
-  // },
-];
+const JoinClass = React.lazy(() =>
+  import("../../../pages/Class/Modal/JoinClass")
+);
 const MessagePanel = ({ loading }) => {
   console.log("PANEL REINE");
   const [panelMode, setPanelMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
+  const [modalMode, setModal] = useState(null);
+  const toggleModal = (mode) => {
+    if (mode) setModal(mode);
+    else setModal(null);
+  };
   // const [searching, setSearching] = useState(false);
   useEffect(() => {
     if (!loading && searchQuery.length > 0) {
@@ -101,16 +53,33 @@ const MessagePanel = ({ loading }) => {
   console.log(globalState.classData);
   return (
     <div className="messages__panel loading">
+      <Suspense fallback={<Loading />}>
+        <Modal
+          open={modalMode}
+          onClose={(e) => toggleModal(null)}
+          classNames={{ wrapper: "center", content: "form__modal" }}
+        >
+          {modalMode === "join" ? <JoinClass /> : null}
+        </Modal>
+      </Suspense>
+      <div className="join-or-create">
+        <Button variant="outlined" onClick={(e) => toggleModal("join")}>
+          <EmojiPeopleIcon />
+        </Button>
+        <Button variant="outlined" onClick={(e) => toggleModal("create")}>
+          <AddIcon />
+        </Button>
+      </div>
       <HeaderNav
         elements={[
           {
             onClick: (e) => setPanelMode((prev) => !prev),
-            text: "JOINED",
+            text: "CLASSES",
             active: !panelMode,
           },
           {
             onClick: (e) => setPanelMode((prev) => !prev),
-            text: "OWNED",
+            text: "CONTACT",
             active: panelMode,
           },
         ]}

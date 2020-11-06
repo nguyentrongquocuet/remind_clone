@@ -14,7 +14,8 @@ exports.getClass = (req, res) => {
 
 exports.findClass = (req, res) => {
   console.log("QUERY", req.query);
-  let query = req.query.query;
+  let { query, notJoined } = req.query;
+  const userId = req.decodedToken.userId;
   const db = req.app.get("db");
   let nameMode = true;
   if (query[0] === "@") {
@@ -33,8 +34,12 @@ exports.findClass = (req, res) => {
   db.query(
     `SELECT * FROM class WHERE ${
       nameMode ? "MATCH(name) AGAINST(?)" : "classId LIKE ?"
+    } ${
+      notJoined === "true"
+        ? "AND classId NOT IN (SELECT classId from class_member WHERE userId = ?)"
+        : ""
     }`,
-    [query],
+    [query, userId],
     (error, result) => {
       if (error) throw error;
       console.log(result);
@@ -58,4 +63,11 @@ exports.getMembers = (req, res) => {
       res.status(200).json(result);
     }
   );
+};
+
+exports.dummy = (req, res) => {
+  const db = req.app.get("db");
+  const a = db.query(`SELECT * FROM class_member`);
+  console.log(a);
+  res.send(a);
 };

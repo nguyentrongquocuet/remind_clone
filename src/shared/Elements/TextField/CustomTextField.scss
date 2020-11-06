@@ -1,21 +1,22 @@
-.input__wrapper {
+.MuiInputBase-root.input__wrapper {
   width: 100%;
+  border-radius: 4px;
   &:hover {
     border-color: var(--primary);
   }
 }
-.input {
-  padding: 0.5rem !important;
-  font-size: 13px !important;
+.MuiInputBase-input.input {
+  padding: 0.5rem;
+  font-size: 13px;
   height: 100%;
-  border: 1px solid var(--inputborder) !important;
-  border-radius: 4px !important;
-
+  border: 1px solid var(--inputborder);
+  border-radius: 4px;
   &:focus {
-    border-color: var(--primary) !important;
+    box-shadow: 0px 0px 0.5rem rgba(117, 121, 231, 0.4);
+    border-color: var(--primary);
   }
 }
-.input__textarea {
+.MuiInputBase-input.input__textarea {
   width: 100%;
   border: none;
   outline: none;

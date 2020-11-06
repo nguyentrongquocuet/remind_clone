@@ -5,20 +5,13 @@ const Modal = (props) => {
   const content = (
     <MUiModal
       open={props.open}
-      onClose={props.onClose}
+      onClose={(e) => {
+        props.onClose ? props.onClose(e) : e.preventDefault();
+      }}
       container={document.getElementById("modal-hook")}
       className={props.classNames.wrapper || ""}
-      style={{
-        ...props.style.wrapper,
-        position: "absolute",
-        zIndex: 1,
-        outline: "none",
-      }}
     >
-      <div
-        style={{ ...props.style.content, pointerEvents: "none" }}
-        className={`${props.classNames.content}`}
-      >
+      <div className={`${props.classNames.content}`}>
         <div className="modal__header">
           {props.header}
           {props.closeButton && (

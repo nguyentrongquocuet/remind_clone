@@ -8,10 +8,16 @@
     .input {
       height: 100%;
       width: 100%;
-      color: var(--secondary) !important;
+      color: var(--secondary);
     }
   }
 }
 .messages__list {
   padding-top: 1rem;
+}
+.join-or-create {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin: 0.25rem 0;
 }

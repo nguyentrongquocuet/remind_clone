@@ -60,7 +60,6 @@ const Home = () => {
       <Suspense fallback={<Loading />}>
         <Modal
           classNames={{ wrapper: "center", content: "form__modal" }}
-          style={{ wrapper: { position: "absolute" } }}
           open={globalState.toggleSignup || false}
           onClose={(e, r) => {
             dispatch({ type: "TOGGLE_SIGNUP" });
@@ -103,9 +102,8 @@ const Home = () => {
               <br />
               <Button
                 className="banner__signup"
-                style={{ color: "black", padding: "1em 6em" }}
                 onClick={() => dispatch({ type: "TOGGLE_SIGNUP" })}
-                default
+                color="primary"
               >
                 Signup
               </Button>

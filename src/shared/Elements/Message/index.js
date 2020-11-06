@@ -174,7 +174,6 @@ const Message = ({ message, senderData }) => {
           closeButton
           open={previewRequest}
           classNames={{ wrapper: "center", content: "imagePreview" }}
-          style={{}}
           onClose={(e) => {
             alert("close");
             setPreviewRequest(null);

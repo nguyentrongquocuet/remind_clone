@@ -1,12 +1,15 @@
 import BaseService from "./BaseService";
 export class ClassService {
-  static getClass = (token) => {
+  static getClass = () => {
+    const token = JSON.parse(localStorage.getItem("token"));
     if (!token) throw Error("Something went wrong!!!");
+
     return BaseService.get(`class`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   };
-  static joinClass = (classId, token) => {
+  static joinClass = (classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
     if (!token || !classId) throw Error("Something went wrong!!!");
     return BaseService.post(
       `class/join`,
@@ -16,8 +19,9 @@ export class ClassService {
       }
     );
   };
-  static leaveClass = (classId, token) => {
-    if (!token || classId) throw Error("Something went wrong!!!");
+  static leaveClass = (classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token || !classId) throw Error("Something went wrong!!!");
     return BaseService.delete("class/leave", {
       headers: { Authorization: `Bearer ${token}` },
       params: {
@@ -25,18 +29,23 @@ export class ClassService {
       },
     });
   };
-  static findClass = (query, token) => {
+  static findClass = (query, notJoined) => {
+    const token = JSON.parse(localStorage.getItem("token"));
     if (!token || !query) throw Error("Something went wrong!!!");
+    console.log("token", token);
+
     return BaseService.get(`class/find`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       params: {
         query: query,
+        notJoined: Boolean(notJoined),
       },
     });
   };
-  static getClassMembers = (classId, token) => {
+  static getClassMembers = (classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
     if (!token || !classId) throw Error("Something went wrong!!!");
     return BaseService.get(`class/member`, {
       headers: {

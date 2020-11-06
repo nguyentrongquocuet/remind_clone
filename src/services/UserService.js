@@ -43,7 +43,7 @@ export class UserService {
       return { ...data, userData: newUserData.data };
     } catch (error) {
       localStorage.clear();
-      alert(error.response.data);
+      // alert(error.response.data);
     }
   };
 }

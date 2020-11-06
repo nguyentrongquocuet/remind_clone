@@ -13,6 +13,7 @@ exports.init = () => {
     }
     console.log("DATABASE IS FINE");
   });
+  db.query;
   return db;
 };
 

@@ -3,7 +3,12 @@
   margin-top: 5rem;
   font-size: 13px;
 }
-
+.MuiButton-root.login-page__signup {
+  padding: 0.5rem 1rem;
+  color: #fafafa;
+  background-color: #0274de;
+  margin-left: 1.5rem;
+}
 @media screen and (max-width: 500px) {
   .login__wrapper {
     margin-left: 1rem;

@@ -1,39 +1,21 @@
 import React from "react";
 import { Button as MUiButton } from "@material-ui/core/";
-import { styled } from "@material-ui/core/styles";
 import "./Button.scss";
 const Button = (props) => {
-  const StyledButton = styled(MUiButton)({
-    ...props.style,
-  });
-  if (props.href) {
-    return (
-      <StyledButton
-        {...props}
-        type={props.type}
-        style={{ ...props.style, color: props.default ? "white" : "none" }}
-        className={`button ${props.className}`}
-        href={props.href}
-      >
-        {props.children}
-      </StyledButton>
-    );
-  }
   return (
-    <StyledButton
-      // style={props.style}
+    <MUiButton
       {...props}
       type={props.type}
-      className={`button ${props.className}`}
+      // style={{ ...props.style}}
+      className={`${props.className}`}
+      href={props.href}
       onClick={props.onClick}
-      color={props.color}
-      style={{
-        ...props.style,
-        color: props.default ? "white" : "none",
-      }}
+      color={props.color || "primary"}
+      variant={props.variant || "contained"}
+      disabled={props.disabled}
     >
       {props.children}
-    </StyledButton>
+    </MUiButton>
   );
 };
 

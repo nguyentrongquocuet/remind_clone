@@ -30,7 +30,6 @@ const Header = (props) => {
     <React.Fragment>
       {modalVisibility && (
         <Modal
-          style={{ backgroundColor: "#3784dd" }}
           open={modalVisibility}
           onClose={() => setModalVisibility(false)}
           classNames={{ content: "full" }}
@@ -77,13 +76,7 @@ const Header = (props) => {
           </NavLink>
           <Button
             color="primary"
-            style={{
-              padding: "0.5rem 1rem",
-              color: "#fafafa",
-              backgroundColor: "#0274de",
-              marginLeft: "1.5rem",
-            }}
-            className="header__actions__e"
+            className="header__actions__e header__signup"
             onClick={setMode}
             default
           >

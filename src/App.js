@@ -26,9 +26,6 @@ function App() {
           <Route exact path="/classes/:classId/:action">
             <Class />
           </Route>
-          <Route exact path="/classes/:classId/messages/:roomId">
-            <Class />
-          </Route>
           <Route exact path="/classes/:classId">
             <Class />
           </Route>

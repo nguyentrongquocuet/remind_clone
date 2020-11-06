@@ -22,11 +22,15 @@ exports.getMessages = (req, res) => {
   // const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
   const db = req.app.get("db");
-  db.query(
-    `SELECT * FROM messages WHERE roomId= ? ORDER BY createAt`,
-    [roomId],
-    (error, result) => {
-      res.status(200).json(result);
-    }
+  setTimeout(
+    () =>
+      db.query(
+        `SELECT * FROM messages WHERE roomId= ? ORDER BY createAt`,
+        [roomId],
+        (error, result) => {
+          res.status(200).json(result);
+        }
+      ),
+    3000
   );
 };

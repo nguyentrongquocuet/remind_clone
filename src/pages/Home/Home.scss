@@ -38,16 +38,22 @@
   padding-left: 4rem;
   text-align: left;
 }
+.MuiButton-root.banner__signup {
+  padding: 1rem 6rem;
+}
 .form__header {
   margin-bottom: 4rem;
 }
-
+#modal-hook .center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .form__modal {
-  height: 100%;
   // pointer-events: none;
+  width: fit-content;
   .signupform__wrapper {
     // pointer-events: none;
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;

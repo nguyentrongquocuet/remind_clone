@@ -51,7 +51,11 @@
 .header__actions__e.hamburger {
   display: none;
 }
-
+.MuiButton-root.header__signup {
+  padding: 0.5rem 1rem;
+  background-color: #0274de;
+  margin-left: 1.5rem;
+}
 @media screen and (max-width: 800px) {
   .header {
     padding: 0 24px;

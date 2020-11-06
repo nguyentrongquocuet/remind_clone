@@ -44,14 +44,13 @@ html {
 }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Open Sans";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   background-color: var(--bodybackground);
   font-size: 13px;
+  font-weight: 500;
   height: 100%;
 }
 
@@ -77,4 +76,32 @@ code {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.skeleton {
+  background-color: whitesmoke;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.001),
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.001)
+  );
+  background-repeat: no-repeat;
+  background-size: 100px 100%;
+  background-position: center;
+  background-origin: 40%;
+  animation: ske 1s ease-out infinite;
+}
+
+@keyframes ske {
+  0% {
+    background-position: left;
+  }
+
+  50% {
+    background-position: right;
+  }
+
+  100% {
+    background-position: left;
+  }
 }

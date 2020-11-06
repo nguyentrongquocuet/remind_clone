@@ -1,8 +1,8 @@
 .messages__wrapper {
   flex-grow: 3.5;
+  height: 100%;
   padding: 0.5rem;
   border-right: 1px solid var(--headborder);
-  background-color: #cdedf6;
   display: flex;
   flex-direction: column;
   // justify-content: flex-end;

@@ -43,14 +43,8 @@ const Login = () => {
         <div className="header__actions flex-align">
           <Button
             color="primary"
-            style={{
-              padding: "0.5rem 1rem",
-              color: "#fafafa",
-              backgroundColor: "#0274de",
-              marginLeft: "1.5rem",
-            }}
+            className="header__actions__e login-page__signup"
             href="/?signup=true"
-            className="header__actions__e"
             default
           >
             Signup

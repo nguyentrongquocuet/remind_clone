@@ -5,6 +5,7 @@ import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Sidebar from "../../../shared/components/Sidebar";
 import Popper from "../../../shared/Elements/Popper";
 import { Context } from "../../../shared/Util/context";
+import Avatar from "@material-ui/core/Avatar";
 const MessagePanel = React.lazy(() =>
   import("../../../shared/components/MessagePanel")
 );
@@ -13,16 +14,6 @@ const ClassSidebar = ({ loading }) => {
   const { dispatch, globalState } = useContext(Context);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [dummyClasses] = useState([
-    {
-      id: 1,
-      name: "quoc1",
-    },
-    {
-      id: 2,
-      name: "quoc2",
-    },
-  ]);
   const id = open ? "simple-popper" : undefined;
   const image = undefined;
   const handleClick = (event) => {
@@ -31,11 +22,9 @@ const ClassSidebar = ({ loading }) => {
   const header = (
     <>
       <Link className="sidebar__header__avatar" to="/settings/profile">
-        {image ? (
-          <img src={image} alt="hell" />
-        ) : (
-          <div className="alter-avatar medium">TN</div>
-        )}
+        <Avatar className="alter-avatar medium" alt="hello" src="dsdj">
+          {globalState.userData.firstName[0] + globalState.userData.lastName[0]}
+        </Avatar>
       </Link>
       <div className="sidebar__header__info">
         <p className="secondary">
@@ -73,7 +62,6 @@ const ClassSidebar = ({ loading }) => {
     <Sidebar
       header={header}
       parts={parts}
-      classes={dummyClasses}
       classNames={{
         wrapper: "class__sidebar",
         header: "class__sidebar__header",

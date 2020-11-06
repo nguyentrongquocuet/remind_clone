@@ -62,14 +62,16 @@ const SignUpForm = (props) => {
           <Button
             disabled={!formState.isValid}
             type="submit"
-            style={{ width: "100%" }}
+            className="loginform__button"
           >
             Login
           </Button>
         </CardActions>
-        <span>Or</span>
+        {/* <span>Or</span> */}
+        <br />
         <Button
-          style={{ width: "100%" }}
+          disabled
+          className="loginform__button"
           onClick={(e) => {
             alert("sign with google");
           }}

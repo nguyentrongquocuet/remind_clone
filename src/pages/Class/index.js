@@ -5,9 +5,9 @@ import ClassMain from "./Main";
 import { Context } from "../../shared/Util/context";
 import { useParams, useHistory } from "react-router-dom";
 
-import "./Class.scss";
 import Loading from "../../shared/components/Loading";
-
+import Skeleton from "@material-ui/lab/Skeleton";
+import "./Class.scss";
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 
 const Class = () => {
@@ -19,7 +19,7 @@ const Class = () => {
   useEffect(() => {
     const ioC = io.connect("http://localhost:5000");
     ioC.on("hello", (str) => {
-      alert(str);
+      // alert(str);
     });
     ClassService.getClass(globalState.token)
       .then((data) => {
@@ -55,15 +55,32 @@ const Class = () => {
       {!loading ? (
         <>
           <div className="main">
-            <Suspense fallback={<div>LOADING SIDEBAR</div>}>
+            <Suspense
+              fallback={<Skeleton variant="rect" className="class__sidebar" />}
+            >
               <ClassSidebar loading={loading} />
             </Suspense>
-            <ClassMain loading={loading} started={started} />
+            {classId ? (
+              <ClassMain loading={loading} started={started} />
+            ) : (
+              <div
+                className="main_main shadow--left"
+                style={{
+                  flexGrow: 1,
+                  backgroundImage: `url(${window.location.origin}/getstarted.jpg)`,
+                  backgroundPosition: "center",
+                  backgroundSize: "cover",
+                }}
+              >
+                No Id
+              </div>
+            )}
+
             {/* // GETTING STARTED PAGE */}
           </div>
         </>
       ) : (
-        <Loading />
+        <Skeleton variant="rect" />
       )}
     </>
   );
