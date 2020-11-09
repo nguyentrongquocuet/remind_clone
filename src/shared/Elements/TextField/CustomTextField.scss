@@ -1,25 +1,58 @@
-.MuiInputBase-root.input__wrapper {
+// .MuiInputBase-root.input__wrapper {
+//   width: 100%;
+//   border-radius: 4px;
+//   &:hover {
+//     border-color: var(--primary);
+//   }
+// }
+// .MuiInputBase-input.input {
+//   padding: 0.5rem;
+//   font-size: 13px;
+//   height: 100%;
+//   border: 1px solid var(--inputborder);
+//   border-radius: 4px;
+//   &:focus {
+//     box-shadow: 0px 0px 0.5rem rgba(117, 121, 231, 0.4);
+//     border-color: var(--primary);
+//   }
+// }
+// .MuiInputBase-input.input__textarea {
+//   width: 100%;
+//   border: none;
+//   outline: none;
+//   border-radius: 4px;
+//   line-height: 1rem;
+// }
+
+.default.MuiTextField-root.input__wrapper {
   width: 100%;
-  border-radius: 4px;
-  &:hover {
-    border-color: var(--primary);
+  .input {
+    height: 100%;
+    color: var(--secondary);
   }
 }
-.MuiInputBase-input.input {
-  padding: 0.5rem;
-  font-size: 13px;
-  height: 100%;
-  border: 1px solid var(--inputborder);
-  border-radius: 4px;
-  &:focus {
-    box-shadow: 0px 0px 0.5rem rgba(117, 121, 231, 0.4);
-    border-color: var(--primary);
+.default {
+  .MuiOutlinedInput-multiline {
+    padding: 0 0.5rem;
+    height: fit-content;
+  }
+  .MuiOutlinedInput-input {
+    padding: 0 0.5rem;
+    height: fit-content;
+  }
+  .MuiOutlinedInput-inputMultiline {
+    line-height: 100%;
+    padding: 0;
+    padding-top: 0.5rem;
+    height: fit-content;
+  }
+
+  .MuiOutlinedInput-root {
+    padding: 0.5rem 0;
   }
 }
-.MuiInputBase-input.input__textarea {
-  width: 100%;
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  line-height: 1rem;
+.MuiTextField-root {
+  .MuiOutlinedInput-inputMultiline {
+    padding: 0 0.5rem;
+  }
 }

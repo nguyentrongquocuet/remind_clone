@@ -6,6 +6,7 @@ import { Context } from "../../../shared/Util/context";
 import ActionSidebar from "./tabs/ActionSidebar";
 import Avatar from "@material-ui/core/Avatar";
 import "./Main.scss";
+import Skeleton from "@material-ui/lab/Skeleton";
 const Messages = React.lazy(() => import("./tabs/Messages"));
 
 const ClassMain = (props) => {
@@ -64,7 +65,9 @@ const ClassMain = (props) => {
     <Main header={header} className="shadow--left">
       {/* //TODO ADD MAIN OF MAIN, FLEXIBLE CLASSNAME */}
       <div className="main__wrapper">
-        <Suspense fallback={<Loading />}>
+        <Suspense
+          fallback={<Skeleton className="messages__wrapper" variant="rect" />}
+        >
           <Messages loading={checking && props.loading} />
         </Suspense>
         {/* {room__info--right COMPONENT} */}

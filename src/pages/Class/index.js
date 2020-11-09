@@ -1,14 +1,15 @@
 import React, { Suspense, useEffect, useContext, useState } from "react";
-import io from "socket.io-client";
-import ClassService from "../../services/ClassService";
-import ClassMain from "./Main";
-import { Context } from "../../shared/Util/context";
 import { useParams, useHistory } from "react-router-dom";
+import io from "socket.io-client";
 
+import ClassService from "../../services/ClassService";
 import Loading from "../../shared/components/Loading";
 import Skeleton from "@material-ui/lab/Skeleton";
+import { Context } from "../../shared/Util/context";
 import "./Class.scss";
+import LoadingPage from "../../shared/components/loadingpage/LoadingPage";
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
+const ClassMain = React.lazy(() => import("./Main"));
 
 const Class = () => {
   const { globalState, dispatch } = useContext(Context);
@@ -21,7 +22,7 @@ const Class = () => {
     ioC.on("hello", (str) => {
       // alert(str);
     });
-    ClassService.getClass(globalState.token)
+    ClassService.getClass()
       .then((data) => {
         console.log("classDAta", data.data);
         dispatch({
@@ -61,26 +62,37 @@ const Class = () => {
               <ClassSidebar loading={loading} />
             </Suspense>
             {classId ? (
-              <ClassMain loading={loading} started={started} />
-            ) : (
-              <div
-                className="main_main shadow--left"
-                style={{
-                  flexGrow: 1,
-                  backgroundImage: `url(${window.location.origin}/getstarted.jpg)`,
-                  backgroundPosition: "center",
-                  backgroundSize: "cover",
-                }}
+              <Suspense
+                fallback={
+                  <Skeleton
+                    variant="rect"
+                    className="main__main skeleton-full"
+                  />
+                }
               >
-                No Id
-              </div>
+                <ClassMain loading={loading} started={started} />
+              </Suspense>
+            ) : (
+              <Suspense
+                fallback={<Skeleton variant="rect" className="skeleton-full" />}
+              >
+                <div
+                  className="main_main shadow--left"
+                  style={{
+                    flexGrow: 1,
+                    backgroundImage: `url(${window.location.origin}/getstarted.jpg)`,
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                  }}
+                ></div>
+              </Suspense>
             )}
 
             {/* // GETTING STARTED PAGE */}
           </div>
         </>
       ) : (
-        <Skeleton variant="rect" />
+        <LoadingPage />
       )}
     </>
   );

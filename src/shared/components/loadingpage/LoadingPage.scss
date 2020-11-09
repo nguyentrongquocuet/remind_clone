@@ -1,0 +1,137 @@
+div.svg__wrapper {
+  width: 100vw;
+  height: 100vh;
+  font-family: sans-serif;
+  position: relative;
+  h3 {
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-transform: uppercase;
+    animation: text 1s ease infinite alternate;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    object-fit: cover;
+  }
+  #light path {
+    animation: light 1s ease infinite alternate;
+  }
+
+  #incandescent {
+    animation: light2 1s ease infinite alternate;
+  }
+  #bulb-cover {
+    fill: rgba(210, 230, 3, 0.1);
+    animation: light3 1s linear infinite alternate;
+  }
+  #text {
+    animation: text 1s ease infinite alternate;
+  }
+  /* //message */
+  #Group_11 {
+    animation: message 1s linear infinite alternate;
+  }
+  /* //message */
+  #Group_7 {
+    animation: message 2s linear infinite alternate;
+  }
+  /* //hand */
+  #hand,
+  #arm,
+  #mouse {
+    animation: typing 2s linear infinite alternate;
+  }
+  #right-sleeve {
+    animation: typing 2s linear infinite alternate;
+  }
+  /* //crow */
+  #craw1,
+  #craw2 {
+    animation: craw 20s linear infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  #minutehand {
+    animation: minute 6s linear infinite;
+    transform-box: fill-box;
+  }
+  #timekepper {
+    animation: minute 360s linear infinite;
+    transform-box: fill-box;
+    transform-origin: bottom right;
+  }
+}
+
+@keyframes light {
+  from {
+    stroke: #d2e603;
+  }
+  to {
+    stroke: rgba(255, 255, 255, 0);
+  }
+}
+@keyframes light2 {
+  from {
+    stroke: #d2e603;
+  }
+  to {
+    stroke: black;
+  }
+}
+@keyframes light3 {
+  from {
+    stroke: #d2e603;
+    fill: rgba(210, 230, 3, 0.5);
+  }
+  to {
+    stroke: black;
+    fill: rgba(210, 230, 3, 0.1);
+  }
+}
+
+@keyframes message {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(10px);
+  }
+}
+@keyframes craw {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes typing {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(10deg);
+  }
+}
+
+@keyframes minute {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+@keyframes text {
+  from {
+    fill: #d2e603;
+  }
+  to {
+    fill: rgba(255, 255, 255, 0);
+  }
+}

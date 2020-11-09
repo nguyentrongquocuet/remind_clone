@@ -8,7 +8,7 @@ if (db instanceof Error) {
   throw db;
 }
 app.set("port", port);
-app.set("db", db);
+app.set("db", db.promise());
 const sever = require("http").createServer(app);
 const io = require("socket.io")(sever);
 io.set("match origin protocol", true);

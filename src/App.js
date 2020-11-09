@@ -6,11 +6,12 @@ import {
   Route,
 } from "react-router-dom";
 // import Class from "./pages/Class";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
 import { Context } from "./shared/Util/context";
 import "./App.scss";
 import { Suspense } from "react";
+import Authpreloader from "./shared/components/authpreloader/Authpreloader";
+const Login = React.lazy(() => import("./pages/Login"));
+const Home = React.lazy(() => import("./pages/Home"));
 const Class = React.lazy(async () => {
   return import("./pages/Class");
 });
@@ -21,7 +22,7 @@ function App() {
   const isAuthenticated = globalState.isLoggedIn;
   if (isAuthenticated) {
     routes = (
-      <Suspense fallback={<div>LOADING...</div>}>
+      <Suspense fallback={<Authpreloader />}>
         <Switch>
           <Route exact path="/classes/:classId/:action">
             <Class />
@@ -41,15 +42,17 @@ function App() {
     );
   } else
     routes = (
-      <Switch>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/" exact>
-          <Home />
-        </Route>
-        <Redirect to="/" />
-      </Switch>
+      <Suspense fallback={<Authpreloader />}>
+        <Switch>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/" exact>
+            <Home />
+          </Route>
+          <Redirect to="/" />
+        </Switch>
+      </Suspense>
     );
   return <Router>{routes}</Router>;
 }

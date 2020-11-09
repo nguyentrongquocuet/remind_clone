@@ -77,6 +77,14 @@ const Message = ({ message, senderData }) => {
 
     return (
       <div
+        onClick={(e) => {
+          e.preventDefault();
+          alert("preview");
+          setPreviewRequest(
+            message.image ||
+              "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
+          );
+        }}
         onMouseLeave={(e) => {
           handleClick("off", e);
         }}
@@ -128,7 +136,10 @@ const Message = ({ message, senderData }) => {
           onClick={(e) => {
             e.preventDefault();
             alert("preview");
-            setPreviewRequest(message.image || null);
+            setPreviewRequest(
+              message.image ||
+                "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
+            );
           }}
           className="image"
           id={visible ? "" : "image__wrapper"}

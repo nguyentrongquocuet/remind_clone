@@ -10,6 +10,7 @@ import Modal from "../../Elements/Modal";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import "./MessagePanel.scss";
+import CreateClass from "../../../pages/Class/Modal/CreateClass";
 const JoinClass = React.lazy(() =>
   import("../../../pages/Class/Modal/JoinClass")
 );
@@ -29,10 +30,7 @@ const MessagePanel = ({ loading }) => {
       // setSearching(true);
       const time = setTimeout(async () => {
         try {
-          const data = await ClassService.findClass(
-            searchQuery,
-            globalState.token
-          );
+          const data = await ClassService.findClass(searchQuery);
           setSearchResult(data.data);
           // setSearching(false);
         } catch (error) {
@@ -53,13 +51,24 @@ const MessagePanel = ({ loading }) => {
   console.log(globalState.classData);
   return (
     <div className="messages__panel loading">
-      <Suspense fallback={<Loading />}>
+      <Suspense
+        fallback={
+          <Loading
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        }
+      >
         <Modal
           open={modalMode}
           onClose={(e) => toggleModal(null)}
           classNames={{ wrapper: "center", content: "form__modal" }}
         >
-          {modalMode === "join" ? <JoinClass /> : null}
+          {modalMode === "join" ? <JoinClass /> : <CreateClass />}
         </Modal>
       </Suspense>
       <div className="join-or-create">
@@ -108,7 +117,6 @@ const MessagePanel = ({ loading }) => {
                   path={r.classId}
                   key={r.classId}
                   name={r.name}
-                  onClick={(e) => alert("open message")}
                   active={false}
                 ></MessItem>
               ))}
@@ -127,8 +135,6 @@ const MessagePanel = ({ loading }) => {
                     path={filteredClass.classId}
                     key={filteredClass.classId}
                     name={filteredClass.name}
-                    onClick={(e) => alert("open message")}
-                    message="hello wuoc"
                     active={false}
                   ></MessItem>
                 ))
@@ -137,8 +143,6 @@ const MessagePanel = ({ loading }) => {
                   path={filteredClass.classId}
                   key={filteredClass.classId}
                   name={filteredClass.name}
-                  onClick={(e) => alert("open message")}
-                  message="hello wuoc"
                   active={false}
                 ></MessItem>
               ))}

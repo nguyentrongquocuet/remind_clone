@@ -1,15 +1,25 @@
 import React from "react";
-import InputBase from "@material-ui/core/InputBase";
+import Textfield from "@material-ui/core/Textfield";
 import "./CustomTextField.scss";
-const CustomTextField = ({ type, onKeyUp, value, onChange, placeholder }) => {
+const CustomTextField = ({
+  type,
+  onKeyUp,
+  value,
+  variant,
+  onChange,
+  placeholder,
+  custom,
+}) => {
   return (
-    <InputBase
+    <Textfield
       onKeyUp={onKeyUp ? (e) => onKeyUp(e) : (e) => e.preventDefault()}
       classes={{
-        input: "input",
-        root: "input__wrapper",
+        input: `input ${!custom ? "default" : ""}`,
+        root: `input__wrapper ${!custom ? "default" : ""}`,
       }}
+      className={`${!custom ? "default" : ""}`}
       value={value}
+      variant={variant || "outlined"}
       onChange={
         onChange
           ? (e) => {

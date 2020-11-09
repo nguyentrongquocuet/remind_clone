@@ -132,7 +132,7 @@ const SignUpForm = (props) => {
         </CardActions>
         <br />
         <Button
-          className="signupform__button"
+          className="signupform__button no-pad"
           onClick={(e) => {
             alert("sign with google");
           }}

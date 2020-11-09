@@ -60,7 +60,9 @@ code {
 }
 
 .center {
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 #root {
@@ -76,6 +78,10 @@ code {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.MuiSkeleton-root.skeleton-full {
+  flex-grow: 1;
+  height: 100vh;
 }
 .skeleton {
   background-color: whitesmoke;

@@ -51,7 +51,7 @@ const Login = () => {
           </Button>
         </div>
       </Header>
-      <div className="login__wrapper center">
+      <div className="center">
         <LoginForm header={<h1>Login</h1>} login={submitFormHandler} />
       </div>
     </>

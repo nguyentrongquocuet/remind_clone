@@ -1,22 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Card } from "@material-ui/core";
 import Loading from "../../../shared/components/Loading";
 import MessItem from "../../../shared/components/Sidebar/MesItem";
 import TextField from "../../../shared/Elements/TextField";
 import ClassService from "../../../services/ClassService";
 import "./JoinClass.scss";
+import { Context } from "../../../shared/Util/context";
+import { useHistory } from "react-router-dom";
+
 const JoinClass = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  const joinClass = (classId) => {
+  const { globalState, dispatch } = useContext(Context);
+  const history = useHistory();
+  const joinClass = useCallback((classId) => {
     ClassService.joinClass(classId)
       .then((data) => {
+        dispatch({
+          type: "ADD_CLASS",
+          payload: data.data,
+        });
+        history.push(`/classes/${classId}`);
         console.log(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  };
+  }, []);
   useEffect(() => {
     if (searchQuery.length > 0) {
       // setSearching(true);

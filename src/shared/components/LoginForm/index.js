@@ -21,7 +21,7 @@ const SignUpForm = (props) => {
   };
 
   return (
-    <Card className="login" style={{ borderRadius: ".6rem" }}>
+    <Card className="login login__wrapper" style={{ borderRadius: ".6rem" }}>
       {props.header}
       <br />
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -30,7 +30,6 @@ const SignUpForm = (props) => {
             label="Email address"
             fullWidth
             variant="outlined"
-            style={{ marginBottom: "1rem" }}
             className="no-pad"
             name="email"
             inputRef={register({
@@ -47,7 +46,6 @@ const SignUpForm = (props) => {
             label="Password"
             fullWidth
             variant="outlined"
-            style={{ marginBottom: "1rem" }}
             className="no-pad"
             name="password"
             inputRef={register({

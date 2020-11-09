@@ -43,10 +43,7 @@ const ActionSidebar = (props) => {
   useEffect(() => {
     if (state.action === "people") {
       try {
-        ClassService.getClassMembers(
-          props.classId || classId,
-          globalState.token
-        ).then((data) => {
+        ClassService.getClassMembers(props.classId || classId).then((data) => {
           console.log("member", data.data);
           dispatch({
             type: "SET_DATA",

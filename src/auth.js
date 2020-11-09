@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import UserService from "./services/UserService";
-import Loading from "./shared/components/Loading";
+import Authpreloader from "./shared/components/authpreloader/Authpreloader";
 import { Context } from "./shared/Util/context";
 const Auth = ({ setAuth }) => {
   const { dispatch } = useContext(Context);
@@ -31,14 +31,7 @@ const Auth = ({ setAuth }) => {
       setAuth(true);
     });
   }, []);
-  return (
-    <div style={{ textAlign: "center" }}>
-      <h1>AUTHENTICATING</h1>
-      <br />
-      <br />
-      <Loading />
-    </div>
-  );
+  return <Authpreloader />;
 };
 
 export default Auth;

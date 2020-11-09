@@ -37,6 +37,8 @@ const contextReducer = (context, action) => {
       return { ...context, conversationData: action.payload };
     case "TOGGLE_SIGNUP":
       return { ...context, toggleSignup: !context.toggleSignup };
+    case "ADD_CLASS":
+      return { ...context, classData: [...context.classData, action.payload] };
     case "LOGOUT":
       console.log("LOGOUT");
       localStorage.clear();

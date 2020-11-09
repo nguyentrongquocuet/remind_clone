@@ -37,7 +37,7 @@ const Header = (props) => {
         >
           <ul
             className="header__nav__list flex-align"
-            style={{ pointerEvents: "all" }}
+            // style={{ pointerEvents: "all" }}
           >
             {headerNavigationElements.map((e) => {
               if (e.text === "Signup") return null;

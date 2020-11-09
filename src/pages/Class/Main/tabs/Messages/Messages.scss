@@ -1,7 +1,8 @@
 .user-search {
   display: flex;
   align-items: center;
-  .input__wrapper {
+  .MuiTextField-root.input__wrapper {
+    width: 100%;
     .input {
       height: 100%;
       color: var(--secondary);

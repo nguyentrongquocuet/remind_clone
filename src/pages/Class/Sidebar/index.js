@@ -49,7 +49,6 @@ const ClassSidebar = ({ loading }) => {
             dispatch({ type: "LOGOUT" });
             // history.push("/");
           }}
-          style={{ cursor: "pointer " }}
         >
           <ExitToAppIcon />
           LogOut

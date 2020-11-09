@@ -4,7 +4,7 @@ import "./Modal.scss";
 const Modal = (props) => {
   const content = (
     <MUiModal
-      open={props.open}
+      open={props.open || false}
       onClose={(e) => {
         props.onClose ? props.onClose(e) : e.preventDefault();
       }}

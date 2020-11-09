@@ -1,4 +1,4 @@
-const sql = require("mysql");
+const sql = require("mysql2");
 let db;
 exports.init = () => {
   db = sql.createConnection({
