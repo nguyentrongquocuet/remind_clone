@@ -4,8 +4,10 @@ import Popper from "../Popper";
 import useLazy from "../../Util/lazy-hook";
 import { Context } from "../../Util/context";
 import Loading from "../../components/Loading";
+import { Avatar } from "@material-ui/core";
 const Modal = React.lazy(() => import("../Modal"));
 const Message = ({ message, senderData }) => {
+  console.log("check-m", message, senderData);
   const [previewRequest, setPreviewRequest] = useState(null);
   const [ref, visible] = useLazy(
     () => {
@@ -18,7 +20,6 @@ const Message = ({ message, senderData }) => {
   );
   const userId = useContext(Context).globalState.userData.id;
   const own = message.senderId == userId;
-  console.log("time", message.createAt);
 
   // if(content.type==="text")
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,7 +52,7 @@ const Message = ({ message, senderData }) => {
           alignItems: "flex-start",
         }}
       >
-        {!own && <p>{senderData.name || "dummy"}</p>}
+        {!own && <p>{senderData ? senderData.name : "dummy"}</p>}
         <p>
           {new Date(Date.parse(message.createAt)).toLocaleString() || "now"}
         </p>
@@ -110,15 +111,31 @@ const Message = ({ message, senderData }) => {
           handleClick("on", e);
         }}
       >
-        <img
+        <Avatar
+          className="alter-avatar small"
+          alt="message"
           src={
-            senderData.avatar ||
-            "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
+            senderData
+              ? senderData.avatar
+                ? "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
+                : ""
+              : ""
+          }
+        >
+          VL
+        </Avatar>
+        {/* <img
+          src={
+            senderData
+              ? senderData.avatar
+                ? "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
+                : ""
+              : ""
           }
           alt="message"
           className={`alter-avatar small`}
-        />
-        <span>{senderData.name}</span>
+        /> */}
+        <span>{senderData ? senderData.name : "Loading..."}</span>
       </header>
       <div className="announcement__content">
         <p

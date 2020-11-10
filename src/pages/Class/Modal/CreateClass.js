@@ -2,7 +2,7 @@ import React from "react";
 import TextField from "../../../shared/Elements/TextField";
 import Button from "../../../shared/Elements/Button";
 import "./CreateClass.scss";
-const CreateClass = () => {
+const CreateClass = ({ onClose }) => {
   return (
     <div className="createclass__wrapper">
       <header className="createclass__header">Create Class</header>

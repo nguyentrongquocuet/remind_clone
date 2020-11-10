@@ -1,13 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  Suspense,
-  useContext,
-  useMemo,
-  useLayoutEffect,
-} from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { Context } from "../../../../../shared/Util/context";
 import TextField from "../../../../../shared/Elements/TextField";
 import MessageService from "../../../../../services/MessageService";
@@ -33,13 +24,8 @@ const Messages = (props) => {
   const { globalState } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
-  let roomId;
-  try {
-    roomId = globalState.classData.filter((c) => c.classId == classId)[0]
-      .roomId;
-  } catch {
-    history.push("/classes");
-  }
+  const roomId = globalState.classData[classId].roomId;
+  if (!roomId) history.push("/classes");
 
   let messagesRef = useRef(null);
   let { loading } = props;
@@ -51,8 +37,6 @@ const Messages = (props) => {
         { content: message },
         globalState.token
       ).then((data) => {
-        messagesRef.current.removeEventListener("load", () => {});
-
         setMessagesState((prev) => {
           return { ...prev, messages: [...prev.messages, data.data] };
         });
@@ -65,7 +49,6 @@ const Messages = (props) => {
     const fetchMessages = () => {
       MessageService.getMessages(roomId, globalState.token)
         .then((data) => {
-          console.log("check-data", data);
           setMessagesState((prev) => {
             return { fetching: false, messages: [...data.data] };
           });
@@ -78,69 +61,74 @@ const Messages = (props) => {
       });
       fetchMessages();
     }
-  }, [roomId, loading]);
+    return () => setMessagesState({ fetching: true, messages: [] });
+  }, [roomId, classId, loading]);
   // setTimeout(() => setIsLoading(false), 1000);
   useEffect(() => {
-    console.log("state", messagesState);
     const timeout = setTimeout(() => {
-      if (!messagesState.fetching) {
-        console.log(
-          messagesRef.current.scrollTop,
-          messagesRef.current.scrollHeight,
-          messagesRef.current.clientHeight
-        );
-        console.log("current", messagesRef.current);
+      if (!messagesState.fetching && !loading) {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
       }
     }, 100);
     return () => clearTimeout(timeout);
   }, [messagesState, messagesRef.current]);
-
   return (
     <>
-      {loading || messagesState.fetching ? (
-        <Skeleton
-          className="messages__wrapper"
-          animation="wave"
-          variant="rect"
-        />
-      ) : (
-        <div className="messages__wrapper">
-          <div className="fix" style={{ flex: "1" }}></div>
-          <div className="allmessages" ref={messagesRef}>
-            {messagesState.messages.map((m) => (
-              <Message key={m.id} senderData={"nothing"} message={m} />
-            ))}
-          </div>
-
-          <div className="message__input">
-            <TextField
-              type="textarea"
-              onChange={(e) => setMessage(e.target.value)}
-              value={message}
-              onKeyUp={(e) =>
-                e.key === "Enter" ? e.preventDefault() : e.preventDefault()
-              }
-            />
-            <input
-              style={{ display: "none" }}
-              type="file"
-              name="file"
-              id="file"
-            />
-            <AttachFileIcon
-              onClick={(e) => document.getElementById("file").click()}
-              color="primary"
-            />
-            <SendIcon
-              onClick={(e) => {
-                sendMessage();
-              }}
-              color="primary"
-            />
-          </div>
+      <div className={`messages__wrapper ${props.expanded ? "expanded" : ""}`}>
+        {loading || messagesState.fetching ? (
+          <Loading
+            className="messages__wrapper"
+            animation="wave"
+            variant="rect"
+          />
+        ) : (
+          <>
+            <div className="fix" style={{ flex: "1" }}></div>
+            <div className="allmessages" ref={messagesRef}>
+              {messagesState.messages.map((m) => {
+                console.log("memberss", globalState.classData[classId].members);
+                return (
+                  <Message
+                    senderData={
+                      globalState.classData[classId].members
+                        ? globalState.classData[classId].members[m.senderId]
+                        : { no: 1 }
+                    }
+                    key={m.id}
+                    message={m}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
+        <div className="message__input">
+          <TextField
+            type="textarea"
+            onChange={(e) => setMessage(e.target.value)}
+            value={message}
+            onKeyUp={(e) =>
+              e.key === "Enter" ? e.preventDefault() : e.preventDefault()
+            }
+          />
+          <input
+            style={{ display: "none" }}
+            type="file"
+            name="file"
+            id="file"
+          />
+          <AttachFileIcon
+            onClick={(e) => document.getElementById("file").click()}
+            color="primary"
+          />
+          <SendIcon
+            onClick={(e) => {
+              sendMessage();
+            }}
+            color="primary"
+          />
         </div>
-      )}
+      </div>
     </>
   );
 };

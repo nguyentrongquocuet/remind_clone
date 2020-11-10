@@ -29,8 +29,19 @@ const contextReducer = (context, action) => {
       return { ...context, isLoggedIn: true };
     case "LOGIN_FAIL":
       return { ...context, isLoggedIn: false };
+    case "SET_CLASS_MEMBER":
+      return {
+        ...context,
+        classData: {
+          ...context.classData,
+          [action.classId]: {
+            ...context.classData[action.classId],
+            members: { ...action.payload },
+          },
+        },
+      };
     case "SET_CLASS_DATA":
-      return { ...context, classData: [...action.payload] };
+      return { ...context, classData: { ...action.payload } };
     case "SET_TOKEN":
       return { ...context, token: action.payload, isLoggedIn: true };
     case "SET_CONVERSATION_DATA":
@@ -38,7 +49,10 @@ const contextReducer = (context, action) => {
     case "TOGGLE_SIGNUP":
       return { ...context, toggleSignup: !context.toggleSignup };
     case "ADD_CLASS":
-      return { ...context, classData: [...context.classData, action.payload] };
+      return {
+        ...context,
+        classData: { ...context.classData, ...action.payload },
+      };
     case "LOGOUT":
       console.log("LOGOUT");
       localStorage.clear();
@@ -58,9 +72,10 @@ const initialState = {
     firstName: "",
     lastName: "",
     parents: [],
+    name: "",
   },
   //classId:, className,
-  classData: [],
+  classData: {},
   //[[prefix-id, prefix-id]]
   conversationData: [],
   toggleSignup: false,

@@ -32,7 +32,11 @@ exports.getClass = async (req, res) => {
       INNER JOIN  message_room mr ON c.classId=mr.classId`,
       [userId]
     );
-    res.status(200).json(classes);
+    const finalClasses = classes.reduce((prev, cur) => {
+      prev[cur.classId] = cur;
+      return prev;
+    }, {});
+    res.status(200).json(finalClasses);
   } catch (error) {
     throw error;
   }
@@ -59,6 +63,7 @@ exports.findClass = async (req, res) => {
       }, "")
       .match(/^(\+.+)\s$/)[1];
   }
+  console.log({ nameMode, notJoined, query });
   try {
     const [classes] = await db.query(
       `SELECT * FROM class WHERE ${
@@ -66,10 +71,11 @@ exports.findClass = async (req, res) => {
       } ${
         notJoined === "false"
           ? "AND classId IN (SELECT classId from class_member WHERE userId = ?)"
-          : ""
+          : "AND classId NOT IN (SELECT classId from class_member WHERE userId = ?)"
       }`,
       [query, userId]
     );
+
     return res.status(200).json(classes);
   } catch (error) {
     throw error;
@@ -90,7 +96,17 @@ exports.getMembers = async (req, res) => {
       WHERE classId=?`,
       [classId]
     );
-    res.status(200).json(members);
+    const finalMembers = members
+      .map((m) => {
+        return { ...m, name: `${m.firstName} ${m.lastName}` };
+      })
+      .reduce((prev, cur) => {
+        prev[cur.id] = cur;
+        return prev;
+      }, {});
+    setTimeout(() => {
+      res.status(200).json(finalMembers);
+    }, 500);
   } catch (error) {
     throw error;
   }

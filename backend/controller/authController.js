@@ -32,12 +32,15 @@ exports.login = async (req, res) => {
       expiresIn: 3600,
     });
     req.app.get("io").emit("hello", "welcome to remind");
+    const userData = {
+      ...userInfo[0],
+      name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
+    };
+    console.log("userData", userData);
     return res.status(200).json({
       token,
       expiresIn: 3600,
-      userData: {
-        ...userInfo[0],
-      },
+      userData,
     });
   } catch (error) {
     throw error;
@@ -95,7 +98,11 @@ exports.authenticate = async (req, res) => {
     const [userInfo] = await db.query("SELECT * FROM user_info WHERE id=?", [
       id,
     ]);
-    return res.status(200).json(userInfo[0]);
+    const userData = {
+      ...userInfo[0],
+      name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
+    };
+    return res.status(200).json(userData);
   } catch (error) {
     throw error;
   }

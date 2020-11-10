@@ -68,9 +68,11 @@ code {
 #root {
   overflow: hidden;
 }
-.loading {
-  width: 100%;
-  overflow-y: hidden !important;
+.sticky {
+  position: sticky;
+  top: 0;
+  background-color: #ffffff;
+  z-index: 1;
 }
 .break-word-ellipsis {
   display: inline-block;

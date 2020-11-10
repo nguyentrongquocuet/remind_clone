@@ -1,19 +1,13 @@
-import React, { useReducer, useEffect, useContext } from "react";
+import React, { useReducer, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
 import ClassService from "../../../../../services/ClassService";
 import HeaderNav from "../../../../../shared/Elements/HeaderNav";
-import { Context } from "../../../../../shared/Util/context";
 import Loading from "../../../../../shared/components/Loading";
 import "./ActionSidebar.scss";
+import Members from "./Members";
 const initialData = {
   action: "files",
   files: [],
@@ -22,7 +16,7 @@ const initialData = {
 const aSBReducer = (state, action) => {
   switch (action.type) {
     case "SET_DATA": {
-      return { ...state, [action.action]: action.payload };
+      return { ...state, [action.action]: { ...action.payload } };
     }
     case "SET_ACTION": {
       return { ...state, action: action.payload };
@@ -34,9 +28,8 @@ const aSBReducer = (state, action) => {
 };
 const ActionSidebar = (props) => {
   console.log("ACTIONSIDEBAR");
-  const { globalState } = useContext(Context);
   //1: file, 2: people, 3: setting
-  const { action, classId } = useParams();
+  const { classId } = useParams();
   const [state, dispatch] = useReducer(aSBReducer, initialData);
   console.log("DATA", state.files, state.people);
 
@@ -69,6 +62,11 @@ const ActionSidebar = (props) => {
       });
   }, [state.action, props.classId]);
   const HEADER = [
+    {
+      text: <ChevronLeftIcon />,
+      onClick: props.toggleExpand,
+      className: "expandbutton",
+    },
     {
       to: "files",
       text: "files",
@@ -103,8 +101,9 @@ const ActionSidebar = (props) => {
       active: state.action === "settings",
     },
   ];
+  console.log(state);
   return (
-    <div className="room__info--right">
+    <div className={`room__info--right ${props.expanded ? "expanded" : ""}`}>
       <HeaderNav elements={HEADER} />
       {state.action === "files" && (
         <div className="action__data">
@@ -112,35 +111,14 @@ const ActionSidebar = (props) => {
         </div>
       )}
       {state.action === "people" ? (
-        state.people.length > 0 ? (
-          <TableContainer component={Paper}>
-            <Table className="group__members__table" aria-label="caption table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell align="center">Date joined</TableCell>
-                  <TableCell align="center">Role</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {state.people.map((member) => (
-                  <TableRow key={member.name}>
-                    <TableCell align="center">
-                      {member.firstName + " " + member.lastName}
-                    </TableCell>
-                    <TableCell align="center">{member.joinAt}</TableCell>
-                    <TableCell align="center">{member.role}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+        Object.keys(state.people).length > 0 ? (
+          // CLASS MEMBERS
+          <Members people={state.people} />
         ) : (
-          <Loading />
+          <Loading className="actionsidebar__loading" />
         )
       ) : null}
     </div>
   );
 };
-
 export default ActionSidebar;

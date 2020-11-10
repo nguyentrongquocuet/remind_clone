@@ -1,6 +1,25 @@
-.MuiTable-root.group__members__table {
-  th,
-  td {
-    text-align: center;
+.actionsidebar__loading#loading svg {
+  max-width: 40px;
+  max-height: 40px;
+}
+.room__info--right.expanded {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 100000px;
+  transition: 0.25s ease;
+}
+.nav .expandbutton {
+  max-width: 2rem;
+  .MuiSvgIcon-root {
+    transition: 0.25s linear;
+    transform-box: fill-box;
+    transform-origin: center;
+    &:hover {
+      background-color: whitesmoke;
+      color: var(--primary);
+    }
   }
+}
+.room__info--right.expanded .nav .expandbutton .MuiSvgIcon-root {
+  transform: rotate(180deg);
 }

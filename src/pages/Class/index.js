@@ -16,7 +16,6 @@ const Class = () => {
   const [loading, setLoading] = useState(true);
   const [started, setStarted] = useState(false);
   const { classId } = useParams();
-  const history = useHistory();
   useEffect(() => {
     const ioC = io.connect("http://localhost:5000");
     ioC.on("hello", (str) => {
@@ -39,17 +38,6 @@ const Class = () => {
         alert(error);
       });
   }, []);
-  useEffect(() => {
-    if (globalState.classData) {
-      if (globalState.classData.length === 0) {
-        setStarted(true);
-      } else {
-        for (const classs of globalState.classData) {
-          // if(globalState.)
-        }
-      }
-    }
-  }, [globalState.classData]);
   console.log("HOURS", new Date().getHours());
   return (
     <>
@@ -64,7 +52,7 @@ const Class = () => {
             {classId ? (
               <Suspense
                 fallback={
-                  <Skeleton
+                  <Loading
                     variant="rect"
                     className="main__main skeleton-full"
                   />

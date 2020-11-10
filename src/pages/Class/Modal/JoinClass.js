@@ -8,7 +8,7 @@ import "./JoinClass.scss";
 import { Context } from "../../../shared/Util/context";
 import { useHistory } from "react-router-dom";
 
-const JoinClass = () => {
+const JoinClass = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const { globalState, dispatch } = useContext(Context);
@@ -20,8 +20,8 @@ const JoinClass = () => {
           type: "ADD_CLASS",
           payload: data.data,
         });
+        onClose();
         history.push(`/classes/${classId}`);
-        console.log(data);
       })
       .catch((error) => {
         console.log(error);

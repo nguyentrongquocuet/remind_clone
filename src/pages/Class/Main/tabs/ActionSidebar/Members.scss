@@ -1,0 +1,20 @@
+.MuiTable-root.group__members__table {
+  table-layout: fixed;
+  th,
+  td {
+    text-align: center;
+    cursor: pointer;
+    vertical-align: middle;
+    .chevron {
+      &.up {
+        transform: rotate(90deg);
+      }
+      &.down {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+}
+.MuiTable-root.group__members__table.sticky {
+  top: 46px;
+}

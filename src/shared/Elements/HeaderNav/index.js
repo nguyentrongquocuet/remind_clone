@@ -13,7 +13,7 @@ const HeaderNav = ({ elements }) => {
               key={e.to}
               exact
               // activeClassName={"boxlink--active"}
-              className={`nav__link uppercase secondary ${
+              className={`nav__link uppercase secondary ${e.className || " "} ${
                 e.active ? "boxlink--active" : ""
               }`}
               to={e.to ? `/classes/${params.classId}/${e.to}` : "#"}
@@ -28,7 +28,7 @@ const HeaderNav = ({ elements }) => {
           return (
             <span
               key={e.text}
-              className={`nav__link uppercase secondary ${
+              className={`nav__link uppercase secondary ${e.className || " "} ${
                 e.active ? "boxlink--active" : ""
               }`}
               onClick={(event) => {

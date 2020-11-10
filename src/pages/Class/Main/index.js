@@ -1,4 +1,10 @@
-import React, { Suspense, useState, useContext, useEffect } from "react";
+import React, {
+  Suspense,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
 import { useParams, useHistory } from "react-router-dom";
 import Loading from "../../../shared/components/Loading";
 import Main from "../../../shared/components/Main";
@@ -7,36 +13,47 @@ import ActionSidebar from "./tabs/ActionSidebar";
 import Avatar from "@material-ui/core/Avatar";
 import "./Main.scss";
 import Skeleton from "@material-ui/lab/Skeleton";
+import ClassService from "../../../services/ClassService";
 const Messages = React.lazy(() => import("./tabs/Messages"));
 
 const ClassMain = (props) => {
-  const { globalState } = useContext(Context);
+  const { globalState, dispatch } = useContext(Context);
 
   const history = useHistory();
   const classId = useParams().classId;
-  const [checking, setCheck] = useState(false);
+  const [checked, setCheck] = useState(false);
+  const [expanded, setExpand] = useState(false);
+  const toggleExpand = useCallback(() => setExpand((prev) => !prev), []);
   useEffect(() => {
+    console.log("classId changes to", classId);
+
     if (!props.loading) {
-      for (const classs of globalState.classData) {
-        if (classs.classId == classId) {
-          // history.push(`/classes/${classs.classId}/messages`);
-          setCheck(true);
-          return;
+      let flag = false;
+      for (const id of Object.keys(globalState.classData)) {
+        if (id == classId) {
+          flag = true;
+          console.log("SET MEMBERS");
+          ClassService.getClassMembers(classId).then((data) => {
+            dispatch({
+              type: "SET_CLASS_MEMBER",
+              classId: classId,
+              payload: data.data,
+            });
+            setCheck(true);
+            return;
+          });
         }
       }
-      setCheck(false);
-      history.push("/");
+      if (!flag) {
+        setCheck(false);
+        history.push("/");
+      }
     }
-  }, [props.loading]);
+    return () => setCheck(false);
+  }, [props.loading, classId]);
 
-  let className;
-  if (props.loading) return <Loading />;
-  console.log(globalState.classData);
-  for (const classs of globalState.classData) {
-    if (classs.classId == classId) {
-      className = classs.name;
-    }
-  }
+  // if (props.loading || !checked) return <Loading />;
+  const className = globalState.classData[classId].name;
 
   const header = (
     <>
@@ -60,7 +77,10 @@ const ClassMain = (props) => {
       </div>
     </>
   );
-
+  console.log(
+    "loading",
+    checked && props.loading && !globalState.classData[classId].members
+  );
   return (
     <Main header={header} className="shadow--left">
       {/* //TODO ADD MAIN OF MAIN, FLEXIBLE CLASSNAME */}
@@ -68,10 +88,18 @@ const ClassMain = (props) => {
         <Suspense
           fallback={<Skeleton className="messages__wrapper" variant="rect" />}
         >
-          <Messages loading={checking && props.loading} />
+          <Messages
+            expanded={expanded}
+            toggleExpand={toggleExpand}
+            loading={!checked || props.loading}
+          />
         </Suspense>
         {/* {room__info--right COMPONENT} */}
-        <ActionSidebar classId={classId} />
+        <ActionSidebar
+          expanded={expanded}
+          toggleExpand={toggleExpand}
+          classId={classId}
+        />
       </div>
     </Main>
   );

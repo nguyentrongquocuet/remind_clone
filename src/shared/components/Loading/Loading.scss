@@ -4,4 +4,36 @@
   flex: 1 1 auto;
   justify-content: center;
   align-items: center;
+  svg {
+    max-width: 64px;
+    max-height: 64px;
+    object-fit: cover;
+  }
+}
+
+#spinningarea {
+  animation: spin 2s ease infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+#spinningarea path {
+  animation: grow 1s linear infinite alternate;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes grow {
+  from {
+    transform: scale(0.5, 0.5);
+  }
+  to {
+    transform: scale(1, 1);
+  }
 }

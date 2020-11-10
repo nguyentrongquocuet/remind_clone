@@ -31,7 +31,7 @@ const ClassSidebar = ({ loading }) => {
           Good {new Date().getHours() >= 17 ? "Afternoon" : "Morning"}
         </p>
         <p className="fullname" onClick={handleClick}>
-          {globalState.userData.firstName + " " + globalState.userData.lastName}
+          {globalState.userData.name}
           <KeyboardArrowDownIcon />
         </p>
       </div>

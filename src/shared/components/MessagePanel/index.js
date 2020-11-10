@@ -68,40 +68,47 @@ const MessagePanel = ({ loading }) => {
           onClose={(e) => toggleModal(null)}
           classNames={{ wrapper: "center", content: "form__modal" }}
         >
-          {modalMode === "join" ? <JoinClass /> : <CreateClass />}
+          {modalMode === "join" ? (
+            <JoinClass onClose={(e) => toggleModal(null)} />
+          ) : (
+            <CreateClass onClose={(e) => toggleModal(null)} />
+          )}
         </Modal>
       </Suspense>
-      <div className="join-or-create">
-        <Button variant="outlined" onClick={(e) => toggleModal("join")}>
-          <EmojiPeopleIcon />
-        </Button>
-        <Button variant="outlined" onClick={(e) => toggleModal("create")}>
-          <AddIcon />
-        </Button>
-      </div>
-      <HeaderNav
-        elements={[
-          {
-            onClick: (e) => setPanelMode((prev) => !prev),
-            text: "CLASSES",
-            active: !panelMode,
-          },
-          {
-            onClick: (e) => setPanelMode((prev) => !prev),
-            text: "CONTACT",
-            active: panelMode,
-          },
-        ]}
-      />
-      <div className="user-search">
-        <TextField
-          onChange={(e) => {
-            const query = e.target.value;
-            setSearchQuery(query);
-          }}
-          text="Search"
-          placeholder="Search"
+      <div className="sticky">
+        <HeaderNav
+          elements={[
+            {
+              onClick: (e) => setPanelMode((prev) => !prev),
+              text: "CLASSES",
+              active: !panelMode,
+            },
+            {
+              onClick: (e) => setPanelMode((prev) => !prev),
+              text: "CONTACT",
+              active: panelMode,
+            },
+          ]}
         />
+        <div className="join-or-create">
+          <Button variant="outlined" onClick={(e) => toggleModal("join")}>
+            <EmojiPeopleIcon />
+          </Button>
+          <Button variant="outlined" onClick={(e) => toggleModal("create")}>
+            <AddIcon />
+          </Button>
+        </div>
+
+        <div className="user-search">
+          <TextField
+            onChange={(e) => {
+              const query = e.target.value;
+              setSearchQuery(query);
+            }}
+            text="Search"
+            placeholder="Search"
+          />
+        </div>
       </div>
       {loading ? (
         <Loading />
@@ -128,7 +135,7 @@ const MessagePanel = ({ loading }) => {
       ) : (
         <div className="messages__list">
           {panelMode
-            ? globalState.classData
+            ? Object.values(globalState.classData)
                 .filter((classs) => classs.owner == globalState.userData.id)
                 .map((filteredClass) => (
                   <MessItem
@@ -138,7 +145,7 @@ const MessagePanel = ({ loading }) => {
                     active={false}
                   ></MessItem>
                 ))
-            : globalState.classData.map((filteredClass) => (
+            : Object.values(globalState.classData).map((filteredClass) => (
                 <MessItem
                   path={filteredClass.classId}
                   key={filteredClass.classId}
