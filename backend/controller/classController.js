@@ -1,8 +1,10 @@
+const socketIO = require("../configs/socketIO");
 exports.createClass = async (req, res) => {
   console.log(req.body);
   const { className } = req.body;
   const { userId } = req.decodedToken;
   const db = req.app.get("db");
+  const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   try {
     const [
       addClass,
@@ -26,6 +28,8 @@ exports.createClass = async (req, res) => {
       [addClass.insertId]
     );
 
+    const room = `class-${data[0].roomId}`;
+    socket.join(room);
     res.send(data[0]);
   } catch (error) {
     res.status(404).json("Something went wrong!");
@@ -35,6 +39,9 @@ exports.createClass = async (req, res) => {
 exports.getClass = async (req, res) => {
   const userId = req.decodedToken.userId;
   const db = req.app.get("db");
+  const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
+  // console.log(socket);
+  console.log(`socketId of ${userId}`, socketIO.socketId.get(userId));
   try {
     const [classes] = await db.query(
       `SELECT * 
@@ -47,6 +54,12 @@ exports.getClass = async (req, res) => {
       prev[cur.classId] = cur;
       return prev;
     }, {});
+    for (const classs of classes) {
+      const room = `class-${classs.roomId}`;
+      socket.join(room);
+    }
+
+    console.log(socketIO.io.sockets.adapter.rooms);
     res.status(200).json(finalClasses);
   } catch (error) {
     throw error;
@@ -134,6 +147,7 @@ exports.joinClass = async (req, res) => {
   const userId = req.decodedToken.userId;
   const classId = req.body.classId;
   const db = req.app.get("db");
+  const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   if (classId) {
     try {
       await db.query(`INSERT INTO class_member (classId, userId) VALUES(?,?)`, [
@@ -147,6 +161,8 @@ exports.joinClass = async (req, res) => {
         INNER JOIN message_room mr ON c.classId=mr.classId`,
         [classId, userId]
       );
+      const room = `class-${getDataBack[0].roomId}`;
+      socket.join(room);
       return res.status(200).json(getDataBack[0]);
     } catch (error) {
       throw error;

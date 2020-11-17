@@ -6,8 +6,7 @@ import { Context } from "../../Util/context";
 import Loading from "../../components/Loading";
 import { Avatar } from "@material-ui/core";
 const Modal = React.lazy(() => import("../Modal"));
-const Message = ({ message, senderData }) => {
-  console.log("check-m", message, senderData);
+const Message = ({ message, senderData, key }) => {
   const [previewRequest, setPreviewRequest] = useState(null);
   const [ref, visible] = useLazy(
     () => {
@@ -64,7 +63,7 @@ const Message = ({ message, senderData }) => {
     .split(/[\n]+/)
     .map((w) => (
       <>
-        <span>{w}</span> <br />
+        <span key={w}>{w}</span> <br />
       </>
     ));
   if (message.type === 0) {
@@ -78,6 +77,7 @@ const Message = ({ message, senderData }) => {
 
     return (
       <div
+        key={key}
         onClick={(e) => {
           e.preventDefault();
           alert("preview");
@@ -101,7 +101,7 @@ const Message = ({ message, senderData }) => {
   }
 
   return (
-    <div className={`announcement ${own ? "owner" : ""}`}>
+    <div key={key} className={`announcement ${own ? "owner" : ""}`}>
       <header
         className="announcement__header"
         onMouseLeave={(e) => {

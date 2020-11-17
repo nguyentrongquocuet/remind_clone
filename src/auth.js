@@ -2,8 +2,11 @@ import React, { useEffect, useContext } from "react";
 import UserService from "./services/UserService";
 import Authpreloader from "./shared/components/authpreloader/Authpreloader";
 import { Context } from "./shared/Util/context";
+import io from "socket.io-client";
+
 const Auth = ({ setAuth }) => {
-  const { dispatch } = useContext(Context);
+  const { dispatch, globalState } = useContext(Context);
+  const { isLoggedIn, userData } = globalState;
   useEffect(() => {
     UserService.auth().then((data) => {
       console.log("data", data);
@@ -31,6 +34,7 @@ const Auth = ({ setAuth }) => {
       setAuth(true);
     });
   }, []);
+
   return <Authpreloader />;
 };
 

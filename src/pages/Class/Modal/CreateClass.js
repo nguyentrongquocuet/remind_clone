@@ -1,16 +1,20 @@
 import React, { useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 import TextField from "../../../shared/Elements/TextField";
 import Button from "../../../shared/Elements/Button";
 import ClassService from "../../../services/ClassService";
-import "./CreateClass.scss";
 import { Context } from "../../../shared/Util/context";
+import "./CreateClass.scss";
 const CreateClass = ({ onClose }) => {
   const [className, setClassName] = useState("");
   const { dispatch } = useContext(Context);
+  const history = useHistory();
   const createClass = async () => {
     try {
       const classData = await ClassService.createClass(className.trim());
       dispatch({ type: "ADD_CLASS", payload: classData.data });
+      onClose();
+      history.push(`/classes/${classData.data.classId}`);
     } catch (error) {
       alert(error.response && error.response.data);
     }

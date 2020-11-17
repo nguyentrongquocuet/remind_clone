@@ -1,8 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
 import App from "./App";
 import Auth from "./auth";
+import io from "socket.io-client";
+import { Subject } from "rxjs";
 import UserService from "./services/UserService";
 import * as local from "./shared/Util/LocalStorage";
+import RealTimeService from "./services/RealTimeService";
 const { Context } = require("./shared/Util/context");
 const reducer = (context, actions) => {
   let outContext = context;
@@ -16,9 +19,10 @@ const reducer = (context, actions) => {
     }
   }
   console.log("lenght", localStorage.length);
-  local.saveToLocalStorage(outContext);
+  local.saveToLocalStorage({ ...outContext, IO: undefined, subject: null });
   return outContext;
 };
+const subject = new Subject();
 const contextReducer = (context, action) => {
   switch (action.type) {
     case "SET_IO":
@@ -32,7 +36,10 @@ const contextReducer = (context, action) => {
       };
 
     case "LOGIN_SUCCESS":
-      return { ...context, isLoggedIn: true };
+      return {
+        ...context,
+        isLoggedIn: true,
+      };
     case "LOGIN_FAIL":
       return { ...context, isLoggedIn: false };
     case "SET_CLASS_MEMBER":
@@ -46,6 +53,8 @@ const contextReducer = (context, action) => {
           },
         },
       };
+    case "SET_UP_DONE":
+      return { ...context, settingUpIsDone: true };
     case "SET_CLASS_DATA":
       return { ...context, classData: { ...action.payload } };
     case "SET_TOKEN":
@@ -53,6 +62,7 @@ const contextReducer = (context, action) => {
     case "SET_CONVERSATION_DATA":
       return { ...context, conversationData: action.payload };
     case "TOGGLE_SIGNUP":
+      context.subject.next("signup hhe");
       return { ...context, toggleSignup: !context.toggleSignup };
     case "ADD_CLASS":
       return {
@@ -66,7 +76,7 @@ const contextReducer = (context, action) => {
       console.log("LOGOUT");
       localStorage.clear();
       console.log(localStorage.getItem("token"));
-      return {};
+      return { subject: new Subject() };
     default:
       return context;
   }
@@ -88,11 +98,14 @@ const initialState = {
   //[[prefix-id, prefix-id]]
   conversationData: [],
   toggleSignup: false,
+  settingUpIsDone: false,
+  subjects: { messages: new Subject() },
 };
 const Store = () => {
   const [globalState, dispatch] = useReducer(reducer, initialState);
   const [auth, setAuth] = useState(false);
   console.log("rendering");
+
   useEffect(() => {
     console.log(globalState.toggleSignup);
     if (!globalState.toggleSignup)
@@ -120,7 +133,34 @@ const Store = () => {
         }
       });
   }, []);
-
+  useEffect(() => {
+    if (globalState.isLoggedIn && !globalState.settingUpIsDone) {
+      console.log("SETTING IO");
+      RealTimeService.init({ globalState, dispatch });
+      // const ioC = io.connect("http://localhost:5000");
+      // ioC.on("auth", () => {
+      //   dispatch({
+      //     1: {
+      //       type: "SET_TOKEN",
+      //       payload: globalState.token,
+      //     },
+      //     2: {
+      //       type: "SET_USER_DATA",
+      //       payload: globalState.userData,
+      //     },
+      //     3: {
+      //       type: "LOGIN_SUCCESS",
+      //     },
+      //     4: { type: "SET_IO", payload: ioC },
+      //     5: { type: "SET_UP_DONE" },
+      //   });
+      // });
+      // ioC.on("messages", (data) => {
+      //   alert(data.content);
+      // });
+      // ioC.emit("auth", globalState.userData.id);
+    }
+  }, [globalState.isLoggedIn]);
   return (
     <Context.Provider value={{ globalState: globalState, dispatch: dispatch }}>
       {!auth ? <Auth setAuth={setAuth} /> : <App />}

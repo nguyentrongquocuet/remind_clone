@@ -1,4 +1,5 @@
 const app = require("./backend/app");
+const socketIO = require("./backend/configs/socketIO");
 const port = process.env.SERVER_PORT || 5000;
 
 const sql = require("./backend/Database/db");
@@ -9,20 +10,8 @@ if (db instanceof Error) {
 }
 app.set("port", port);
 app.set("db", db.promise());
-const sever = require("http").createServer(app);
-const io = require("socket.io")(sever);
-io.set("match origin protocol", true);
-io.set("origins", "http://localhost:3000");
-io.on("connection", (socket) => {
-  socket.on("subscribe", (...rooms) => {
-    for (const room of rooms) socket.join(room);
-  });
-  app.set("socket", socket);
-  app.set("io", io);
-  console.log(socket.id);
-  socket.emit("hello", "HELLLO");
-});
-app.set("io", io);
-sever.listen(port, () => {
+const server = require("http").createServer(app);
+socketIO.init(server, app);
+server.listen(port, () => {
   console.log("Listening at port", port);
 });

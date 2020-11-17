@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useLayoutEffect,
+} from "react";
 import { Context } from "../../../../../shared/Util/context";
 import TextField from "../../../../../shared/Elements/TextField";
 import MessageService from "../../../../../services/MessageService";
@@ -7,8 +13,7 @@ import { useParams, useHistory } from "react-router-dom";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import SendIcon from "@material-ui/icons/Send";
 import "./Messages.scss";
-import Skeleton from "@material-ui/lab/Skeleton";
-
+import RealTimeService from "../../../../../services/RealTimeService";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
@@ -44,6 +49,16 @@ const Messages = (props) => {
       });
     }
   };
+  useEffect(() => {
+    RealTimeService.subject.subscribe((data) => {
+      if (data.roomId == roomId) {
+        console.log(data.content);
+        setMessagesState((prev) => {
+          return { ...prev, messages: [...prev.messages, data] };
+        });
+      }
+    });
+  }, [roomId]);
   //TODO: ADD TRY_CATCH
   useEffect(() => {
     const fetchMessages = () => {
@@ -64,7 +79,7 @@ const Messages = (props) => {
     return () => setMessagesState({ fetching: true, messages: [] });
   }, [roomId, classId, loading]);
   // setTimeout(() => setIsLoading(false), 1000);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const timeout = setTimeout(() => {
       if (!messagesState.fetching && !loading) {
         messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
@@ -86,7 +101,6 @@ const Messages = (props) => {
             <div className="fix" style={{ flex: "1" }}></div>
             <div className="allmessages" ref={messagesRef}>
               {messagesState.messages.map((m) => {
-                console.log("memberss", globalState.classData[classId].members);
                 return (
                   <Message
                     senderData={

@@ -19,11 +19,14 @@ const Home = () => {
   const { dispatch, globalState } = useContext(Context);
   useEffect(() => {
     console.log(location.search);
+
     if (location.search === "?signup=true") {
       dispatch({ type: "TOGGLE_SIGNUP" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {}, []);
+
   const signUpSuccessHandler = async (data) => {
     // setMode();
     console.log(data);

@@ -9,9 +9,9 @@ import {
 import io from "socket.io-client";
 
 import { Context } from "./shared/Util/context";
-import "./App.scss";
 import { Suspense } from "react";
 import Authpreloader from "./shared/components/authpreloader/Authpreloader";
+import "./App.scss";
 const Login = React.lazy(() => import("./pages/Login"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Class = React.lazy(async () => {
@@ -20,17 +20,9 @@ const Class = React.lazy(async () => {
 const ChooseRole = React.lazy(() => import("./shared/components/ChooseRole"));
 function App() {
   const { globalState, dispatch } = useContext(Context);
+  const { isLoggedIn, userData, settingUpIsDone } = globalState;
   let routes;
-  const { isLoggedIn, userData } = globalState;
-  useEffect(() => {
-    if (isLoggedIn) {
-      const ioC = io.connect("http://localhost:5000");
-      dispatch({ TYPE: "SET_IO", payload: ioC });
-      ioC.on("hello", (str) => {
-        alert(str);
-      });
-    }
-  }, isLoggedIn);
+
   if (isLoggedIn) {
     // const width =
     //   window.innerWidth > 0 ? window.innerWidth : window.screen.width;
@@ -46,7 +38,7 @@ function App() {
           </Switch>
         </Suspense>
       );
-    else
+    else {
       routes = (
         <Suspense fallback={<Authpreloader />}>
           <Switch>
@@ -66,6 +58,7 @@ function App() {
           </Switch>
         </Suspense>
       );
+    }
   } else {
     routes = (
       <Suspense fallback={<Authpreloader />}>
@@ -81,6 +74,7 @@ function App() {
       </Suspense>
     );
   }
+
   return <Router>{routes}</Router>;
 }
 

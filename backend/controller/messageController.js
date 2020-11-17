@@ -1,3 +1,4 @@
+const socketIO = require("../configs/socketIO");
 exports.sendMessage = async (req, res) => {
   const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
@@ -13,6 +14,9 @@ exports.sendMessage = async (req, res) => {
     const [getBack] = await db.query(`SELECT * FROM messages WHERE id = ?`, [
       send.insertId,
     ]);
+    socketIO.io.sockets.connected[socketIO.socketId.get(userId)]
+      .to(`class-${roomId}`)
+      .emit("messages", { ...getBack[0] });
     return res.status(200).json(getBack[0]);
   } catch (error) {
     throw error;
