@@ -114,7 +114,7 @@ const MessagePanel = ({ loading }) => {
         <Loading />
       ) : searchQuery.length > 0 ? (
         !searchResult ? (
-          <Loading />
+          <Loading className="user-search-loading" />
         ) : searchResult.length > 0 ? (
           <>
             <h4 style={{ textAlign: "center" }}>Search result</h4>

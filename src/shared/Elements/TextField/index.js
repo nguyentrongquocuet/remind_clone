@@ -9,12 +9,13 @@ const CustomTextField = ({
   onChange,
   placeholder,
   custom,
+  classes,
 }) => {
   return (
     <Textfield
       onKeyUp={onKeyUp ? (e) => onKeyUp(e) : (e) => e.preventDefault()}
       classes={{
-        input: `input ${!custom ? "default" : ""}`,
+        // input: `input ${!custom ? "default" : ""}`,
         root: `input__wrapper ${!custom ? "default" : ""}`,
       }}
       className={`${!custom ? "default" : ""}`}

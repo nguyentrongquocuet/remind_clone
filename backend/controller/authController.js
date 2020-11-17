@@ -18,8 +18,6 @@ exports.login = async (req, res) => {
       return res.status(401).json("Wrong password");
     }
     const payload = {
-      email,
-      password,
       userId: findUsingEmail[0].id,
     };
     console.log(findUsingEmail[0].id);
@@ -83,16 +81,40 @@ exports.signup = async (req, res) => {
     throw error;
   }
 };
-exports.authenticate = async (req, res) => {
-  const { email, password } = req.decodedToken;
+
+exports.setRole = async (req, res) => {
+  const { userId } = req.decodedToken;
+  const { roleId } = req.body;
   const db = req.app.get("db");
   try {
-    const [
-      user,
-    ] = await db.query("SELECT * FROM user WHERE email=? AND password =?", [
-      email,
-      password,
+    const [role] = await db.query(`SELECT role FROM user_info WHERE id = ?`, [
+      userId,
     ]);
+    if (role.length < 0 || role[0].role !== null) {
+      throw new Error("Setting role is not available");
+    }
+    await db.query(`UPDATE user_info SET role = ? WHERE id=?`, [
+      roleId,
+      userId,
+    ]);
+    const [newRole] = await db.query(
+      `SELECT role FROM user_info where id = ?`,
+      [userId]
+    );
+    setTimeout(() => {
+      res.status(200).json(newRole[0]);
+    }, 3000);
+  } catch (error) {
+    res.status(404).json("Something went wrong!!!");
+    throw error;
+  }
+};
+
+exports.authenticate = async (req, res) => {
+  const { userId } = req.decodedToken;
+  const db = req.app.get("db");
+  try {
+    const [user] = await db.query("SELECT * FROM user WHERE id=?", [userId]);
     if (user.length <= 0) return res.status(401).json("Invalid Token");
     const id = user[0].id;
     const [userInfo] = await db.query("SELECT * FROM user_info WHERE id=?", [

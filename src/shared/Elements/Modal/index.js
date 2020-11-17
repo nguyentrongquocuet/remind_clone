@@ -1,6 +1,7 @@
 import React from "react";
 import MUiModal from "@material-ui/core/Modal";
 import "./Modal.scss";
+import { Card } from "@material-ui/core";
 const Modal = (props) => {
   const content = (
     <MUiModal
@@ -11,18 +12,24 @@ const Modal = (props) => {
       container={document.getElementById("modal-hook")}
       className={props.classNames.wrapper || ""}
     >
-      <div className={`${props.classNames.content}`}>
-        <div className="modal__header">
-          {props.header}
-          {props.closeButton && (
-            <span onClick={props.onClose} className="modal__close">
-              X
-            </span>
-          )}
-        </div>
+      <Card
+        style={
+          props.transparent && { background: "transparent", boxShadow: "none" }
+        }
+      >
+        <div className={`${props.classNames.content}`}>
+          <div className="modal__header">
+            {props.header}
+            {props.closeButton && (
+              <span onClick={props.onClose} className="modal__close">
+                X
+              </span>
+            )}
+          </div>
 
-        {props.children}
-      </div>
+          {props.children}
+        </div>
+      </Card>
     </MUiModal>
   );
   return content;

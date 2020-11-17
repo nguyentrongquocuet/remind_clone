@@ -8,6 +8,7 @@ import HeaderNav from "../../../../../shared/Elements/HeaderNav";
 import Loading from "../../../../../shared/components/Loading";
 import "./ActionSidebar.scss";
 import Members from "./Members";
+import Settings from "./Settings";
 const initialData = {
   action: "files",
   files: [],
@@ -24,6 +25,8 @@ const aSBReducer = (state, action) => {
     case "CLEAR_DATA": {
       return state;
     }
+    default:
+      return state;
   }
 };
 const ActionSidebar = (props) => {
@@ -101,10 +104,9 @@ const ActionSidebar = (props) => {
       active: state.action === "settings",
     },
   ];
-  console.log(state);
   return (
     <div className={`room__info--right ${props.expanded ? "expanded" : ""}`}>
-      <HeaderNav elements={HEADER} />
+      <HeaderNav className="sticky" elements={HEADER} />
       {state.action === "files" && (
         <div className="action__data">
           <h4 className="center">IM WORKING ON IT</h4>
@@ -118,6 +120,7 @@ const ActionSidebar = (props) => {
           <Loading className="actionsidebar__loading" />
         )
       ) : null}
+      {state.action === "settings" && <Settings />}
     </div>
   );
 };

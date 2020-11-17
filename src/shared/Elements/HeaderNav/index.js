@@ -1,11 +1,11 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 import "./HeaderNav.scss";
-const HeaderNav = ({ elements }) => {
+const HeaderNav = ({ elements, className }) => {
   const params = useParams();
   console.log(params);
   return (
-    <div className="nav">
+    <div className={`nav ${className}`}>
       {elements.map((e) => {
         if (e.tod)
           return (

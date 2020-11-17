@@ -8,7 +8,6 @@ const Button = (props) => {
       type={props.type}
       // style={{ ...props.style}}
       className={`${props.className}`}
-      href={props.href}
       onClick={props.onClick}
       color={props.color || "primary"}
       variant={props.variant || "contained"}

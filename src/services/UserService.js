@@ -24,6 +24,18 @@ export class UserService {
   static signup = (data) => {
     return BaseService.post("auth/signup", data);
   };
+  static setRole = (roleId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    return BaseService.put(
+      "auth/role",
+      { roleId: roleId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
   static auth = async () => {
     const data = getLocalData();
     console.log("from service", data);

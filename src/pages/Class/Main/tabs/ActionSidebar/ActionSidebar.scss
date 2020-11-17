@@ -1,10 +1,10 @@
 .actionsidebar__loading#loading svg {
-  max-width: 40px;
-  max-height: 40px;
+  margin-top: 1rem;
+  max-width: 48px;
+  max-height: 48px;
 }
 .room__info--right.expanded {
   flex-grow: 1;
-  width: 100%;
   max-width: 100000px;
   transition: 0.25s ease;
 }
@@ -14,6 +14,7 @@
     transition: 0.25s linear;
     transform-box: fill-box;
     transform-origin: center;
+    // font-size: 1em;
     &:hover {
       background-color: whitesmoke;
       color: var(--primary);

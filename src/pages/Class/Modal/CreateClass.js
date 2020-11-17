@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import TextField from "../../../shared/Elements/TextField";
 import Button from "../../../shared/Elements/Button";
+import ClassService from "../../../services/ClassService";
 import "./CreateClass.scss";
+import { Context } from "../../../shared/Util/context";
 const CreateClass = ({ onClose }) => {
+  const [className, setClassName] = useState("");
+  const { dispatch } = useContext(Context);
+  const createClass = async () => {
+    try {
+      const classData = await ClassService.createClass(className.trim());
+      dispatch({ type: "ADD_CLASS", payload: classData.data });
+    } catch (error) {
+      alert(error.response && error.response.data);
+    }
+  };
   return (
     <div className="createclass__wrapper">
       <header className="createclass__header">Create Class</header>
@@ -12,11 +24,20 @@ const CreateClass = ({ onClose }) => {
           <span>Edit Icon</span>
         </div>
         <div className="createclass__info">
-          <TextField placeholder="Enter your class name <3" />
+          <TextField
+            onChange={(e) => setClassName(e.target.value)}
+            placeholder="Enter your class name <3"
+          />
         </div>
       </main>
       <footer className="createclass__footer">
-        <Button>Create </Button>
+        <Button
+          onClick={(e) => {
+            createClass();
+          }}
+        >
+          Create{" "}
+        </Button>
       </footer>
     </div>
   );

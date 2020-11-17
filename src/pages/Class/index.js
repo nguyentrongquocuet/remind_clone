@@ -1,13 +1,13 @@
 import React, { Suspense, useEffect, useContext, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import io from "socket.io-client";
+import { Context } from "../../shared/Util/context";
 
 import ClassService from "../../services/ClassService";
 import Loading from "../../shared/components/Loading";
 import Skeleton from "@material-ui/lab/Skeleton";
-import { Context } from "../../shared/Util/context";
-import "./Class.scss";
 import LoadingPage from "../../shared/components/loadingpage/LoadingPage";
+import "./Class.scss";
+
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 const ClassMain = React.lazy(() => import("./Main"));
 
@@ -17,10 +17,6 @@ const Class = () => {
   const [started, setStarted] = useState(false);
   const { classId } = useParams();
   useEffect(() => {
-    const ioC = io.connect("http://localhost:5000");
-    ioC.on("hello", (str) => {
-      // alert(str);
-    });
     ClassService.getClass()
       .then((data) => {
         console.log("classDAta", data.data);

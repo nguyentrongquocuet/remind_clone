@@ -13,11 +13,22 @@ exports.createClass = async (req, res) => {
     const [
       addToClassMember,
     ] = await db.query(
-      `INSERT INTO class_member(classId, userId, role) VALUES(?,?,?)`,
-      [addClass.insertId, userId, 1]
+      `INSERT INTO class_member(classId, userId) VALUES(?,?)`,
+      [addClass.insertId, userId]
     );
-    res.send(addToClassMember);
+    await db.query(`INSERT INTO message_room(classId) VALUES (?)`, [
+      addClass.insertId,
+    ]);
+    const [
+      data,
+    ] = await db.query(
+      `SELECT * FROM class c INNER JOIN message_room mr ON  c.classId=? AND c.classId=mr.classId`,
+      [addClass.insertId]
+    );
+
+    res.send(data[0]);
   } catch (error) {
+    res.status(404).json("Something went wrong!");
     throw error;
   }
 };

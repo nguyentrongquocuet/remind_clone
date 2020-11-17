@@ -6,12 +6,10 @@ import * as local from "./shared/Util/LocalStorage";
 const { Context } = require("./shared/Util/context");
 const reducer = (context, actions) => {
   let outContext = context;
-  console.log(actions);
   if (typeof actions === "object") {
     if (actions.type) {
       outContext = contextReducer(outContext, actions);
     } else {
-      console.log(actions);
       for (const action of Object.values(actions)) {
         outContext = contextReducer(outContext, action);
       }
@@ -23,8 +21,16 @@ const reducer = (context, actions) => {
 };
 const contextReducer = (context, action) => {
   switch (action.type) {
+    case "SET_IO":
+      return { ...context, IO: action.payload };
     case "SET_USER_DATA":
       return { ...context, userData: action.payload };
+    case "SET_ROLE":
+      return {
+        ...context,
+        userData: { ...context.userData, role: action.payload },
+      };
+
     case "LOGIN_SUCCESS":
       return { ...context, isLoggedIn: true };
     case "LOGIN_FAIL":
@@ -51,7 +57,10 @@ const contextReducer = (context, action) => {
     case "ADD_CLASS":
       return {
         ...context,
-        classData: { ...context.classData, ...action.payload },
+        classData: {
+          ...context.classData,
+          [action.payload.classId]: action.payload,
+        },
       };
     case "LOGOUT":
       console.log("LOGOUT");

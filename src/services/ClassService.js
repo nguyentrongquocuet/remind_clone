@@ -60,14 +60,17 @@ export class ClassService {
   static createClass = (className) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token) throw Error("Something went wrong!!!");
-    return BaseService.post(`class/new`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        body: {
-          className: className,
-        },
+    return BaseService.post(
+      `class/new`,
+      {
+        className: className,
       },
-    });
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   };
 }
 export default ClassService;
