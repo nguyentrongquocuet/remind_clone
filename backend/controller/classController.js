@@ -1,6 +1,5 @@
 const socketIO = require("../configs/socketIO");
 exports.createClass = async (req, res) => {
-  console.log(req.body);
   const { className } = req.body;
   const { userId } = req.decodedToken;
   const db = req.app.get("db");
@@ -40,8 +39,6 @@ exports.getClass = async (req, res) => {
   const userId = req.decodedToken.userId;
   const db = req.app.get("db");
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
-  // console.log(socket);
-  console.log(`socketId of ${userId}`, socketIO.socketId.get(userId));
   try {
     const [classes] = await db.query(
       `SELECT * 
@@ -59,7 +56,6 @@ exports.getClass = async (req, res) => {
       socket.join(room);
     }
 
-    console.log(socketIO.io.sockets.adapter.rooms);
     res.status(200).json(finalClasses);
   } catch (error) {
     throw error;
@@ -69,7 +65,6 @@ exports.getClass = async (req, res) => {
 //     AND cm.classId=c.classId
 // SELECT * FROM class c INNER JOIN class_member cm ON c.classId = cm.classId AND cm.userId=1 INNER JOIN  message_room mr ON c.classId=mr.classId
 exports.findClass = async (req, res) => {
-  console.log("QUERY", req.query);
   let { query, notJoined } = req.query;
   const userId = req.decodedToken.userId;
   const db = req.app.get("db");
@@ -87,7 +82,6 @@ exports.findClass = async (req, res) => {
       }, "")
       .match(/^(\+.+)\s$/)[1];
   }
-  console.log({ nameMode, notJoined, query });
   try {
     const [classes] = await db.query(
       `SELECT * FROM class WHERE ${
@@ -139,7 +133,6 @@ exports.getMembers = async (req, res) => {
 exports.dummy = (req, res) => {
   const db = req.app.get("db");
   const a = db.query(`SELECT * FROM class_member`);
-  console.log(a);
   res.send(a);
 };
 

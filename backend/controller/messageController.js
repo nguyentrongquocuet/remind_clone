@@ -14,6 +14,12 @@ exports.sendMessage = async (req, res) => {
     const [getBack] = await db.query(`SELECT * FROM messages WHERE id = ?`, [
       send.insertId,
     ]);
+    console.log(
+      "from",
+      socketIO.socketId.entries(),
+      "to",
+      socketIO.socketId.get(userId)
+    );
     socketIO.io.sockets.connected[socketIO.socketId.get(userId)]
       .to(`class-${roomId}`)
       .emit("messages", { ...getBack[0] });
@@ -27,7 +33,6 @@ exports.getMessages = async (req, res) => {
   // const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
   const db = req.app.get("db");
-  console.log("ROOMID", req.query);
   const [
     result,
   ] = await db.query(

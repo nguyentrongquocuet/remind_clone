@@ -4,7 +4,6 @@ const SECRET_KEY = require("../configs/jwt");
 const { validationResult } = require("express-validator");
 //login with {email, password}
 exports.login = async (req, res) => {
-  console.log(req.body);
   const { email, password } = req.body;
   const db = req.app.get("db");
   try {
@@ -20,12 +19,10 @@ exports.login = async (req, res) => {
     const payload = {
       userId: findUsingEmail[0].id,
     };
-    console.log(findUsingEmail[0].id);
     const [userInfo] = await db.query(`SELECT * FROM user_info WHERE id=?`, [
       findUsingEmail[0].id,
     ]);
 
-    console.log(userInfo);
     const token = jwt.sign(payload, SECRET_KEY, {
       expiresIn: 3600,
     });
@@ -34,7 +31,6 @@ exports.login = async (req, res) => {
       ...userInfo[0],
       name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
     };
-    console.log("userData", userData);
     return res.status(200).json({
       token,
       expiresIn: 3600,
@@ -46,8 +42,6 @@ exports.login = async (req, res) => {
 };
 //SignUp with {email, password, repassword, firstname, lastname}
 exports.signup = async (req, res) => {
-  console.log(req.body);
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -69,7 +63,6 @@ exports.signup = async (req, res) => {
       password,
     ]);
     const id = addUser.insertId;
-    console.log("add to user", addUser);
     const [
       addUserInfo,
     ] = await db.query(

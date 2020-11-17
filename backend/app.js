@@ -20,12 +20,12 @@ app.use(cors());
 //   );
 //   next();
 // });
-app.use((req, res, next) => {
-  console.log(req.path);
-  console.log(req.body);
-  console.log(req.statusCode);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.path);
+//   console.log(req.body);
+//   console.log(req.statusCode);
+//   next();
+// });
 app.use("/api/auth", authRouter);
 app.use("/api/class", classRouter);
 app.use("/api/message", messageRouter);

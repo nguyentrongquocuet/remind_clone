@@ -6,8 +6,6 @@ class SocketIO {
     this.io.set("origins", "http://localhost:3000");
     app.set("io", this.io);
     this.io.on("connection", (socket) => {
-      console.log("user connecdted ", socket.id);
-      console.log(socket.rooms);
       socket.on("auth", (userId) => {
         console.log(userId);
         if (userId) {

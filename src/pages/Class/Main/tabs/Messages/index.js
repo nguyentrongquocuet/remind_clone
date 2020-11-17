@@ -24,12 +24,11 @@ const Messages = (props) => {
     messages: [],
     fetching: true,
   });
-  const messages = useRef(messagesState);
   const [message, setMessage] = useState("");
   const { globalState } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
-  const roomId = globalState.classData[classId].roomId;
+  let roomId = globalState.classData[classId].roomId;
   if (!roomId) history.push("/classes");
 
   let messagesRef = useRef(null);
@@ -50,15 +49,24 @@ const Messages = (props) => {
     }
   };
   useEffect(() => {
-    RealTimeService.subject.subscribe((data) => {
+    roomId = globalState.classData[classId].roomId;
+    const sub = RealTimeService.subject.subscribe((data) => {
       if (data.roomId == roomId) {
-        console.log(data.content);
+        console.log(
+          "check--message",
+          data,
+          "zoomid",
+          roomId,
+          "classId",
+          classId
+        );
         setMessagesState((prev) => {
           return { ...prev, messages: [...prev.messages, data] };
         });
       }
     });
-  }, [roomId]);
+    return () => sub.unsubscribe();
+  }, [roomId, classId]);
   //TODO: ADD TRY_CATCH
   useEffect(() => {
     const fetchMessages = () => {

@@ -8,7 +8,6 @@ const authMiddleware = async (req, res, next) => {
       SECRET_KEY
     );
     const { userId } = decodedToken;
-    console.log({ userId: userId });
     const [user] = await db.query(`SELECT * FROM user where id = ?`, [userId]);
     if (user.length < 0) throw new Error("User Not Found");
     req.decodedToken = decodedToken;
