@@ -3,11 +3,8 @@ import "./Message.scss";
 import Popper from "../Popper";
 import useLazy from "../../Util/lazy-hook";
 import { Context } from "../../Util/context";
-import Loading from "../../components/Loading";
 import { Avatar } from "@material-ui/core";
-const Modal = React.lazy(() => import("../Modal"));
-const Message = ({ message, senderData, key }) => {
-  const [previewRequest, setPreviewRequest] = useState(null);
+const Message = ({ message, senderData, key, onPreview }) => {
   const [ref, visible] = useLazy(
     () => {
       ref.current.src = ref.current.getAttribute("data-src");
@@ -58,34 +55,30 @@ const Message = ({ message, senderData, key }) => {
       </div>
     </Popper>
   );
-  const text = message.content
-    .trim()
-    .split(/[\n]+/)
-    .map((w) => (
-      <>
-        <span key={w}>{w}</span> <br />
-      </>
-    ));
+  const text =
+    message.content.length > 0
+      ? message.content
+          .trim()
+          .split(/[\n]+/)
+          .map((w) => (
+            <>
+              <span key={w}>{w}</span> <br />
+            </>
+          ))
+      : null;
   if (message.type === 0) {
-    const normalMessage = (
+    const normalMessage = text ? (
       <>
         <div className="message__content">
           <p>{text}</p>
         </div>
       </>
-    );
+    ) : null;
 
     return (
       <div
         key={key}
-        onClick={(e) => {
-          e.preventDefault();
-          alert("preview");
-          setPreviewRequest(
-            message.image ||
-              "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
-          );
-        }}
+        onClick={onPreview}
         onMouseLeave={(e) => {
           handleClick("off", e);
         }}
@@ -95,6 +88,23 @@ const Message = ({ message, senderData, key }) => {
         className={`message ${own ? "owner" : ""}`}
       >
         {normalMessage}
+        {message.file && (
+          <div
+            onClick={onPreview}
+            className="image"
+            id={visible ? "" : "image__wrapper"}
+            style={{
+              backgroundImage: visible
+                ? `url("${
+                    message.file || "/imgplaceholder.png"
+                  }"),url("/imgplaceholder.png")`
+                : "",
+            }}
+          >
+            <img className="image-placeholder" ref={ref} alt="hello" />
+          </div>
+        )}
+
         {popper}
       </div>
     );
@@ -124,17 +134,6 @@ const Message = ({ message, senderData, key }) => {
         >
           VL
         </Avatar>
-        {/* <img
-          src={
-            senderData
-              ? senderData.avatar
-                ? "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
-                : ""
-              : ""
-          }
-          alt="message"
-          className={`alter-avatar small`}
-        /> */}
         <span>{senderData ? senderData.name : "Loading..."}</span>
       </header>
       <div className="announcement__content">
@@ -148,92 +147,22 @@ const Message = ({ message, senderData, key }) => {
           {message.content ||
             "hellooooooodddqwdqwdwqdsadasdadddassdasaddwqdwqdqwooo"}
         </p>
-        {/* <LazyLoad placeholder="loading" offset={100}> */}
         <div
-          onClick={(e) => {
-            e.preventDefault();
-            alert("preview");
-            setPreviewRequest(
-              message.image ||
-                "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
-            );
-          }}
+          onClick={onPreview}
           className="image"
           id={visible ? "" : "image__wrapper"}
           style={{
-            cursor: "pointer",
-            maxWidth: "280px",
             backgroundImage: visible
               ? `url("${
-                  message.image ||
-                  "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
-                }")`
+                  message.file || "/imgplaceholder.png"
+                }"),url("/imgplaceholder.png")`
               : "",
-            // backgroundPosition: "center",
-            backgroundSize: "cover",
-            maxHeight: "150px",
           }}
         >
-          {/* {image && ( */}
-          <img
-            style={{
-              opacity: 0,
-              width: "280px",
-              height: "150px",
-              display: "block",
-            }}
-            ref={ref}
-            // src={
-            //   visible
-            //     ? image ||
-            //       "https://www.publicdomainpictures.net/pictures/320000/velka/background-image.png"
-            //     : ""
-            // }
-
-            alt="hello"
-          />
-          {/* )} */}
+          <img className="image-placeholder" ref={ref} alt="hello" />
         </div>
-        {/* </LazyLoad> */}
       </div>
       {popper}
-      <Suspense fallback={<Loading />}>
-        <Modal
-          closeButton
-          open={previewRequest}
-          classNames={{ wrapper: "center", content: "imagePreview" }}
-          onClose={(e) => {
-            alert("close");
-            setPreviewRequest(null);
-          }}
-          header={
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                width: "100%",
-                height: "40px",
-                backgroundColor: "black",
-                color: "white",
-              }}
-            >
-              <span>detinhieu</span>
-              <span style={{ flex: "1 1 auto" }}></span>
-              <span style={{ cursor: "pointer" }}>View</span>
-              <span style={{ cursor: "pointer" }}>Download</span>
-            </div>
-          }
-        >
-          <div className="preview" style={{ pointerEvents: "none" }}>
-            <img
-              src={previewRequest}
-              alt="hello"
-              style={{ maxWidth: "700px", pointerEvents: "all" }}
-            />
-          </div>
-        </Modal>
-      </Suspense>
     </div>
   );
 };

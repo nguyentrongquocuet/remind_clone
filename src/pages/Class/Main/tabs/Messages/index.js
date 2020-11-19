@@ -5,15 +5,19 @@ import React, {
   useContext,
   useLayoutEffect,
 } from "react";
-import { Context } from "../../../../../shared/Util/context";
-import TextField from "../../../../../shared/Elements/TextField";
-import MessageService from "../../../../../services/MessageService";
-import Loading from "../../../../../shared/components/Loading";
 import { useParams, useHistory } from "react-router-dom";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import SendIcon from "@material-ui/icons/Send";
-import "./Messages.scss";
+import { Context } from "../../../../../shared/Util/context";
 import RealTimeService from "../../../../../services/RealTimeService";
+import MessageService from "../../../../../services/MessageService";
+import { Card } from "@material-ui/core";
+import SendIcon from "@material-ui/icons/Send";
+import CancelIcon from "@material-ui/icons/Cancel";
+import TextField from "../../../../../shared/Elements/TextField";
+import Loading from "../../../../../shared/components/Loading";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+import MimeTypeDetect from "../../../../../shared/Util/MimeTypeDetect";
+import ModalSubject from "../../../../../shared/Util/ModalSubject";
+import "./Messages.scss";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
@@ -24,8 +28,13 @@ const Messages = (props) => {
     messages: [],
     fetching: true,
   });
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState({
+    content: "",
+    file: null,
+    schedule: null,
+  });
   const { globalState } = useContext(Context);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const history = useHistory();
   const classId = useParams().classId;
   let roomId = globalState.classData[classId].roomId;
@@ -35,37 +44,38 @@ const Messages = (props) => {
   let { loading } = props;
   const sendMessage = () => {
     console.log(message);
-    if (message.trim().length > 0) {
-      MessageService.sendMessage(
-        roomId,
-        { content: message },
-        globalState.token
-      ).then((data) => {
-        setMessagesState((prev) => {
-          return { ...prev, messages: [...prev.messages, data.data] };
-        });
-        setMessage("");
-      });
+    if (message.content.trim().length > 0 || message.file) {
+      const messageData = new FormData();
+      messageData.append("content", message.content);
+      messageData.append("schedule", message.schedule);
+      if (message.file) {
+        messageData.append("file", message.file, message.file.name);
+      }
+
+      MessageService.sendMessage(roomId, messageData, globalState.token).then(
+        (data) => {
+          setMessagesState((prev) => {
+            return { ...prev, messages: [...prev.messages, data.data] };
+          });
+          setMessage({ schedule: null, content: "", file: null });
+        }
+      );
     }
   };
   useEffect(() => {
     roomId = globalState.classData[classId].roomId;
-    const sub = RealTimeService.subject.subscribe((data) => {
+    const sub = RealTimeService.IOSubject.subscribe((data) => {
       if (data.roomId == roomId) {
-        console.log(
-          "check--message",
-          data,
-          "zoomid",
-          roomId,
-          "classId",
-          classId
-        );
         setMessagesState((prev) => {
           return { ...prev, messages: [...prev.messages, data] };
         });
       }
     });
-    return () => sub.unsubscribe();
+    return () => {
+      sub.unsubscribe();
+      setPreviewUrl(null);
+      setMessage({ schedule: null, content: "", file: null });
+    };
   }, [roomId, classId]);
   //TODO: ADD TRY_CATCH
   useEffect(() => {
@@ -95,6 +105,30 @@ const Messages = (props) => {
     }, 100);
     return () => clearTimeout(timeout);
   }, [messagesState, messagesRef.current]);
+
+  ///file effect
+  const fileHandler = async (e) => {
+    if (e.target.files.length > 0) {
+      if (e.target.files[0].size / 1024 / 1024 > 10) {
+        alert("file too big");
+        e.target.value = null;
+        return;
+      }
+      const fileReader = new FileReader();
+      const file = e.target.files[0];
+
+      const head = await MimeTypeDetect(file);
+      fileReader.onloadend = () => {
+        setMessage((prev) => {
+          return { ...prev, file: file };
+        });
+        setPreviewUrl(fileReader.result);
+        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      };
+      fileReader.readAsDataURL(file);
+      e.target.value = null;
+    }
+  };
   return (
     <>
       <div className={`messages__wrapper ${props.expanded ? "expanded" : ""}`}>
@@ -111,6 +145,12 @@ const Messages = (props) => {
               {messagesState.messages.map((m) => {
                 return (
                   <Message
+                    onPreview={(e) =>
+                      ModalSubject.next({
+                        name: "fwf",
+                        path: m.file || "/logo.png",
+                      })
+                    }
                     senderData={
                       globalState.classData[classId].members
                         ? globalState.classData[classId].members[m.senderId]
@@ -124,31 +164,65 @@ const Messages = (props) => {
             </div>
           </>
         )}
-        <div className="message__input">
-          <TextField
-            type="textarea"
-            onChange={(e) => setMessage(e.target.value)}
-            value={message}
-            onKeyUp={(e) =>
-              e.key === "Enter" ? e.preventDefault() : e.preventDefault()
-            }
-          />
-          <input
-            style={{ display: "none" }}
-            type="file"
-            name="file"
-            id="file"
-          />
-          <AttachFileIcon
-            onClick={(e) => document.getElementById("file").click()}
-            color="primary"
-          />
-          <SendIcon
-            onClick={(e) => {
-              sendMessage();
-            }}
-            color="primary"
-          />
+        <div className="message-input-preview">
+          {previewUrl && message.file && (
+            <Card className="preview">
+              <img
+                onClick={(e) =>
+                  ModalSubject.next({ path: previewUrl, name: "heyy" })
+                }
+                src={previewUrl}
+                alt=""
+              />
+              <div className="cancel">
+                <CancelIcon
+                  onClick={(e) => setPreviewUrl(null)}
+                  color="secondary"
+                />
+              </div>
+            </Card>
+          )}
+          <div className="message__input">
+            <TextField
+              type="textarea"
+              onChange={(e) =>
+                setMessage((prev) => {
+                  return { ...prev, content: e.target.value };
+                })
+              }
+              value={message.content}
+              onKeyUp={(e) =>
+                e.key === "Enter" ? e.preventDefault() : e.preventDefault()
+              }
+            />
+            <input
+              style={{ display: "none" }}
+              type="file"
+              name="file"
+              id="file"
+              onChange={fileHandler}
+            />
+            <div
+              title="Create Announcement"
+              className="message__input__action small"
+            >
+              <img src="/announcement.png" alt="" />
+            </div>
+            <AttachFileIcon
+              onClick={(e) => document.getElementById("file").click()}
+              color="primary"
+              className="message__input__action"
+              titleAccess="Attach File"
+            />
+            <SendIcon
+              onClick={(e) => {
+                sendMessage();
+              }}
+              className="message__input__action"
+              color="primary"
+              titleAccess="Send Message"
+            />
+          </div>
         </div>
       </div>
     </>

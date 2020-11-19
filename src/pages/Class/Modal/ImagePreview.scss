@@ -1,0 +1,43 @@
+#modal-hook {
+  .MuiPaper-root {
+    background-color: transparent;
+    .imagePreview {
+      height: 100vh;
+      img {
+        position: relative;
+      }
+      .modal__header {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .preview__header {
+        position: relative;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        height: 40px;
+        color: white;
+        padding: 0 1rem;
+        .preview__action {
+          margin-left: 1rem;
+          cursor: pointer;
+        }
+      }
+      .preview {
+        max-height: calc(100vh - 80px);
+        display: grid;
+        align-items: center;
+        .full-preview {
+          max-width: 100vw;
+          max-height: calc(100vh - 40px);
+          object-fit: cover;
+        }
+        // justify-content: center;
+      }
+      // display: flex;
+      // align-items: center;
+      // margin-top: 5rem;
+    }
+  }
+}

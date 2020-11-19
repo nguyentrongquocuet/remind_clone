@@ -22,7 +22,6 @@ const reducer = (context, actions) => {
   local.saveToLocalStorage({ ...outContext, IO: undefined, subject: null });
   return outContext;
 };
-const subject = new Subject();
 const contextReducer = (context, action) => {
   switch (action.type) {
     case "SET_IO":
@@ -53,6 +52,17 @@ const contextReducer = (context, action) => {
           },
         },
       };
+    case "SET_UNREAD":
+      return {
+        ...context,
+        classData: {
+          ...context.classData,
+          [action.id]: {
+            ...context.classData[action.id],
+            unread: true,
+          },
+        },
+      };
     case "SET_UP_DONE":
       return { ...context, settingUpIsDone: true };
     case "SET_CLASS_DATA":
@@ -62,7 +72,6 @@ const contextReducer = (context, action) => {
     case "SET_CONVERSATION_DATA":
       return { ...context, conversationData: action.payload };
     case "TOGGLE_SIGNUP":
-      context.subject.next("signup hhe");
       return { ...context, toggleSignup: !context.toggleSignup };
     case "ADD_CLASS":
       return {
@@ -76,7 +85,7 @@ const contextReducer = (context, action) => {
       console.log("LOGOUT");
       localStorage.clear();
       console.log(localStorage.getItem("token"));
-      return { subject: new Subject() };
+      return {};
     default:
       return context;
   }
@@ -99,7 +108,6 @@ const initialState = {
   conversationData: [],
   toggleSignup: false,
   settingUpIsDone: false,
-  subjects: { messages: new Subject() },
 };
 const Store = () => {
   const [globalState, dispatch] = useReducer(reducer, initialState);

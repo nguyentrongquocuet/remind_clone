@@ -18,23 +18,39 @@
   margin-bottom: 1rem;
   overflow-y: auto;
 }
-.message__input {
-  display: flex;
-  align-items: center;
-}
-
-.imagePreview {
-  height: 100%;
-  img {
-    position: relative;
-  }
+.message-input-preview {
+  // padding-top: 0.5rem;
+  border-radius: 4px;
+  background-color: whitesmoke;
   .preview {
-    height: calc(100vh - 40px);
+    // width: fit-content;
+    // border-radius: 6px;
+    display: flex;
+    flex-direction: row;
+    background: transparent;
+    width: fit-content;
+    max-height: 150px;
+    position: relative;
+    margin: 0.5rem 0 0.5rem 0.5rem;
+
+    img {
+      cursor: pointer;
+      max-width: 150px;
+      display: block;
+      object-fit: cover;
+    }
+    .cancel {
+      height: fit-content;
+      cursor: pointer;
+    }
+  }
+  .message__input {
     display: flex;
     align-items: center;
-    justify-content: center;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    &__action {
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
   }
-  // display: flex;
-  // align-items: center;
-  // margin-top: 5rem;
 }

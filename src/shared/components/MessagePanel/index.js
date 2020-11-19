@@ -142,6 +142,7 @@ const MessagePanel = ({ loading }) => {
                     path={filteredClass.classId}
                     key={filteredClass.classId}
                     name={filteredClass.name}
+                    unread={filteredClass.unread}
                     active={false}
                   ></MessItem>
                 ))
@@ -150,6 +151,7 @@ const MessagePanel = ({ loading }) => {
                   path={filteredClass.classId}
                   key={filteredClass.classId}
                   name={filteredClass.name}
+                  unread={filteredClass.unread}
                   active={false}
                 ></MessItem>
               ))}

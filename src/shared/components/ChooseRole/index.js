@@ -58,16 +58,16 @@ const ChooseRole = () => {
             </p>
             <img
               className="role__img"
-              src={window.location.origin + "/parent.svg"}
+              src={window.location.origin + "/teacher.svg"}
               alt="Student"
             />
           </Card>
-          <Card className="role" onClick={() => setRole(0)}>
+          <Card className="role" onClick={() => setRole(2)}>
             <h4>Im a parent</h4>
             <p>Parent or guardian</p>
             <img
               className="role__img"
-              src={window.location.origin + "/teacher.svg"}
+              src={window.location.origin + "/parent.svg"}
               alt="Student"
             />
           </Card>

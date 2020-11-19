@@ -10,12 +10,29 @@
   background-color: #5eb1bf;
   margin-bottom: 0.25rem;
   text-align: left;
+  font-size: 0.9rem;
+  .image {
+    padding-left: 0;
+    margin-left: -1rem;
+    background-size: cover;
+    max-height: 150px;
+    cursor: pointer;
+    max-width: 280px;
+    background-color: whitesmoke;
 
+    .image-placeholder {
+      opacity: 0;
+      width: 280px;
+      height: 150px;
+      display: block;
+    }
+  }
   &__content {
     p {
       word-wrap: normal;
       word-break: break-word;
     }
+    margin-bottom: 0.5rem;
   }
 }
 .message.owner {
@@ -56,9 +73,26 @@
       max-width: calc(280px - 1rem);
       object-fit: contain;
     }
+    p {
+      margin-bottom: 0.5rem;
+    }
   }
   &.owner header {
     background-color: blue;
+  }
+  .image {
+    padding-left: 0;
+    margin-left: -1rem;
+    background-size: cover;
+    max-height: 150px;
+    cursor: pointer;
+    max-width: 280px;
+    // .image-placeholder {
+    //   opacity: 0;
+    //   width: 280px;
+    //   height: 150px;
+    //   display: block;
+    // }
   }
 }
 #image__wrapper {

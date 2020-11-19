@@ -2,14 +2,21 @@ const socketIO = require("../configs/socketIO");
 exports.sendMessage = async (req, res) => {
   const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
+  const file = req.file;
+
   const { content } = req.body;
   const db = req.app.get("db");
+  let filePath = null;
+  if (file) {
+    filePath =
+      req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
+  }
   try {
     const [
       send,
     ] = await db.query(
-      `INSERT INTO messages(senderId, roomId, content) VALUES(?,?,?)`,
-      [userId, roomId, content]
+      `INSERT INTO messages(senderId, roomId, content,file) VALUES(?,?,?, ?)`,
+      [userId, roomId, content, filePath]
     );
     const [getBack] = await db.query(`SELECT * FROM messages WHERE id = ?`, [
       send.insertId,

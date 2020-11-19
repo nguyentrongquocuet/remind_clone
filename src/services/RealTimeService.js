@@ -22,7 +22,7 @@ class RealtimeService {
     });
     this.io.emit("auth", globalState.userData.id);
 
-    this.subject = new Observable((observer) => {
+    this.IOSubject = new Observable((observer) => {
       this.io.on("messages", (data) => {
         observer.next(data);
       });

@@ -8,6 +8,8 @@
 ☐ sửa lại preview ảnh
 ☐ bỏ css inline
 ☐ bỏ !important
-☐ tham gia lớp, tạo lớp
-☐ xử lý khi chưa có lớp
-☐ chức năng nhắn tin - socketio
+✔ tham gia lớp, tạo lớp @done(20-11-18 07:33)
+✔ xử lý khi chưa có lớp @done(20-11-18 07:33)
+✔ chức năng nhắn tin - socketio @done(20-11-18 07:33)
+✔ Sử dụng ModalSubject để handler modal preview ảnh @done(20-11-19 20:05)
+☐ Preview dựa trên file type

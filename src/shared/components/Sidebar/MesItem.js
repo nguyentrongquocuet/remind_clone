@@ -11,6 +11,7 @@ const MessItem = ({
   message,
   time,
   // active,
+  unread,
   ...props
 }) => {
   console.log("path", path);
@@ -20,7 +21,7 @@ const MessItem = ({
     <NavLink
       to={`/classes/${path}`}
       onClick={onClick}
-      className="sidebar__part__e classitem"
+      className={`sidebar__part__e classitem ${unread && "unread"}`}
       activeClassName={"item--active"}
     >
       <Avatar
