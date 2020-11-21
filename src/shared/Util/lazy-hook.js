@@ -17,7 +17,7 @@ const useLazy = (handler, options) => {
     );
     if (ref.current) io.observe(ref.current);
     return () => ref.current && io.unobserve(ref.current);
-  }, [ref, visible]);
+  }, [ref.current, visible]);
 
   return [ref, visible];
 };

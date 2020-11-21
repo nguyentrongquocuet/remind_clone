@@ -9,7 +9,6 @@ const MessItem = ({
   name,
   onClick,
   message,
-  time,
   // active,
   unread,
   ...props
@@ -19,7 +18,7 @@ const MessItem = ({
   console.log("history", props.history);
   return (
     <NavLink
-      to={`/classes/${path}`}
+      to={path ? `/classes/${path}` : "#"}
       onClick={onClick}
       className={`sidebar__part__e classitem ${unread && "unread"}`}
       activeClassName={"item--active"}

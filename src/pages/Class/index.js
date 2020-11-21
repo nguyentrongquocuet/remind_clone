@@ -10,12 +10,15 @@ import LoadingPage from "../../shared/components/loadingpage/LoadingPage";
 import ModalSubject from "../../shared/Util/ModalSubject";
 import "./Class.scss";
 import ImagePreview from "./Modal/ImagePreview";
+import CreateAnnouncement from "./Modal/CreateAnnouncement";
+import Modal from "../../shared/Elements/Modal";
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 const ClassMain = React.lazy(() => import("./Main"));
 const Class = () => {
   const { globalState, dispatch } = useContext(Context);
   const [loading, setLoading] = useState(true);
   const [previewObject, setPreviewObject] = useState(false);
+  const [createAnnouncementMode, toggleAnnouncement] = useState(null);
   const { classId } = useParams();
   const history = useHistory();
 
@@ -26,7 +29,12 @@ const Class = () => {
   }, [classId, loading]);
   useEffect(() => {
     ModalSubject.asObservable().subscribe((data) => {
-      setPreviewObject(data);
+      if (data.type === "PREVIEW_IMAGE") setPreviewObject(data.data);
+      if (data.type === "CREATE_ANNOUNCEMENT")
+        toggleAnnouncement((prev) => {
+          if (!prev) return { ...data.data };
+          else return null;
+        });
     });
     ClassService.getClass()
       .then((data) => {
@@ -44,6 +52,7 @@ const Class = () => {
         setLoading(false);
         alert(error);
       });
+    return () => () => ModalSubject.unsubscribe();
   }, []);
   useEffect(() => {
     const sub = RealTimeService.IOSubject.subscribe((data) => {
@@ -86,6 +95,17 @@ const Class = () => {
                     onClose={(e) => setPreviewObject(null)}
                     previewObject={previewObject}
                   />
+                )}
+                {createAnnouncementMode && !loading && (
+                  <Modal
+                    open={Boolean(createAnnouncementMode)}
+                    onClose={(e) => toggleAnnouncement(null)}
+                    classNames={{ wrapper: "center", content: "form__modal" }}
+                  >
+                    <CreateAnnouncement
+                      initialClass={createAnnouncementMode.class}
+                    />
+                  </Modal>
                 )}
               </Suspense>
             ) : (

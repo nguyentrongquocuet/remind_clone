@@ -32,12 +32,17 @@
     max-height: 150px;
     position: relative;
     margin: 0.5rem 0 0.5rem 0.5rem;
-
     img {
       cursor: pointer;
+
       max-width: 150px;
+      width: 56px;
+      height: 56px;
       display: block;
       object-fit: cover;
+    }
+    img.file-type-preview-image {
+      max-width: 56px;
     }
     .cancel {
       height: fit-content;

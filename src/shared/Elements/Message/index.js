@@ -1,10 +1,11 @@
-import React, { useState, useContext, Suspense } from "react";
+import React, { useState, useContext } from "react";
 import "./Message.scss";
 import Popper from "../Popper";
 import useLazy from "../../Util/lazy-hook";
 import { Context } from "../../Util/context";
 import { Avatar } from "@material-ui/core";
-const Message = ({ message, senderData, key, onPreview }) => {
+import AttachFilePreview from "../AttachFilePreview";
+const Message = ({ message, senderData, onPreview }) => {
   const [ref, visible] = useLazy(
     () => {
       ref.current.src = ref.current.getAttribute("data-src");
@@ -55,15 +56,16 @@ const Message = ({ message, senderData, key, onPreview }) => {
       </div>
     </Popper>
   );
+
   const text =
     message.content.length > 0
       ? message.content
           .trim()
           .split(/[\n]+/)
-          .map((w) => (
-            <>
-              <span key={w}>{w}</span> <br />
-            </>
+          .map((w, index) => (
+            <span key={index}>
+              {w} <br />
+            </span>
           ))
       : null;
   if (message.type === 0) {
@@ -77,8 +79,6 @@ const Message = ({ message, senderData, key, onPreview }) => {
 
     return (
       <div
-        key={key}
-        onClick={onPreview}
         onMouseLeave={(e) => {
           handleClick("off", e);
         }}
@@ -89,19 +89,14 @@ const Message = ({ message, senderData, key, onPreview }) => {
       >
         {normalMessage}
         {message.file && (
-          <div
-            onClick={onPreview}
-            className="image"
-            id={visible ? "" : "image__wrapper"}
-            style={{
-              backgroundImage: visible
-                ? `url("${
-                    message.file || "/imgplaceholder.png"
-                  }"),url("/imgplaceholder.png")`
-                : "",
-            }}
-          >
-            <img className="image-placeholder" ref={ref} alt="hello" />
+          <div ref={ref}>
+            <AttachFilePreview
+              // imgRef={ref}
+              onClick={onPreview}
+              className="image"
+              fileUrl={message.file}
+              visible={visible}
+            />
           </div>
         )}
 
@@ -111,7 +106,7 @@ const Message = ({ message, senderData, key, onPreview }) => {
   }
 
   return (
-    <div key={key} className={`announcement ${own ? "owner" : ""}`}>
+    <div className={`announcement ${own ? "owner" : ""}`}>
       <header
         className="announcement__header"
         onMouseLeave={(e) => {
@@ -144,23 +139,19 @@ const Message = ({ message, senderData, key, onPreview }) => {
             cursor: "default",
           }}
         >
-          {message.content ||
-            "hellooooooodddqwdqwdwqdsadasdadddassdasaddwqdwqdqwooo"}
+          {message.content}
         </p>
-        <div
-          onClick={onPreview}
-          className="image"
-          id={visible ? "" : "image__wrapper"}
-          style={{
-            backgroundImage: visible
-              ? `url("${
-                  message.file || "/imgplaceholder.png"
-                }"),url("/imgplaceholder.png")`
-              : "",
-          }}
-        >
-          <img className="image-placeholder" ref={ref} alt="hello" />
-        </div>
+        {message.file && (
+          <div ref={ref}>
+            <AttachFilePreview
+              // imgRef={ref}
+              onClick={onPreview}
+              className="image"
+              fileUrl={message.file}
+              visible={visible}
+            />
+          </div>
+        )}
       </div>
       {popper}
     </div>

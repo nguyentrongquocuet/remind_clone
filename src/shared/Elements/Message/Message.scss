@@ -1,6 +1,6 @@
 .message {
   width: fit-content;
-  max-width: 280px;
+  max-width: 200px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -11,19 +11,22 @@
   margin-bottom: 0.25rem;
   text-align: left;
   font-size: 0.9rem;
+  .file-preview {
+    max-width: calc(200px - 2rem);
+  }
   .image {
     padding-left: 0;
     margin-left: -1rem;
     background-size: cover;
-    max-height: 150px;
+    max-height: 120px;
     cursor: pointer;
-    max-width: 280px;
+    max-width: 200px;
     background-color: whitesmoke;
 
     .image-placeholder {
       opacity: 0;
-      width: 280px;
-      height: 150px;
+      width: 200px;
+      height: 120px;
       display: block;
     }
   }
@@ -31,8 +34,9 @@
     p {
       word-wrap: normal;
       word-break: break-word;
+      font-size: 0.85rem;
     }
-    margin-bottom: 0.5rem;
+    // margin-bottom: 0.5rem;
   }
 }
 .message.owner {
@@ -66,12 +70,23 @@
   }
   &__content {
     // padding: 0.5rem;
+    width: 100%;
     border-radius: 0 0 0.7rem 0.7rem;
-    width: fit-content;
+    // width: fit-content;
     overflow: hidden;
+    .file-preview {
+      max-width: unset;
+    }
     img {
       max-width: calc(280px - 1rem);
       object-fit: contain;
+    }
+    & > div {
+      width: 100%;
+      .file-preview {
+        border-radius: 0;
+      }
+      width: 100%;
     }
     p {
       margin-bottom: 0.5rem;
@@ -81,22 +96,11 @@
     background-color: blue;
   }
   .image {
-    padding-left: 0;
-    margin-left: -1rem;
-    background-size: cover;
-    max-height: 150px;
-    cursor: pointer;
-    max-width: 280px;
-    // .image-placeholder {
-    //   opacity: 0;
-    //   width: 280px;
-    //   height: 150px;
-    //   display: block;
-    // }
+    margin-left: 0rem;
   }
 }
 #image__wrapper {
   display: block;
-  width: 280px;
-  height: 150px;
+  width: 200px;
+  height: 120px;
 }

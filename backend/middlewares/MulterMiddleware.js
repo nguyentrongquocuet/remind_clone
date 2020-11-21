@@ -1,4 +1,5 @@
 const multer = require("multer");
+const removeVietnameseTones = require("../Utils/removeVietnameseTone");
 const MIMETYPE = {
   "image/png": "png",
   "image/jpg": "jpg",

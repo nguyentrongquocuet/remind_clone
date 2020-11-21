@@ -10,6 +10,7 @@ const CustomTextField = ({
   placeholder,
   custom,
   classes,
+  rows,
 }) => {
   return (
     <Textfield
@@ -30,7 +31,8 @@ const CustomTextField = ({
       }
       placeholder={placeholder || ""}
       multiline={type === "textarea"}
-      rows={type === "textarea" ? "2" : "0"}
+      rows={rows || "2"}
+      rowsMax={rows}
     />
   );
 };

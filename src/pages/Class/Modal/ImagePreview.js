@@ -6,12 +6,16 @@ const ImagePreview = ({ open, onClose, previewObject }) => {
   return (
     <Suspense fallback={<Loading />}>
       <Modal
-        open={previewObject}
+        open={Boolean(previewObject)}
         classNames={{ wrapper: "center", content: "imagePreview" }}
         onClose={onClose}
         header={
           <div className="preview__header">
-            <span>{previewObject.path.match(/([^\/]+$)/gi)[0] || "image"}</span>
+            <span>
+              {previewObject.name ||
+                previewObject.path.match(/([^/]+$)/gi)[0] ||
+                "image"}
+            </span>
             <span style={{ flex: "1 1 auto" }}></span>
             <a
               className="preview__action"

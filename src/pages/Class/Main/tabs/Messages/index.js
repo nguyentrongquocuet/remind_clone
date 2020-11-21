@@ -18,6 +18,7 @@ import AttachFileIcon from "@material-ui/icons/AttachFile";
 import MimeTypeDetect from "../../../../../shared/Util/MimeTypeDetect";
 import ModalSubject from "../../../../../shared/Util/ModalSubject";
 import "./Messages.scss";
+import AttachFilePreview from "../../../../../shared/Elements/AttachFilePreview";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
@@ -34,7 +35,6 @@ const Messages = (props) => {
     schedule: null,
   });
   const { globalState } = useContext(Context);
-  const [previewUrl, setPreviewUrl] = useState(null);
   const history = useHistory();
   const classId = useParams().classId;
   let roomId = globalState.classData[classId].roomId;
@@ -73,7 +73,6 @@ const Messages = (props) => {
     });
     return () => {
       sub.unsubscribe();
-      setPreviewUrl(null);
       setMessage({ schedule: null, content: "", file: null });
     };
   }, [roomId, classId]);
@@ -104,28 +103,21 @@ const Messages = (props) => {
       }
     }, 100);
     return () => clearTimeout(timeout);
-  }, [messagesState, messagesRef.current]);
+  }, [messagesState.fetching, messagesRef]);
 
   ///file effect
   const fileHandler = async (e) => {
     if (e.target.files.length > 0) {
-      if (e.target.files[0].size / 1024 / 1024 > 10) {
+      if (e.target.files[0].size / 1024 / 1024 > 2) {
         alert("file too big");
         e.target.value = null;
         return;
       }
-      const fileReader = new FileReader();
       const file = e.target.files[0];
-
-      const head = await MimeTypeDetect(file);
-      fileReader.onloadend = () => {
-        setMessage((prev) => {
-          return { ...prev, file: file };
-        });
-        setPreviewUrl(fileReader.result);
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      };
-      fileReader.readAsDataURL(file);
+      setMessage((prev) => {
+        return { ...prev, file: file };
+      });
+      // messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
       e.target.value = null;
     }
   };
@@ -147,8 +139,10 @@ const Messages = (props) => {
                   <Message
                     onPreview={(e) =>
                       ModalSubject.next({
-                        name: "fwf",
-                        path: m.file || "/logo.png",
+                        type: "PREVIEW_IMAGE",
+                        data: {
+                          path: m.file || "/logo.png",
+                        },
                       })
                     }
                     senderData={
@@ -156,7 +150,7 @@ const Messages = (props) => {
                         ? globalState.classData[classId].members[m.senderId]
                         : { no: 1 }
                     }
-                    key={m.id}
+                    key={m.id || -1}
                     message={m}
                   />
                 );
@@ -165,18 +159,25 @@ const Messages = (props) => {
           </>
         )}
         <div className="message-input-preview">
-          {previewUrl && message.file && (
+          {message.file && (
             <Card className="preview">
-              <img
-                onClick={(e) =>
-                  ModalSubject.next({ path: previewUrl, name: "heyy" })
+              <AttachFilePreview
+                onClick={(e, data) =>
+                  ModalSubject.next({
+                    type: "PREVIEW_IMAGE",
+                    data: data,
+                  })
                 }
-                src={previewUrl}
-                alt=""
+                visible={true}
+                file={message.file}
               />
               <div className="cancel">
                 <CancelIcon
-                  onClick={(e) => setPreviewUrl(null)}
+                  onClick={(e) =>
+                    setMessage((prev) => {
+                      return { ...prev, file: null };
+                    })
+                  }
                   color="secondary"
                 />
               </div>
@@ -205,6 +206,14 @@ const Messages = (props) => {
             <div
               title="Create Announcement"
               className="message__input__action small"
+              onClick={(e) =>
+                ModalSubject.next({
+                  type: "CREATE_ANNOUNCEMENT",
+                  data: {
+                    class: classId,
+                  },
+                })
+              }
             >
               <img src="/announcement.png" alt="" />
             </div>
