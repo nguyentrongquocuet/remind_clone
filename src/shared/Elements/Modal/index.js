@@ -11,6 +11,8 @@ const Modal = (props) => {
       }}
       container={document.getElementById("modal-hook")}
       className={props.classNames.wrapper || ""}
+      disableAutoFocus={true}
+      disableEnforceFocus={true}
     >
       <Card
         style={

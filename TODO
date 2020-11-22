@@ -12,9 +12,13 @@
 ✔ xử lý khi chưa có lớp @done(20-11-18 07:33)
 ✔ chức năng nhắn tin - socketio @done(20-11-18 07:33)
 ✔ Sử dụng ModalSubject để handler modal preview ảnh @done(20-11-19 20:05)
-☐ Preview dựa trên file type(Preview khi gửi)
-☐ sửa preview full
-☐ Gửi announcement
+✔ Preview dựa trên file type(Preview khi gửi) @done(20-11-22 01:36)
+✔ sửa preview full @done(20-11-22 01:36)
+✔ Gửi announcement @done(20-11-22 01:36)
 ☐ Add people-request
 ☐ Show files
-☐ 
+☐ use case:
+☐ fetch tin nhắn => đã đọc đến tin nhắn đã fetch,
+☐ gửi tin nhắn ==> set đã đọc
+☐ nhận tin nhắn ==> nếu đang cùng class==> đã đọc
+✔ hẹn giờ @done(20-11-22 19:33)

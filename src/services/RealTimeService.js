@@ -20,8 +20,16 @@ class RealtimeService {
         5: { type: "SET_UP_DONE" },
       });
     });
-    this.io.emit("auth", globalState.userData.id);
-
+    this.io.on("disconnect", (reason) => {
+      console.log("io has disconnected, Error: ", reason);
+    });
+    this.io.on("connect", () => {
+      console.log("connected");
+      this.io.emit("auth", globalState.userData.id);
+    });
+    this.io.on("reconnect", (attemptNumber) => {
+      console.log("reconn", attemptNumber);
+    });
     this.IOSubject = new Observable((observer) => {
       this.io.on("messages", (data) => {
         observer.next(data);

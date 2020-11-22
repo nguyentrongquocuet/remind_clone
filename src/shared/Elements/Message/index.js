@@ -1,10 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useLayoutEffect } from "react";
 import "./Message.scss";
 import Popper from "../Popper";
 import useLazy from "../../Util/lazy-hook";
 import { Context } from "../../Util/context";
 import { Avatar } from "@material-ui/core";
 import AttachFilePreview from "../AttachFilePreview";
+import localTime from "../../Util/convertToLocaleTime";
 const Message = ({ message, senderData, onPreview }) => {
   const [ref, visible] = useLazy(
     () => {
@@ -20,6 +21,20 @@ const Message = ({ message, senderData, onPreview }) => {
 
   // if(content.type==="text")
   const [anchorEl, setAnchorEl] = useState(null);
+  useLayoutEffect(() => {
+    if (message.type === 1) {
+      const messElement = document.getElementById(`message${message.id}`);
+      if (messElement) {
+        const aTags = document.querySelectorAll(
+          "#" + messElement.getAttribute("id") + " " + "a"
+        );
+        for (const a of aTags) {
+          a.setAttribute("target", "_blank");
+        }
+        messElement.innerHTML = message.content;
+      }
+    }
+  }, [message]);
   const handleClick = (type, event) => {
     event.preventDefault();
     if (type === "off") {
@@ -50,9 +65,7 @@ const Message = ({ message, senderData, onPreview }) => {
         }}
       >
         {!own && <p>{senderData ? senderData.name : "dummy"}</p>}
-        <p>
-          {new Date(Date.parse(message.createAt)).toLocaleString() || "now"}
-        </p>
+        <p>{localTime(message.createAt) || "now"}</p>
       </div>
     </Popper>
   );
@@ -132,15 +145,17 @@ const Message = ({ message, senderData, onPreview }) => {
         <span>{senderData ? senderData.name : "Loading..."}</span>
       </header>
       <div className="announcement__content">
-        <p
+        <div
+          id={`message${message.id}`}
+          className="content"
           style={{
             marginLeft: ".5rem",
             wordBreak: "break-word",
             cursor: "default",
           }}
         >
-          {message.content}
-        </p>
+          {/* {message.content} */}
+        </div>
         {message.file && (
           <div ref={ref}>
             <AttachFilePreview

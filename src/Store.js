@@ -63,6 +63,17 @@ const contextReducer = (context, action) => {
           },
         },
       };
+    case "SET_READ":
+      return {
+        ...context,
+        classData: {
+          ...context.classData,
+          [action.id]: {
+            ...context.classData[action.id],
+            unread: false,
+          },
+        },
+      };
     case "SET_UP_DONE":
       return { ...context, settingUpIsDone: true };
     case "SET_CLASS_DATA":

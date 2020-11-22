@@ -75,6 +75,7 @@
     }
     ////////MODE 2: EDIT ANNOUNCEMENT
     .announcement-edit-content {
+      grid-column: 1/3;
       .announcement-receivers {
         width: 100%;
         padding: 0.5rem;
@@ -114,10 +115,30 @@
         .PrivateNotchedOutline-root-1 {
           border: none;
         }
+        //CK EDITOR
+        .ck {
+          ul {
+            list-style: unset;
+          }
+          &.ck-editor {
+            height: 10rem;
+            .ck-editor__main {
+              max-height: 7rem;
+              .ck-content {
+                max-height: 7rem;
+              }
+            }
+          }
+        }
+
         .announcement-file-preview {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
           height: 7rem;
           background-color: #fafafa;
           p {
+            display: none;
             font-weight: 700;
             padding-top: 1rem;
           }
@@ -128,13 +149,29 @@
             box-sizing: border-box;
             padding: 1rem;
             height: auto;
-            img {
-              // width: 5rem;
-            }
+            max-width: 200px;
           }
           .cancel-preview {
             margin-left: 0.5rem;
             cursor: pointer;
+          }
+          .announcement-edit-actions {
+            margin-left: 1rem;
+            padding: 0 1rem;
+            //CK
+            .uploadfile {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              cursor: pointer;
+              img {
+                display: block;
+              }
+              span {
+                margin-left: 1rem;
+                font-weight: 700;
+              }
+            }
           }
         }
 
@@ -148,6 +185,9 @@
         align-items: center;
         justify-content: flex-start;
         margin-top: 1rem;
+        .schedule-picker {
+          width: fit-content;
+        }
         .back {
           margin-right: auto;
         }
@@ -156,23 +196,6 @@
         }
         .send {
           margin-left: 1rem;
-        }
-      }
-    }
-    .announcement-edit-actions {
-      margin-left: 1rem;
-      padding: 0 1rem;
-      .uploadfile {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        cursor: pointer;
-        img {
-          display: block;
-        }
-        span {
-          margin-left: 1rem;
-          font-weight: 700;
         }
       }
     }
@@ -199,4 +222,13 @@
       }
     }
   }
+}
+.ck-body-wrapper {
+  position: relative;
+  z-index: 1000000;
+  pointer-events: all;
+}
+.ck-rounded-corners .ck.ck-balloon-panel,
+.ck.ck-balloon-panel.ck-rounded-corners {
+  z-index: 10055 !important;
 }

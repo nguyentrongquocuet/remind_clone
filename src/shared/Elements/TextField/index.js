@@ -9,17 +9,22 @@ const CustomTextField = ({
   onChange,
   placeholder,
   custom,
-  classes,
+  className,
   rows,
+  inputProps,
+  ...props
 }) => {
   return (
     <Textfield
+      {...props}
+      inputProps={inputProps}
+      type={type || "input"}
       onKeyUp={onKeyUp ? (e) => onKeyUp(e) : (e) => e.preventDefault()}
       classes={{
         // input: `input ${!custom ? "default" : ""}`,
         root: `input__wrapper ${!custom ? "default" : ""}`,
       }}
-      className={`${!custom ? "default" : ""}`}
+      className={`${className} ${!custom ? "default" : ""}`}
       value={value}
       variant={variant || "outlined"}
       onChange={

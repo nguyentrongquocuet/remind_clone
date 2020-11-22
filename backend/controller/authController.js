@@ -1,11 +1,11 @@
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = require("../configs/jwt");
-
 const { validationResult } = require("express-validator");
+const Db = require("../Database/db");
 //login with {email, password}
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  const db = req.app.get("db");
+  const db = Db.db;
   try {
     const [findUsingEmail] = await db.query(
       `SELECT * FROM user WHERE email=?`,
@@ -26,7 +26,6 @@ exports.login = async (req, res) => {
     const token = jwt.sign(payload, SECRET_KEY, {
       expiresIn: 3600,
     });
-    req.app.get("io").emit("hello", "welcome to remind");
     const userData = {
       ...userInfo[0],
       name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
@@ -42,12 +41,13 @@ exports.login = async (req, res) => {
 };
 //SignUp with {email, password, repassword, firstname, lastname}
 exports.signup = async (req, res) => {
+  const db = Db.db;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
   const { email, password, firstname, lastname } = req.body;
-  const db = req.app.get("db");
+
   try {
     const [
       checkIfEmailExist,
@@ -78,7 +78,7 @@ exports.signup = async (req, res) => {
 exports.setRole = async (req, res) => {
   const { userId } = req.decodedToken;
   const { roleId } = req.body;
-  const db = req.app.get("db");
+  const db = Db.db;
   try {
     const [role] = await db.query(`SELECT role FROM user_info WHERE id = ?`, [
       userId,
@@ -105,7 +105,7 @@ exports.setRole = async (req, res) => {
 
 exports.authenticate = async (req, res) => {
   const { userId } = req.decodedToken;
-  const db = req.app.get("db");
+  const db = Db.db;
   try {
     const [user] = await db.query("SELECT * FROM user WHERE id=?", [userId]);
     if (user.length <= 0) return res.status(401).json("Invalid Token");

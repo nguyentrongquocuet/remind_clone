@@ -34,7 +34,7 @@ const Messages = (props) => {
     file: null,
     schedule: null,
   });
-  const { globalState } = useContext(Context);
+  const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
   let roomId = globalState.classData[classId].roomId;
@@ -81,6 +81,7 @@ const Messages = (props) => {
     const fetchMessages = () => {
       MessageService.getMessages(roomId, globalState.token)
         .then((data) => {
+          dispatch({ type: "SET_READ", id: classId });
           setMessagesState((prev) => {
             return { fetching: false, messages: [...data.data] };
           });
@@ -162,6 +163,7 @@ const Messages = (props) => {
           {message.file && (
             <Card className="preview">
               <AttachFilePreview
+                supportVideo={false}
                 onClick={(e, data) =>
                   ModalSubject.next({
                     type: "PREVIEW_IMAGE",

@@ -82,6 +82,7 @@ const AttachFilePreview = ({
   visible,
   download,
   file,
+  supportVideo = true,
   ...props
 }) => {
   const [preview, setPreview] = useState({
@@ -158,6 +159,15 @@ const AttachFilePreview = ({
         </div>
       </>
     );
+  if (supportVideo && preview.type === "video") {
+    return (
+      <div className="file-preview">
+        <video controls className="file-type-preview-video">
+          <source src={preview.url} type="video/mp4"></source>
+        </video>
+      </div>
+    );
+  }
   return (
     <div className="file-preview">
       <a

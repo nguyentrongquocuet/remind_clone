@@ -6,13 +6,16 @@ import EditIcon from "@material-ui/icons/Edit";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import Checkbox from "@material-ui/core/Checkbox";
 import CancelIcon from "@material-ui/icons/Cancel";
+
 import Popper from "../../../shared/Elements/Popper";
 import Button from "../../../shared/Elements/Button";
 import { useParams } from "react-router-dom";
 import AttachFilePreview from "../../../shared/Elements/AttachFilePreview";
-import isImage from "../../../shared/Util/ImageDetect";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./CreateAnnouncement.scss";
 import MessageService from "../../../services/MessageService";
+import DateTimePicker from "../../../shared/Elements/DateTimePicker";
 const objectFilter = (obj) => {
   const b = { ...obj };
   for (let c in b) {
@@ -59,6 +62,19 @@ const reducer = (state, action) => {
     case "SET_FILE":
       out = { ...state, file: action.payload.file };
       break;
+    case "TOGGLE_SCHEDULE":
+      out = { ...state, schedule: !state.schedule };
+      break;
+    case "SET_SCHEDULE_TIME":
+      const time = new Date(action.payload.time);
+      time.setSeconds(0);
+      const timeStr = time.toUTCString();
+      console.log(timeStr);
+      out = {
+        ...state,
+        scheduleTime: timeStr,
+      };
+      break;
     default:
       break;
   }
@@ -72,8 +88,9 @@ const CreateAnnouncement = ({ initialClass }) => {
     classes: { [classId]: "all" },
     onChoosing: null,
     content: "",
-    schedule: null,
+    scheduleTime: null,
     file: null,
+    schedule: false,
   });
   const [mode, setMode] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -112,7 +129,9 @@ const CreateAnnouncement = ({ initialClass }) => {
       .map((classData) => classData.roomId);
     const announcementData = new FormData();
     announcementData.append("content", selectedClass.content);
-    announcementData.append("schedule", selectedClass.schedule);
+
+    selectedClass.schedule &&
+      announcementData.append("scheduleTime", selectedClass.scheduleTime);
     announcementData.append("roomIds", roomIds);
     selectedClass.file &&
       announcementData.append(
@@ -120,6 +139,7 @@ const CreateAnnouncement = ({ initialClass }) => {
         selectedClass.file,
         selectedClass.file.name
       );
+    //HANDLE RESPONSE
     const response = await MessageService.sendAnnouncement(announcementData);
   };
   let main;
@@ -317,7 +337,7 @@ const CreateAnnouncement = ({ initialClass }) => {
             />
           </div>
           <div className="announcement-edit-content__textfield">
-            <TextField
+            {/* <TextField
               placeholder="Type your message here"
               type="textarea"
               rows={7}
@@ -330,13 +350,78 @@ const CreateAnnouncement = ({ initialClass }) => {
                 });
               }}
               value={selectedClass.content}
+            /> */}
+            <CKEditor
+              editor={ClassicEditor}
+              data={selectedClass.content}
+              config={{
+                toolbar: [
+                  "heading",
+                  "|",
+                  "bold",
+                  "italic",
+                  "blockQuote",
+                  "link",
+                  "numberedList",
+                  "bulletedList",
+                  // "imageUpload",
+                  "insertTable",
+                  // "tableColumn",
+                  // "tableRow",
+                  // "mergeTableCells",
+                  "mediaEmbed",
+                  "|",
+                  "undo",
+                  "redo",
+                ],
+              }}
+              onReady={(editor) => {
+                // You can store the "editor" and use when it is needed.
+                console.log("Editor is ready to use!", editor);
+              }}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                console.log(data);
+                dispatch({
+                  type: "SET_CONTENT",
+                  payload: { text: data },
+                });
+              }}
+              onBlur={(event, editor) => {
+                console.log("Blur.", editor);
+              }}
+              onFocus={(event, editor) => {
+                console.log("Focus.", editor);
+              }}
             />
             <div className="announcement-file-preview">
+              <div className="announcement-edit-actions">
+                <div
+                  className="uploadfile"
+                  onClick={(e) =>
+                    document.getElementById("announcement-file-upload").click()
+                  }
+                >
+                  <img
+                    className="medium"
+                    src="/uploadfile.png"
+                    alt="Upload File"
+                  />
+                  <span>Upload A File</span>
+                  <input
+                    id="announcement-file-upload"
+                    style={{ display: "none" }}
+                    type="file"
+                    onChange={fileHandler}
+                  />
+                </div>
+              </div>
               {selectedClass.file ? (
                 <div className="preview">
                   <AttachFilePreview
                     download={false}
                     visible={true}
+                    supportVideo={false}
                     // fileUrl={previewUrl}
                     file={selectedClass.file}
                     // fileName={selectedClass.file.name}
@@ -368,9 +453,37 @@ const CreateAnnouncement = ({ initialClass }) => {
             >
               Back
             </Button>
-            <Button className="schedule" variant="outlined">
+            {selectedClass.schedule && (
+              <DateTimePicker
+                disablePast
+                ampm={false}
+                format="dd/MM/yyyy HH:mm"
+                className="schedule-picker"
+                value={selectedClass.scheduleTime}
+                onChange={(date) => {
+                  console.log(date);
+                  dispatch({
+                    type: "SET_SCHEDULE_TIME",
+                    payload: {
+                      time: date,
+                    },
+                  });
+                }}
+              />
+            )}
+
+            <Button
+              onClick={(e) =>
+                dispatch({
+                  type: "TOGGLE_SCHEDULE",
+                })
+              }
+              className="schedule"
+              variant="outlined"
+            >
               Schedule
             </Button>
+
             <Button
               className="send"
               disabled={
@@ -380,24 +493,6 @@ const CreateAnnouncement = ({ initialClass }) => {
             >
               Send
             </Button>
-          </div>
-        </div>
-
-        <div className="announcement-edit-actions">
-          <div
-            className="uploadfile"
-            onClick={(e) =>
-              document.getElementById("announcement-file-upload").click()
-            }
-          >
-            <img className="medium" src="/uploadfile.png" alt="Upload File" />
-            <span>Upload A File</span>
-            <input
-              id="announcement-file-upload"
-              style={{ display: "none" }}
-              type="file"
-              onChange={fileHandler}
-            />
           </div>
         </div>
       </>

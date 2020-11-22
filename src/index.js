@@ -3,12 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import Store from "./Store";
 import * as serviceWorker from "./serviceWorker";
-ReactDOM.render(
-  <React.StrictMode>
-    <Store />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+ReactDOM.render(<Store />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

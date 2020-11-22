@@ -1,8 +1,10 @@
 const socketIO = require("../configs/socketIO");
+const Db = require("../Database/db");
+
 exports.createClass = async (req, res) => {
   const { className } = req.body;
   const { userId } = req.decodedToken;
-  const db = req.app.get("db");
+  const db = Db.db;
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   try {
     const [
@@ -26,9 +28,11 @@ exports.createClass = async (req, res) => {
       `SELECT * FROM class c INNER JOIN message_room mr ON  c.classId=? AND c.classId=mr.classId`,
       [addClass.insertId]
     );
+    if (socket) {
+      const room = `class-${data[0].roomId}`;
+      socket.join(room);
+    }
 
-    const room = `class-${data[0].roomId}`;
-    socket.join(room);
     res.send(data[0]);
   } catch (error) {
     res.status(404).json("Something went wrong!");
@@ -37,7 +41,7 @@ exports.createClass = async (req, res) => {
 };
 exports.getClass = async (req, res) => {
   const userId = req.decodedToken.userId;
-  const db = req.app.get("db");
+  const db = Db.db;
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   try {
     const [classes] = await db.query(
@@ -51,9 +55,11 @@ exports.getClass = async (req, res) => {
       prev[cur.classId] = cur;
       return prev;
     }, {});
-    for (const classs of classes) {
-      const room = `class-${classs.roomId}`;
-      socket.join(room);
+    if (socket) {
+      for (const classs of classes) {
+        const room = `class-${classs.roomId}`;
+        socket.join(room);
+      }
     }
 
     res.status(200).json(finalClasses);
@@ -67,7 +73,7 @@ exports.getClass = async (req, res) => {
 exports.findClass = async (req, res) => {
   let { query, notJoined } = req.query;
   const userId = req.decodedToken.userId;
-  const db = req.app.get("db");
+  const db = Db.db;
   let nameMode = true;
   if (query[0] === "@") {
     query = query.split("@").filter((e) => e)[0];
@@ -104,7 +110,7 @@ exports.findClass = async (req, res) => {
 };
 
 exports.getMembers = async (req, res) => {
-  const db = req.app.get("db");
+  const db = Db.db;
   let classId = req.query.classId;
   if (isNaN(classId)) classId = -1;
   try {
@@ -131,7 +137,7 @@ exports.getMembers = async (req, res) => {
 };
 
 exports.dummy = (req, res) => {
-  const db = req.app.get("db");
+  const db = Db.db;
   const a = db.query(`SELECT * FROM class_member`);
   res.send(a);
 };
@@ -139,7 +145,7 @@ exports.dummy = (req, res) => {
 exports.joinClass = async (req, res) => {
   const userId = req.decodedToken.userId;
   const classId = req.body.classId;
-  const db = req.app.get("db");
+  const db = Db.db;
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   if (classId) {
     try {
@@ -154,8 +160,11 @@ exports.joinClass = async (req, res) => {
         INNER JOIN message_room mr ON c.classId=mr.classId`,
         [classId, userId]
       );
-      const room = `class-${getDataBack[0].roomId}`;
-      socket.join(room);
+      if (socket) {
+        const room = `class-${getDataBack[0].roomId}`;
+        socket.join(room);
+      }
+
       return res.status(200).json(getDataBack[0]);
     } catch (error) {
       throw error;
