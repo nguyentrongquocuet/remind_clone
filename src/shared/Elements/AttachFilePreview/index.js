@@ -94,7 +94,6 @@ const AttachFilePreview = ({
     if (file) {
       const { name } = file;
       if (isImage(file)) {
-        alert("is image");
         const fileReader = new FileReader();
         fileReader.addEventListener("loadend", () => {
           setPreview({
@@ -115,7 +114,6 @@ const AttachFilePreview = ({
       }
     } else {
       if (fileUrl) {
-        console.log("check-url", fileUrl);
         const type = getFileType(fileUrl);
         if (type === "image") {
           setPreview({
@@ -135,7 +133,6 @@ const AttachFilePreview = ({
       }
     }
   }, [fileUrl, file]);
-  console.log("name", preview.name);
 
   if (preview.type === "image")
     return (
@@ -152,16 +149,20 @@ const AttachFilePreview = ({
           onClick={(e) =>
             onClick && onClick(e, { name: preview.name, path: preview.url })
           }
-          className={className || "file-preview"}
+          className={className || "file-preview image"}
           title={preview.name || "hello"}
         >
-          <img className="image-placeholder" alt="hello" />
+          <img
+            className="image-placeholder"
+            src={visible ? preview.url : ""}
+            alt="hello"
+          />
         </div>
       </>
     );
   if (supportVideo && preview.type === "video") {
     return (
-      <div className="file-preview">
+      <div className="file-preview video">
         <video controls className="file-type-preview-video">
           <source src={preview.url} type="video/mp4"></source>
         </video>
@@ -180,6 +181,9 @@ const AttachFilePreview = ({
           className="file-type-preview-image"
           src={preview.url && fileImages[preview.type]}
         />
+        {preview.url && (
+          <img className="file-type-preview-image" src="/download.png" />
+        )}
       </a>
       <span className="file-name">{preview.name}</span>
     </div>

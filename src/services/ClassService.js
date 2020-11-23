@@ -2,7 +2,7 @@ import BaseService from "./BaseService";
 export class ClassService {
   static getClass = () => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token) throw Error("Something went wrong!!!");
+    if (!token) return new Error("Something went wrong!!!");
 
     return BaseService.get(`class`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -10,7 +10,7 @@ export class ClassService {
   };
   static joinClass = (classId) => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token || !classId) throw Error("Something went wrong!!!");
+    if (!token || !classId) return new Error("Something went wrong!!!");
     return BaseService.post(
       `class/join`,
       { classId: classId },
@@ -21,7 +21,7 @@ export class ClassService {
   };
   static leaveClass = (classId) => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token || !classId) throw Error("Something went wrong!!!");
+    if (!token || !classId) return new Error("Something went wrong!!!");
     return BaseService.delete("class/leave", {
       headers: { Authorization: `Bearer ${token}` },
       params: {
@@ -31,8 +31,7 @@ export class ClassService {
   };
   static findClass = (query, notJoined) => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token || !query) throw Error("Something went wrong!!!");
-    console.log("token", token);
+    if (!token || !query) return new Error("Something went wrong!!!");
 
     return BaseService.get(`class/find`, {
       headers: {
@@ -46,7 +45,7 @@ export class ClassService {
   };
   static getClassMembers = (classId) => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token || !classId) throw Error("Something went wrong!!!");
+    if (!token || !classId) return new Error("Something went wrong!!!");
     return BaseService.get(`class/member`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,7 +58,7 @@ export class ClassService {
 
   static createClass = (className) => {
     const token = JSON.parse(localStorage.getItem("token"));
-    if (!token) throw Error("Something went wrong!!!");
+    if (!token) return new Error("Something went wrong!!!");
     return BaseService.post(
       `class/new`,
       {

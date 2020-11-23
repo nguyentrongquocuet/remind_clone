@@ -19,6 +19,29 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
+.incoming-schedules {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: whitesmoke;
+  text-align: center;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  &:hover {
+    svg {
+      fill: var(--secondary);
+    }
+    p {
+      color: var(--secondary);
+    }
+  }
+  p {
+    width: fit-content;
+    color: var(--primary);
+  }
+}
 .message-input-preview {
   // padding-top: 0.5rem;
   border-radius: 4px;

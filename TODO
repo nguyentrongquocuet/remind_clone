@@ -16,9 +16,11 @@
 ✔ sửa preview full @done(20-11-22 01:36)
 ✔ Gửi announcement @done(20-11-22 01:36)
 ☐ Add people-request
+☐ invite people
 ☐ Show files
 ☐ use case:
 ☐ fetch tin nhắn => đã đọc đến tin nhắn đã fetch,
 ☐ gửi tin nhắn ==> set đã đọc
 ☐ nhận tin nhắn ==> nếu đang cùng class==> đã đọc
 ✔ hẹn giờ @done(20-11-22 19:33)
+☐ senario sửa: sửa=> userid-createAtMs==> xoá schedule cũ thêm mới, setSchedule vào map

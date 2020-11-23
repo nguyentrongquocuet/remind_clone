@@ -38,7 +38,6 @@ export class UserService {
   };
   static auth = async () => {
     const data = getLocalData();
-    console.log("from service", data);
 
     if (!data) {
       localStorage.clear();
@@ -46,8 +45,6 @@ export class UserService {
     }
     let newUserData;
     try {
-      console.log("token", data.token);
-
       newUserData = await BaseService.post("auth/auth", null, {
         headers: { Authorization: `Bearer ${data.token}` },
       });

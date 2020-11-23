@@ -13,9 +13,7 @@ const MessItem = ({
   unread,
   ...props
 }) => {
-  console.log("path", path);
   const history = useHistory();
-  console.log("history", props.history);
   return (
     <NavLink
       to={path ? `/classes/${path}` : "#"}

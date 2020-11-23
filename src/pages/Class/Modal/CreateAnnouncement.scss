@@ -150,6 +150,16 @@
             padding: 1rem;
             height: auto;
             max-width: 200px;
+            max-height: 100%;
+            .file-preview {
+              width: fit-content;
+              max-width: 100%;
+              &.video {
+                video {
+                  max-height: 100%;
+                }
+              }
+            }
           }
           .cancel-preview {
             margin-left: 0.5rem;
@@ -203,11 +213,11 @@
 
   .choosetype {
     position: relative;
-    z-index: 100;
+    z-index: 10;
   }
 }
 #choose-type-popper {
-  z-index: 1000000;
+  z-index: 1300;
   .choosetype {
     background-color: whitesmoke;
     border-radius: 4px;
@@ -225,10 +235,10 @@
 }
 .ck-body-wrapper {
   position: relative;
-  z-index: 1000000;
+  z-index: 100000;
   pointer-events: all;
 }
 .ck-rounded-corners .ck.ck-balloon-panel,
 .ck.ck-balloon-panel.ck-rounded-corners {
-  z-index: 10055 !important;
+  z-index: 11 !important;
 }

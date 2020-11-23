@@ -5,6 +5,7 @@ import Button from "../../../shared/Elements/Button";
 import ClassService from "../../../services/ClassService";
 import { Context } from "../../../shared/Util/context";
 import "./CreateClass.scss";
+import PopupSubject from "../../../shared/Util/PopupSubject";
 const CreateClass = ({ onClose }) => {
   const [className, setClassName] = useState("");
   const { dispatch } = useContext(Context);
@@ -16,7 +17,11 @@ const CreateClass = ({ onClose }) => {
       onClose();
       history.push(`/classes/${classData.data.classId}`);
     } catch (error) {
-      alert(error.response && error.response.data);
+      PopupSubject.next({
+        type: "ERROR",
+        message: error.response ? error.response.data : "Some errors occured",
+        showTime: 5,
+      });
     }
   };
   return (

@@ -10,7 +10,7 @@ const Button = (props) => {
       className={`${props.className}`}
       onClick={props.onClick}
       color={props.color || "primary"}
-      variant={props.variant || "contained"}
+      variant={!props.text ? props.variant || "contained" : ""}
       disabled={props.disabled}
     >
       {props.children}

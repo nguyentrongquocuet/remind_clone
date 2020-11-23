@@ -11,11 +11,11 @@ import AddIcon from "@material-ui/icons/Add";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import "./MessagePanel.scss";
 import CreateClass from "../../../pages/Class/Modal/CreateClass";
+import PopupSubject from "../../Util/PopupSubject";
 const JoinClass = React.lazy(() =>
   import("../../../pages/Class/Modal/JoinClass")
 );
 const MessagePanel = ({ loading }) => {
-  console.log("PANEL REINE");
   const [panelMode, setPanelMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
@@ -34,7 +34,14 @@ const MessagePanel = ({ loading }) => {
           setSearchResult(data.data);
           // setSearching(false);
         } catch (error) {
-          console.log(error);
+          error.response &&
+            PopupSubject.next({
+              type: "ERROR",
+              message: error.response
+                ? error.response.data
+                : "Some errors occured",
+              showTime: 5,
+            });
         }
       }, 1000);
       const f = () => {
@@ -48,7 +55,6 @@ const MessagePanel = ({ loading }) => {
   }, [searchQuery]);
   const { globalState, dispatch } = useContext(Context);
   if (loading) return <Loading />;
-  console.log(globalState.classData);
   return (
     <div className="messages__panel loading">
       <Suspense

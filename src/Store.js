@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer, useState } from "react";
 import App from "./App";
 import Auth from "./auth";
-import io from "socket.io-client";
-import { Subject } from "rxjs";
 import UserService from "./services/UserService";
 import * as local from "./shared/Util/LocalStorage";
 import RealTimeService from "./services/RealTimeService";
+import PopUp from "./shared/Elements/PopUp";
+import popupSubject from "./shared/Util/PopupSubject";
 const { Context } = require("./shared/Util/context");
 const reducer = (context, actions) => {
   let outContext = context;
@@ -18,7 +18,6 @@ const reducer = (context, actions) => {
       }
     }
   }
-  console.log("lenght", localStorage.length);
   local.saveToLocalStorage({ ...outContext, IO: undefined, subject: null });
   return outContext;
 };
@@ -93,9 +92,7 @@ const contextReducer = (context, action) => {
         },
       };
     case "LOGOUT":
-      console.log("LOGOUT");
       localStorage.clear();
-      console.log(localStorage.getItem("token"));
       return {};
     default:
       return context;
@@ -123,65 +120,56 @@ const initialState = {
 const Store = () => {
   const [globalState, dispatch] = useReducer(reducer, initialState);
   const [auth, setAuth] = useState(false);
-  console.log("rendering");
+  const [popup, setPopup] = useState(null);
 
   useEffect(() => {
-    console.log(globalState.toggleSignup);
+    const sub = popupSubject.asObservable().subscribe((popupContent) => {
+      setPopup(popupContent);
+      if (popupContent.type === "ERROR") {
+        dispatch({ type: "LOGOUT" });
+      }
+    });
     if (!globalState.toggleSignup)
-      UserService.auth().then((data) => {
-        console.log("data", data);
-        if (!data) {
-          console.log("LOGD");
-          dispatch({
-            type: "LOGOUT",
-          });
-        } else {
-          dispatch({
-            1: {
-              type: "SET_TOKEN",
-              payload: data.token,
-            },
-            2: {
-              type: "SET_USER_DATA",
-              payload: data.userData,
-            },
-            3: {
-              type: "LOGIN_SUCCESS",
-            },
-          });
-        }
-      });
+      UserService.auth()
+        .then((data) => {
+          if (!data) {
+            dispatch({
+              type: "LOGOUT",
+            });
+          } else {
+            dispatch({
+              1: {
+                type: "SET_TOKEN",
+                payload: data.token,
+              },
+              2: {
+                type: "SET_USER_DATA",
+                payload: data.userData,
+              },
+              3: {
+                type: "LOGIN_SUCCESS",
+              },
+            });
+          }
+        })
+        .catch((error) =>
+          popupSubject.next({
+            type: "ERROR",
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            showTime: 5,
+          })
+        );
   }, []);
   useEffect(() => {
     if (globalState.isLoggedIn && !globalState.settingUpIsDone) {
-      console.log("SETTING IO");
       RealTimeService.init({ globalState, dispatch });
-      // const ioC = io.connect("http://localhost:5000");
-      // ioC.on("auth", () => {
-      //   dispatch({
-      //     1: {
-      //       type: "SET_TOKEN",
-      //       payload: globalState.token,
-      //     },
-      //     2: {
-      //       type: "SET_USER_DATA",
-      //       payload: globalState.userData,
-      //     },
-      //     3: {
-      //       type: "LOGIN_SUCCESS",
-      //     },
-      //     4: { type: "SET_IO", payload: ioC },
-      //     5: { type: "SET_UP_DONE" },
-      //   });
-      // });
-      // ioC.on("messages", (data) => {
-      //   alert(data.content);
-      // });
-      // ioC.emit("auth", globalState.userData.id);
     }
   }, [globalState.isLoggedIn]);
   return (
     <Context.Provider value={{ globalState: globalState, dispatch: dispatch }}>
+      {popup && <PopUp onClose={() => setPopup(null)} content={popup} />}
       {!auth ? <Auth setAuth={setAuth} /> : <App />}
     </Context.Provider>
   );

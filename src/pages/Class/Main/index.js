@@ -6,7 +6,6 @@ import React, {
   useCallback,
 } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import Loading from "../../../shared/components/Loading";
 import Main from "../../../shared/components/Main";
 import { Context } from "../../../shared/Util/context";
 import ActionSidebar from "./tabs/ActionSidebar";
@@ -14,8 +13,8 @@ import Avatar from "@material-ui/core/Avatar";
 import "./Main.scss";
 import Skeleton from "@material-ui/lab/Skeleton";
 import ClassService from "../../../services/ClassService";
+import popUpSubject from "../../../shared/Util/PopupSubject";
 const Messages = React.lazy(() => import("./tabs/Messages"));
-
 const ClassMain = (props) => {
   const { globalState, dispatch } = useContext(Context);
 
@@ -25,23 +24,30 @@ const ClassMain = (props) => {
   const [expanded, setExpand] = useState(false);
   const toggleExpand = useCallback(() => setExpand((prev) => !prev), []);
   useEffect(() => {
-    console.log("classId changes to", classId);
-
     if (!props.loading) {
       let flag = false;
       for (const id of Object.keys(globalState.classData)) {
         if (id == classId) {
           flag = true;
-          console.log("SET MEMBERS");
-          ClassService.getClassMembers(classId).then((data) => {
-            dispatch({
-              type: "SET_CLASS_MEMBER",
-              classId: classId,
-              payload: data.data,
-            });
-            setCheck(true);
-            return;
-          });
+          ClassService.getClassMembers(classId)
+            .then((data) => {
+              dispatch({
+                type: "SET_CLASS_MEMBER",
+                classId: classId,
+                payload: data.data,
+              });
+              setCheck(true);
+              return;
+            })
+            .catch((error) =>
+              popUpSubject.next({
+                type: "ERROR",
+                message: error.response
+                  ? error.response.data
+                  : "Some errors occured",
+                showTime: 5,
+              })
+            );
         }
       }
       if (!flag) {
@@ -76,10 +82,6 @@ const ClassMain = (props) => {
         </div>
       </div>
     </>
-  );
-  console.log(
-    "loading",
-    checked && props.loading && !globalState.classData[classId].members
   );
   return (
     <Main header={header} className="shadow--left">

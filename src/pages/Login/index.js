@@ -6,14 +6,13 @@ import LoginForm from "../../shared/components/LoginForm";
 import "./Login.scss";
 import Header from "../../shared/components/Header";
 import Button from "../../shared/Elements/Button";
+import PopupSubject from "../../shared/Util/PopupSubject";
 const Login = () => {
   const { dispatch } = useContext(Context);
   //login with {email, password}
-  console.log(dispatch);
   const submitFormHandler = async (data) => {
     try {
       const authData = await UserService.login(data);
-      console.log(authData);
       dispatch({
         1: {
           type: "SET_TOKEN",
@@ -31,8 +30,11 @@ const Login = () => {
       // history.push("/classes/1");
     } catch (error) {
       if (error.response) {
-        alert(error.response.data);
-        console.log(error.response);
+        PopupSubject.next({
+          type: "ERROR",
+          message: error.response ? error.response.data : "Some errors occured",
+          showTime: 5,
+        });
       }
     }
   };

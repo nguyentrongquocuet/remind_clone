@@ -1,0 +1,85 @@
+.schedule-preview-modal.center {
+  height: 100%;
+  .form__modal {
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-width: 900px;
+    .schedules-preview {
+      background-color: #ffffff;
+
+      ul {
+        list-style: initial;
+      }
+      // ol {
+      //   list-style: initial;
+      // }
+      table,
+      td,
+      th,
+      tr {
+        border: 1px solid var(--secondary);
+        border-collapse: collapse;
+      }
+      &__header {
+        background-color: var(--primary);
+        padding: 1rem;
+      }
+      .schedules-preview__schedules {
+        .schedule-overview {
+          padding: 1rem;
+          box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.15);
+          .schedule__content {
+            width: fit-content;
+            margin-right: auto;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+          }
+          .schedule__file {
+            width: 100%;
+            .file-preview {
+              width: 50%;
+              margin: 1rem auto;
+              &.video {
+                width: 100%;
+                video {
+                  width: 100%;
+                }
+              }
+            }
+            .schedule__file--attach {
+              cursor: pointer;
+              img.image-placeholder {
+                opacity: 0;
+                object-fit: cover;
+                max-width: 100%;
+              }
+              background-size: contain;
+              background-repeat: no-repeat;
+            }
+          }
+          &__actions {
+            width: fit-content;
+            margin-left: auto;
+            .MuiButton-root {
+              font-size: 0.7rem;
+              margin-left: 1rem;
+            }
+            .MuiButton-outlinedPrimary:hover {
+              background-color: var(--primary);
+              color: whitesmoke;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  .schedule-preview-modal.center {
+    .form__modal {
+      max-width: 500px;
+    }
+  }
+}

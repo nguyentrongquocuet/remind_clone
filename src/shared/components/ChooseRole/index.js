@@ -7,6 +7,7 @@ import Loading from "../Loading";
 import UserService from "../../../services/UserService";
 import "../Header/Header.scss";
 import "./ChooseRole.scss";
+import PopupSubject from "../../Util/PopupSubject";
 const ChooseRole = () => {
   const { dispatch, globalState } = useContext(Context);
   const [processing, setProcessing] = useState(false);
@@ -21,7 +22,14 @@ const ChooseRole = () => {
           payload: newRole.data.role,
         });
       } catch (error) {
-        alert(error.response && error.response.data);
+        error.response &&
+          PopupSubject.next({
+            type: "ERROR",
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            showTime: 5,
+          });
       } finally {
         setProcessing(false);
       }

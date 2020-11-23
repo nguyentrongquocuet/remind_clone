@@ -8,6 +8,7 @@ import Content from "./components/Content";
 import Button from "../../shared/Elements/Button";
 import UserService from "../../services/UserService";
 import "./Home.scss";
+import PopupSubject from "../../shared/Util/PopupSubject";
 const Modal = React.lazy(() => import("../../shared/Elements/Modal"));
 
 const SignUpForm = React.lazy(() =>
@@ -18,8 +19,6 @@ const Home = () => {
   let location = useLocation();
   const { dispatch, globalState } = useContext(Context);
   useEffect(() => {
-    console.log(location.search);
-
     if (location.search === "?signup=true") {
       dispatch({ type: "TOGGLE_SIGNUP" });
     }
@@ -29,7 +28,6 @@ const Home = () => {
 
   const signUpSuccessHandler = async (data) => {
     // setMode();
-    console.log(data);
     try {
       const authData = await UserService.login({
         email: data.email,
@@ -51,10 +49,12 @@ const Home = () => {
       // login(authData.data);
       // history.push("/classes/1");
     } catch (error) {
-      alert(error);
       if (error.response) {
-        alert(error.response.data);
-        console.log(error.response);
+        PopupSubject.next({
+          type: "ERROR",
+          message: error.response ? error.response.data : "Some errors occured",
+          showTime: 5,
+        });
       }
     }
   };

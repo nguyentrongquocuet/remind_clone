@@ -4,6 +4,7 @@ import React, {
   useRef,
   useContext,
   useLayoutEffect,
+  useMemo,
 } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { Context } from "../../../../../shared/Util/context";
@@ -12,27 +13,28 @@ import MessageService from "../../../../../services/MessageService";
 import { Card } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import CancelIcon from "@material-ui/icons/Cancel";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+import ScheduleIcon from "@material-ui/icons/Schedule";
 import TextField from "../../../../../shared/Elements/TextField";
 import Loading from "../../../../../shared/components/Loading";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import MimeTypeDetect from "../../../../../shared/Util/MimeTypeDetect";
 import ModalSubject from "../../../../../shared/Util/ModalSubject";
 import "./Messages.scss";
 import AttachFilePreview from "../../../../../shared/Elements/AttachFilePreview";
+import popupSubject from "../../../../../shared/Util/PopupSubject";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
 //TOTO: CACHE MESSAGES DATA
 const Messages = (props) => {
-  console.log("<ESSA");
   const [messagesState, setMessagesState] = useState({
     messages: [],
+    schedules: [],
     fetching: true,
   });
   const [message, setMessage] = useState({
     content: "",
     file: null,
-    schedule: null,
+    schedules: null,
   });
   const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
@@ -42,8 +44,11 @@ const Messages = (props) => {
 
   let messagesRef = useRef(null);
   let { loading } = props;
+  const isOwner = useMemo(
+    () => globalState.classData[classId].owner === globalState.userData.id,
+    [classId, globalState]
+  );
   const sendMessage = () => {
-    console.log(message);
     if (message.content.trim().length > 0 || message.file) {
       const messageData = new FormData();
       messageData.append("content", message.content);
@@ -52,23 +57,50 @@ const Messages = (props) => {
         messageData.append("file", message.file, message.file.name);
       }
 
-      MessageService.sendMessage(roomId, messageData, globalState.token).then(
-        (data) => {
+      MessageService.sendMessage(roomId, messageData, globalState.token)
+        .then((data) => {
           setMessagesState((prev) => {
             return { ...prev, messages: [...prev.messages, data.data] };
           });
           setMessage({ schedule: null, content: "", file: null });
-        }
-      );
+        })
+        .catch((error) =>
+          popupSubject.next({
+            type: "ERROR",
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            showTime: 5,
+          })
+        );
     }
   };
   useEffect(() => {
     roomId = globalState.classData[classId].roomId;
     const sub = RealTimeService.IOSubject.subscribe((data) => {
-      if (data.roomId == roomId) {
-        setMessagesState((prev) => {
-          return { ...prev, messages: [...prev.messages, data] };
-        });
+      switch (data.type) {
+        case "MESSAGES":
+          if (data.payload.roomId == roomId) {
+            setMessagesState((prev) => {
+              return { ...prev, messages: [...prev.messages, data.payload] };
+            });
+          }
+          break;
+        case "SCHEDULE":
+          switch (data.action) {
+            case "START":
+              setMessagesState((prev) => {
+                return {
+                  ...prev,
+                  schedules: [...prev.schedules, data.payload],
+                };
+              });
+              break;
+            default:
+              break;
+          }
+        default:
+          break;
       }
     });
     return () => {
@@ -78,23 +110,35 @@ const Messages = (props) => {
   }, [roomId, classId]);
   //TODO: ADD TRY_CATCH
   useEffect(() => {
+    //fetch messages and schedules
+
     const fetchMessages = () => {
       MessageService.getMessages(roomId, globalState.token)
         .then((data) => {
           dispatch({ type: "SET_READ", id: classId });
           setMessagesState((prev) => {
-            return { fetching: false, messages: [...data.data] };
+            return {
+              fetching: false,
+              messages: [...data.data.messages],
+              schedules: [...data.data.schedules],
+            };
           });
         })
-        .catch((error) => alert(error));
+        .catch((error) =>
+          popupSubject.next({
+            showTime: 5,
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            type: "ERROR",
+          })
+        );
     };
-    if (!loading) {
-      setMessagesState((prev) => {
-        return { ...prev, fetching: true };
-      });
+    if (!loading && messagesState.fetching) {
       fetchMessages();
     }
-    return () => setMessagesState({ fetching: true, messages: [] });
+    return () =>
+      setMessagesState({ fetching: true, messages: [], schedules: [] });
   }, [roomId, classId, loading]);
   // setTimeout(() => setIsLoading(false), 1000);
   useLayoutEffect(() => {
@@ -110,7 +154,11 @@ const Messages = (props) => {
   const fileHandler = async (e) => {
     if (e.target.files.length > 0) {
       if (e.target.files[0].size / 1024 / 1024 > 2) {
-        alert("file too big");
+        popupSubject.next({
+          type: "WARN",
+          showTime: 5,
+          message: "File too big, please choose other file less than 2MB!",
+        });
         e.target.value = null;
         return;
       }
@@ -122,6 +170,7 @@ const Messages = (props) => {
       e.target.value = null;
     }
   };
+
   return (
     <>
       <div className={`messages__wrapper ${props.expanded ? "expanded" : ""}`}>
@@ -159,6 +208,7 @@ const Messages = (props) => {
             </div>
           </>
         )}
+
         <div className="message-input-preview">
           {message.file && (
             <Card className="preview">
@@ -185,6 +235,23 @@ const Messages = (props) => {
               </div>
             </Card>
           )}
+          {isOwner && messagesState.schedules.length > 0 && (
+            <div
+              onClick={(e) =>
+                ModalSubject.next({
+                  type: "PREVIEW_SCHEDULE",
+                  data: {
+                    schedules: messagesState.schedules,
+                  },
+                })
+              }
+              className="incoming-schedules"
+            >
+              <ScheduleIcon color="primary" />
+              <p>You have {messagesState.schedules.length} schedules</p>
+            </div>
+          )}
+
           <div className="message__input">
             <TextField
               type="textarea"
@@ -205,20 +272,23 @@ const Messages = (props) => {
               id="file"
               onChange={fileHandler}
             />
-            <div
-              title="Create Announcement"
-              className="message__input__action small"
-              onClick={(e) =>
-                ModalSubject.next({
-                  type: "CREATE_ANNOUNCEMENT",
-                  data: {
-                    class: classId,
-                  },
-                })
-              }
-            >
-              <img src="/announcement.png" alt="" />
-            </div>
+            {isOwner && (
+              <div
+                title="Create Announcement"
+                className="message__input__action small"
+                onClick={(e) =>
+                  ModalSubject.next({
+                    type: "CREATE_ANNOUNCEMENT",
+                    data: {
+                      initialClass: classId,
+                    },
+                  })
+                }
+              >
+                <img src="/announcement.png" alt="" />
+              </div>
+            )}
+
             <AttachFileIcon
               onClick={(e) => document.getElementById("file").click()}
               color="primary"

@@ -32,7 +32,20 @@ class RealtimeService {
     });
     this.IOSubject = new Observable((observer) => {
       this.io.on("messages", (data) => {
-        observer.next(data);
+        observer.next({ type: "MESSAGES", payload: data });
+      });
+      this.io.on("schedule", (data) => {
+        switch (data.type) {
+          case "SCHEDULE_START":
+            observer.next({
+              type: "SCHEDULE",
+              action: "START",
+              payload: {
+                ...data.schedule,
+              },
+            });
+        }
+        console.log(data);
       });
     });
   }

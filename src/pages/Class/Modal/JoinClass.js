@@ -7,6 +7,8 @@ import ClassService from "../../../services/ClassService";
 import "./JoinClass.scss";
 import { Context } from "../../../shared/Util/context";
 import { useHistory } from "react-router-dom";
+import popupSubject from "../../../shared/Util/PopupSubject";
+import PopupSubject from "../../../shared/Util/PopupSubject";
 
 const JoinClass = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +26,11 @@ const JoinClass = ({ onClose }) => {
         history.push(`/classes/${classId}`);
       })
       .catch((error) => {
-        console.log(error);
+        popupSubject.next({
+          type: "ERROR",
+          message: error.response ? error.response.data : "Some errors occured",
+          showTime: 5,
+        });
       });
   }, []);
   useEffect(() => {
@@ -33,11 +39,16 @@ const JoinClass = ({ onClose }) => {
       const time = setTimeout(async () => {
         try {
           const data = await ClassService.findClass(searchQuery, true);
-          console.log("join", data.data);
           setSearchResult(data.data);
           // setSearching(false);
         } catch (error) {
-          console.log(error);
+          PopupSubject.next({
+            type: "ERROR",
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            showTime: 5,
+          });
         }
       }, 1000);
       const f = () => {

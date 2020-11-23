@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: flex-start;
   font-size: 0.9rem;
-  font-weight: 350;
+  font-weight: 500;
   margin-left: 1rem;
   span:first-child {
     color: black;
@@ -14,7 +14,8 @@
   }
 }
 .classitem {
-  font-size: 13px;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
   border-radius: 4px;
   margin-bottom: 0.5rem;

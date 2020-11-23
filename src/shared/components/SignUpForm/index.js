@@ -5,6 +5,7 @@ import UserService from "../../../services/UserService";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
 import "./SignUpForm.scss";
+import PopupSubject from "../../Util/PopupSubject";
 
 const SignUpForm = (props) => {
   const { register, handleSubmit, watch, errors, formState } = useForm({
@@ -19,12 +20,18 @@ const SignUpForm = (props) => {
 
   const signup = useCallback(
     async (data) => {
-      console.log(data);
       try {
         await UserService.signup(data);
         props.onSuccess(data);
       } catch (error) {
-        alert(error.response.data);
+        error.response &&
+          PopupSubject.next({
+            type: "ERROR",
+            message: error.response
+              ? error.response.data
+              : "Some errors occured",
+            showTime: 5,
+          });
       }
     },
     [props]

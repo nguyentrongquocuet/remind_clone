@@ -9,6 +9,7 @@ import Loading from "../../../../../shared/components/Loading";
 import "./ActionSidebar.scss";
 import Members from "./Members";
 import Settings from "./Settings";
+import PopupSubject from "../../../../../shared/Util/PopupSubject";
 const initialData = {
   action: "files",
   files: [],
@@ -30,17 +31,14 @@ const aSBReducer = (state, action) => {
   }
 };
 const ActionSidebar = (props) => {
-  console.log("ACTIONSIDEBAR");
   //1: file, 2: people, 3: setting
   const { classId } = useParams();
   const [state, dispatch] = useReducer(aSBReducer, initialData);
-  console.log("DATA", state.files, state.people);
 
   useEffect(() => {
     if (state.action === "people") {
       try {
         ClassService.getClassMembers(props.classId || classId).then((data) => {
-          console.log("member", data.data);
           dispatch({
             type: "SET_DATA",
             action: "people",
@@ -48,7 +46,12 @@ const ActionSidebar = (props) => {
           });
         });
       } catch (error) {
-        alert(error);
+        error.response &&
+          PopupSubject.next({
+            showTime: 5,
+            type: "WARN",
+            message: error.response.data,
+          });
       }
     } else {
       if (state.action === "files") {

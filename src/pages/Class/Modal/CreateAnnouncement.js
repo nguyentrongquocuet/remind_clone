@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useState } from "react";
+import React, { useContext, useMemo, useReducer, useState } from "react";
 import { Context } from "../../../shared/Util/context";
 import TextField from "../../../shared/Elements/TextField";
 import { Avatar, Card } from "@material-ui/core";
@@ -16,6 +16,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./CreateAnnouncement.scss";
 import MessageService from "../../../services/MessageService";
 import DateTimePicker from "../../../shared/Elements/DateTimePicker";
+import PopupSubject from "../../../shared/Util/PopupSubject";
 const objectFilter = (obj) => {
   const b = { ...obj };
   for (let c in b) {
@@ -69,7 +70,6 @@ const reducer = (state, action) => {
       const time = new Date(action.payload.time);
       time.setSeconds(0);
       const timeStr = time.toUTCString();
-      console.log(timeStr);
       out = {
         ...state,
         scheduleTime: timeStr,
@@ -81,18 +81,46 @@ const reducer = (state, action) => {
 
   return { ...out, classes: { ...objectFilter(out.classes) } };
 };
-const CreateAnnouncement = ({ initialClass }) => {
+const CreateAnnouncement = ({
+  initialClass,
+  initialValues,
+  onDone,
+  mode = "create",
+}) => {
+  const initialValuesMemorized = useMemo(() => initialValues, [initialValues]);
   const { globalState } = useContext(Context);
-  const { classId } = useParams();
   const [selectedClass, dispatch] = useReducer(reducer, {
-    classes: { [classId]: "all" },
+    classes:
+      mode !== "create"
+        ? { ...initialValuesMemorized.classes }
+        : initialClass
+        ? {
+            [initialClass]: "all",
+          }
+        : {},
     onChoosing: null,
-    content: "",
-    scheduleTime: null,
-    file: null,
-    schedule: false,
+    content:
+      mode !== "create"
+        ? initialValuesMemorized
+          ? initialValuesMemorized.content
+          : ""
+        : "",
+    scheduleTime:
+      mode !== "create"
+        ? initialValuesMemorized
+          ? initialValuesMemorized.scheduleTime
+          : null
+        : null,
+    file:
+      mode !== "create"
+        ? initialValuesMemorized
+          ? initialValuesMemorized.file
+          : null
+        : null,
+    schedule:
+      mode !== "create" ? (initialValuesMemorized ? true : false) : false,
   });
-  const [mode, setMode] = useState(false);
+  const [stage, setStage] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const toggleChooseOption = (event, classId) => {
     setAnchorEl(selectedClass.onChoosing ? null : event.currentTarget);
@@ -107,7 +135,11 @@ const CreateAnnouncement = ({ initialClass }) => {
   const fileHandler = async (e) => {
     if (e.target.files[0].size / 1024 / 1024 > 2) {
       e.target.value = null;
-      alert("File too big");
+      PopupSubject.next({
+        type: "ERROR",
+        showTime: 5,
+        message: "File too big, please choose other file less than 2MB!",
+      });
     }
     if (e.target.files[0]) {
       const file = e.target.files[0];
@@ -118,32 +150,55 @@ const CreateAnnouncement = ({ initialClass }) => {
     }
     e.target.value = null;
   };
-  const sendAnnouncement = async () => {
+  const commitAnnouncement = async () => {
     const classes = Object.keys(selectedClass.classes);
-    console.log(selectedClass, classes);
+    //getRoomIds
     const roomIds = Object.values(globalState.classData)
       .filter((classData) => {
-        // console.log(classData.classId);
         return classes.includes("" + classData.classId);
       })
       .map((classData) => classData.roomId);
     const announcementData = new FormData();
+    //same for both edit and create
     announcementData.append("content", selectedClass.content);
-
     selectedClass.schedule &&
       announcementData.append("scheduleTime", selectedClass.scheduleTime);
     announcementData.append("roomIds", roomIds);
+    //a little bit dif
+    mode === "create" &&
     selectedClass.file &&
-      announcementData.append(
-        "file",
-        selectedClass.file,
-        selectedClass.file.name
-      );
+    selectedClass.file instanceof File
+      ? announcementData.append(
+          "file",
+          selectedClass.file,
+          selectedClass.file.name
+        )
+      : announcementData.append("file", selectedClass.file);
+    //setId
+
     //HANDLE RESPONSE
-    const response = await MessageService.sendAnnouncement(announcementData);
+    try {
+      const response =
+        mode === "create"
+          ? await MessageService.sendAnnouncement(announcementData)
+          : await MessageService.editSchedule(announcementData);
+      onDone(
+        response.data.message || mode === "create"
+          ? `You've created a ${
+              selectedClass.schedule ? "scheduled" : ""
+            } announcement`
+          : "Edit successfully"
+      );
+    } catch (error) {
+      PopupSubject.next({
+        type: "ERROR",
+        message: error.response ? error.response.data : "Some errors occured",
+        showTime: 5,
+      });
+    }
   };
   let main;
-  if (!mode) {
+  if (!stage) {
     let open = Boolean(selectedClass.onChoosing);
     main = (
       <>
@@ -300,7 +355,7 @@ const CreateAnnouncement = ({ initialClass }) => {
             })}
           <Button
             onClick={(e) => {
-              setMode(true);
+              setStage(true);
             }}
             className="continue"
           >
@@ -310,7 +365,7 @@ const CreateAnnouncement = ({ initialClass }) => {
       </>
     );
   } else {
-    // SEND MODE HERE
+    // SEND Stage HERE
     main = (
       <>
         <div className="announcement-edit-content">
@@ -331,7 +386,7 @@ const CreateAnnouncement = ({ initialClass }) => {
               );
             })}
             <EditIcon
-              onClick={(e) => setMode(false)}
+              onClick={(e) => setStage(false)}
               color="primary"
               className="edit"
             />
@@ -375,23 +430,12 @@ const CreateAnnouncement = ({ initialClass }) => {
                   "redo",
                 ],
               }}
-              onReady={(editor) => {
-                // You can store the "editor" and use when it is needed.
-                console.log("Editor is ready to use!", editor);
-              }}
               onChange={(event, editor) => {
                 const data = editor.getData();
-                console.log(data);
                 dispatch({
                   type: "SET_CONTENT",
                   payload: { text: data },
                 });
-              }}
-              onBlur={(event, editor) => {
-                console.log("Blur.", editor);
-              }}
-              onFocus={(event, editor) => {
-                console.log("Focus.", editor);
               }}
             />
             <div className="announcement-file-preview">
@@ -419,11 +463,20 @@ const CreateAnnouncement = ({ initialClass }) => {
               {selectedClass.file ? (
                 <div className="preview">
                   <AttachFilePreview
-                    download={false}
+                    download={initialValuesMemorized}
                     visible={true}
-                    supportVideo={false}
-                    // fileUrl={previewUrl}
-                    file={selectedClass.file}
+                    supportVideo={true}
+                    fileUrl={
+                      selectedClass.file instanceof File
+                        ? null
+                        : selectedClass.file
+                    }
+                    file={
+                      selectedClass.file instanceof File
+                        ? selectedClass.file
+                        : null
+                    }
+
                     // fileName={selectedClass.file.name}
                     // type={selectedClass.file.type}
                   />
@@ -448,7 +501,7 @@ const CreateAnnouncement = ({ initialClass }) => {
           <div className="announcement-edit-content__actions">
             <Button
               className="back"
-              onClick={(e) => setMode(false)}
+              onClick={(e) => setStage(false)}
               variant="outlined"
             >
               Back
@@ -461,7 +514,6 @@ const CreateAnnouncement = ({ initialClass }) => {
                 className="schedule-picker"
                 value={selectedClass.scheduleTime}
                 onChange={(date) => {
-                  console.log(date);
                   dispatch({
                     type: "SET_SCHEDULE_TIME",
                     payload: {
@@ -489,7 +541,7 @@ const CreateAnnouncement = ({ initialClass }) => {
               disabled={
                 selectedClass.content.length <= 0 && !selectedClass.file
               }
-              onClick={(e) => sendAnnouncement()}
+              onClick={(e) => commitAnnouncement()}
             >
               Send
             </Button>

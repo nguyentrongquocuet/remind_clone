@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useContext, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { Context } from "../../shared/Util/context";
 import RealTimeService from "../../services/RealTimeService";
-
 import ClassService from "../../services/ClassService";
 import Loading from "../../shared/components/Loading";
 import Skeleton from "@material-ui/lab/Skeleton";
@@ -12,16 +11,18 @@ import "./Class.scss";
 import ImagePreview from "./Modal/ImagePreview";
 import CreateAnnouncement from "./Modal/CreateAnnouncement";
 import Modal from "../../shared/Elements/Modal";
+import popupSubject from "../../shared/Util/PopupSubject";
+import SchedulePreview from "./Modal/SchedulePreview";
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 const ClassMain = React.lazy(() => import("./Main"));
 const Class = () => {
   const { globalState, dispatch } = useContext(Context);
   const [loading, setLoading] = useState(true);
-  const [previewObject, setPreviewObject] = useState(false);
+  const [previewImage, setPreviewImage] = useState(false);
   const [createAnnouncementMode, toggleAnnouncement] = useState(null);
+  const [previewSchedule, setPreviewSchedule] = useState(null);
   const { classId } = useParams();
   const history = useHistory();
-
   useEffect(() => {
     if (!loading && classId && !globalState.classData[classId]) {
       history.push("/classes");
@@ -29,16 +30,24 @@ const Class = () => {
   }, [classId, loading]);
   useEffect(() => {
     ModalSubject.asObservable().subscribe((data) => {
-      if (data.type === "PREVIEW_IMAGE") setPreviewObject(data.data);
-      if (data.type === "CREATE_ANNOUNCEMENT")
-        toggleAnnouncement((prev) => {
-          if (!prev) return { ...data.data };
-          else return null;
-        });
+      switch (data.type) {
+        case "PREVIEW_IMAGE":
+          setPreviewImage(data.data);
+          break;
+        case "CREATE_ANNOUNCEMENT":
+          toggleAnnouncement((prev) => {
+            if (!prev) return { ...data.data };
+            else return null;
+          });
+          break;
+        case "PREVIEW_SCHEDULE":
+          setPreviewSchedule(data.data.schedules);
+        default:
+          break;
+      }
     });
     ClassService.getClass()
       .then((data) => {
-        console.log("classDAta", data.data);
         dispatch({
           type: "SET_CLASS_DATA",
           payload: data.data,
@@ -50,26 +59,32 @@ const Class = () => {
       })
       .catch((error) => {
         setLoading(false);
-        alert(error);
+        popupSubject.next({
+          showTime: 5,
+          message: error.response ? error.response.data : "Some errors occured",
+          type: "ERROR",
+        });
       });
     return () => () => ModalSubject.unsubscribe();
   }, []);
   useEffect(() => {
     const sub = RealTimeService.IOSubject.subscribe((data) => {
-      const id = data.roomId;
-      let cId;
-      for (const classs of Object.values(globalState.classData)) {
-        console.log("check-classData", classs);
-        if (classs.roomId == id) cId = classs.classId;
-      }
-      if (!classId || cId != classId) {
-        console.log("check-classId", classId, cId);
-        dispatch({ type: "SET_UNREAD", id: cId });
+      if (data.type === "MESSAGES") {
+        const id = data.payload.roomId;
+        let cId;
+        for (const classs of Object.values(globalState.classData)) {
+          if (classs.roomId == id) cId = classs.classId;
+        }
+        if (
+          data.senderId !== globalState.userData.id &&
+          (!classId || cId != classId)
+        ) {
+          dispatch({ type: "SET_UNREAD", id: cId });
+        }
       }
     });
     return () => sub.unsubscribe();
   }, [globalState.classData, classId]);
-  console.log("HOURS", new Date().getHours());
   return (
     <>
       {!loading ? (
@@ -90,10 +105,10 @@ const Class = () => {
                 }
               >
                 <ClassMain loading={loading} />
-                {previewObject && (
+                {previewImage && (
                   <ImagePreview
-                    onClose={(e) => setPreviewObject(null)}
-                    previewObject={previewObject}
+                    onClose={(e) => setPreviewImage(null)}
+                    previewObject={previewImage}
                   />
                 )}
                 {createAnnouncementMode && !loading && (
@@ -103,8 +118,28 @@ const Class = () => {
                     classNames={{ wrapper: "center", content: "form__modal" }}
                   >
                     <CreateAnnouncement
-                      initialClass={createAnnouncementMode.class}
+                      onDone={(message) => {
+                        popupSubject.next({
+                          showTime: 5,
+                          message: message || "You've created a schedule",
+                          type: "SUCCESS",
+                        });
+                        toggleAnnouncement(null);
+                      }}
+                      {...createAnnouncementMode}
                     />
+                  </Modal>
+                )}
+                {previewSchedule && (
+                  <Modal
+                    onClose={(e) => setPreviewSchedule(null)}
+                    open={Boolean(previewSchedule)}
+                    classNames={{
+                      wrapper: "schedule-preview-modal center",
+                      content: "form__modal",
+                    }}
+                  >
+                    <SchedulePreview schedules={previewSchedule} />
                   </Modal>
                 )}
               </Suspense>
