@@ -1,5 +1,6 @@
 const app = require("./backend/app");
 const socketIO = require("./backend/configs/socketIO");
+const OATH = require("./backend/Utils/googleOath");
 const port = process.env.SERVER_PORT || 5000;
 
 const DB = require("./backend/Database/db");
@@ -9,6 +10,7 @@ try {
   app.set("port", port);
   const server = require("http").createServer(app);
   socketIO.init(server, app);
+  OATH.init();
   server.listen(port, () => {
     console.log("Listening at port", port);
   });

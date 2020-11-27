@@ -148,18 +148,46 @@ const Class = () => {
                 fallback={<Skeleton variant="rect" className="skeleton-full" />}
               >
                 <div
-                  className="main_main shadow--left"
+                  className="main_main shadow--left getting-started"
                   style={{
                     flexGrow: 1,
                     backgroundImage: `url(${window.location.origin}/getstarted.jpg)`,
                     backgroundPosition: "center",
                     backgroundSize: "cover",
                   }}
-                ></div>
+                >
+                  <span className="getstart">GET STARTED</span>
+                  {globalState.userData.role === 0 ? (
+                    <p>
+                      <span
+                        onClick={(e) =>
+                          ModalSubject.next({ type: "CREATE_CLASS" })
+                        }
+                      >
+                        Create a class
+                      </span>{" "}
+                      to stay connected with your clubs, teams, organizations,
+                      and more!
+                    </p>
+                  ) : (
+                    <p>
+                      <span
+                        onClick={(e) =>
+                          ModalSubject.next({ type: "JOIN_CLASS" })
+                        }
+                      >
+                        Join a class
+                      </span>{" "}
+                      to stay connected with your clubs, teams, organizations,
+                      and more!
+                    </p>
+                  )}
+                  <p>
+                    <span></span>
+                  </p>
+                </div>
               </Suspense>
             )}
-
-            {/* // GETTING STARTED PAGE */}
           </div>
         </>
       ) : (

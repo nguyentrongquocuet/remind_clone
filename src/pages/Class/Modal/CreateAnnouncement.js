@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useReducer, useState } from "react";
 import { Context } from "../../../shared/Util/context";
 import TextField from "../../../shared/Elements/TextField";
-import { Avatar, Card } from "@material-ui/core";
+import { Avatar } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import CloseOutlinedIcon from "@material-ui/icons/CloseOutlined";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -9,7 +9,6 @@ import CancelIcon from "@material-ui/icons/Cancel";
 
 import Popper from "../../../shared/Elements/Popper";
 import Button from "../../../shared/Elements/Button";
-import { useParams } from "react-router-dom";
 import AttachFilePreview from "../../../shared/Elements/AttachFilePreview";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -17,6 +16,7 @@ import "./CreateAnnouncement.scss";
 import MessageService from "../../../services/MessageService";
 import DateTimePicker from "../../../shared/Elements/DateTimePicker";
 import PopupSubject from "../../../shared/Util/PopupSubject";
+
 const objectFilter = (obj) => {
   const b = { ...obj };
   for (let c in b) {
@@ -181,7 +181,10 @@ const CreateAnnouncement = ({
       const response =
         mode === "create"
           ? await MessageService.sendAnnouncement(announcementData)
-          : await MessageService.editSchedule(announcementData);
+          : await MessageService.editSchedule(
+              initialValues.scheduleId,
+              announcementData
+            );
       onDone(
         response.data.message || mode === "create"
           ? `You've created a ${

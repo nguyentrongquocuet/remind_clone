@@ -55,7 +55,7 @@ const ChooseRole = () => {
             <p>Teacher, coach, club adviser, organizer, etc</p>
             <img
               className="role__img"
-              src={window.location.origin + "/student.svg"}
+              src={window.location.origin + "/teacher.svg"}
               alt="teacher"
             />
           </Card>
@@ -66,7 +66,7 @@ const ChooseRole = () => {
             </p>
             <img
               className="role__img"
-              src={window.location.origin + "/teacher.svg"}
+              src={window.location.origin + "/student.svg"}
               alt="Student"
             />
           </Card>

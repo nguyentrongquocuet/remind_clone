@@ -1,0 +1,44 @@
+.class-files {
+  padding: 1rem 0.5rem;
+  .class-file {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-right: 0.5rem;
+    border-radius: 4px;
+    background-color: whitesmoke;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    user-select: none;
+    &__filename {
+      color: var(--primary);
+    }
+    &__day {
+      margin-left: auto;
+      color: var(--secondary);
+    }
+    &:hover {
+      .class-file__preview {
+        display: block;
+      }
+      .class-file__day {
+        display: none;
+      }
+    }
+    &__preview {
+      display: none;
+      height: fit-content;
+      align-self: center;
+      margin-left: auto;
+    }
+    .file-preview {
+      width: fit-content;
+      box-shadow: none;
+      margin-right: 1rem;
+      &.image {
+        max-width: 80px;
+      }
+    }
+  }
+}

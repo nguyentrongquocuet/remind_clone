@@ -22,13 +22,22 @@ const ClassSidebar = ({ loading }) => {
   const header = (
     <>
       <Link className="sidebar__header__avatar" to="/settings/profile">
-        <Avatar className="alter-avatar medium" alt="hello" src="dsdj">
+        <Avatar
+          className="alter-avatar medium"
+          alt="hello"
+          src={globalState.userData.avatar}
+        >
           {globalState.userData.firstName[0] + globalState.userData.lastName[0]}
         </Avatar>
       </Link>
       <div className="sidebar__header__info">
         <p className="secondary">
-          Good {new Date().getHours() >= 17 ? "Afternoon" : "Morning"}
+          Good{" "}
+          {new Date().getHours() >= 19
+            ? "Night"
+            : new Date().getHours() <= 12
+            ? "Morning"
+            : "Afternoon"}
         </p>
         <p className="fullname" onClick={handleClick}>
           {globalState.userData.name}

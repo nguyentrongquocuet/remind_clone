@@ -69,11 +69,6 @@ const ClassMain = (props) => {
           alt="hello"
           src="https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
         ></Avatar>
-        {/* <img
-          src="https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
-          
-          
-        /> */}
         <div className="text-info">
           <span title={className} className="break-word-ellipsis">
             {className}

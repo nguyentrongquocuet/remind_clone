@@ -18,12 +18,15 @@ export class MessageService {
       },
     });
   };
-  static editSchedule = (data) => {
+  static editSchedule = (scheduleId, data) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token) return new Error("Something went wrong");
     return BaseService.put(`message/announcement`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+      params: {
+        scheduleId: scheduleId,
       },
     });
   };
@@ -49,6 +52,42 @@ export class MessageService {
       },
       params: {
         scheduleId: scheduleId,
+      },
+    });
+  };
+  static deleteSchedule = (scheduleId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong");
+    return BaseService.delete(`message/schedule`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        scheduleId: scheduleId,
+      },
+    });
+  };
+  static getFiles = (classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong!!!");
+    return BaseService.get(`message/files`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        classId: classId,
+      },
+    });
+  };
+  static getFileDetails = (messageId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong!!!");
+    return BaseService.get(`message/fileDetails`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        messageId: messageId,
       },
     });
   };

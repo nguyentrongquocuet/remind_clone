@@ -21,6 +21,7 @@ import ModalSubject from "../../../../../shared/Util/ModalSubject";
 import "./Messages.scss";
 import AttachFilePreview from "../../../../../shared/Elements/AttachFilePreview";
 import popupSubject from "../../../../../shared/Util/PopupSubject";
+import FileSubject from "../../../../../shared/Util/FileSubject";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
@@ -59,6 +60,12 @@ const Messages = (props) => {
 
       MessageService.sendMessage(roomId, messageData, globalState.token)
         .then((data) => {
+          if (data.data.file) {
+            FileSubject.next({
+              type: "NEW_FILE",
+              payload: data.data,
+            });
+          }
           setMessagesState((prev) => {
             return { ...prev, messages: [...prev.messages, data.data] };
           });

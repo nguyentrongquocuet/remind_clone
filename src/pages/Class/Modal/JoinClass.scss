@@ -1,18 +1,20 @@
 .MuiCard-root.joinclass {
-  width: 400px;
-  height: 400px;
-  overflow-y: auto;
-  background-color: #ffffff;
-  padding: 1rem;
-  header.joinclass__header {
-    margin: 1rem 0;
-    font-size: 18px;
-    font-weight: bold;
-    border-bottom: 1px solid var(--secondary);
-  }
-  main.joinclass__main {
-    p:first-child {
-      color: var(--secondary);
+    width: 400px;
+    height: 400px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    padding: 1rem;
+
+    header.joinclass__header {
+        margin: 1rem 0;
+        font-size: 18px;
+        font-weight: bold;
+        border-bottom: 1px solid var(--secondary);
     }
-  }
+
+    main.joinclass__main {
+        p:first-child {
+            color: var(--secondary);
+        }
+    }
 }

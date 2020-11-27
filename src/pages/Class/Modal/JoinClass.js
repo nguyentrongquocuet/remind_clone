@@ -15,15 +15,20 @@ const JoinClass = ({ onClose }) => {
   const [searchResult, setSearchResult] = useState([]);
   const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
-  const joinClass = useCallback((classId) => {
-    ClassService.joinClass(classId)
+  const joinClass = useCallback((classD) => {
+    ClassService.joinClass(classD.classId)
       .then((data) => {
         dispatch({
           type: "ADD_CLASS",
           payload: data.data,
         });
         onClose();
-        history.push(`/classes/${classId}`);
+        PopupSubject.next({
+          type: "SUCCESS",
+          message: `You've joined ${classD.name}`,
+          showTime: 5,
+        });
+        history.push(`/classes/${classD.classId}`);
       })
       .catch((error) => {
         popupSubject.next({
@@ -89,7 +94,7 @@ const JoinClass = ({ onClose }) => {
                     name={r.name}
                     onClick={(e) => {
                       e.preventDefault();
-                      joinClass(r.classId);
+                      joinClass(r);
                     }}
                     active={false}
                   ></MessItem>

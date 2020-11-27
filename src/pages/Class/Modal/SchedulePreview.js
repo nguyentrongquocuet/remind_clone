@@ -48,7 +48,33 @@ const SchedulePreview = ({ schedules, onClose }) => {
       });
     } catch (error) {
       if (error.response) {
-        if (error.response.statusCode === 401) {
+        if (error.response.status === 401) {
+          PopupSubject.next({
+            type: "ERROR",
+            message: error.response.data || "Some errors occured",
+            showTime: 5,
+          });
+        } else {
+          PopupSubject.next({
+            type: "WARN",
+            message: "Cannot edit this schedule!",
+            showTime: 5,
+          });
+        }
+      }
+    }
+  }, []);
+  const onDelete = useCallback(async (schedule) => {
+    try {
+      await MessageService.deleteSchedule(schedule.scheduleId);
+      PopupSubject.next({
+        type: "SUCCESS",
+        message: "The schedule has been canceled",
+        showTime: 5,
+      });
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
           PopupSubject.next({
             type: "ERROR",
             message: error.response.data || "Some errors occured",
@@ -110,7 +136,14 @@ const SchedulePreview = ({ schedules, onClose }) => {
                 >
                   Edit
                 </Button>
-                <Button color="secondary">Delete</Button>
+                <Button
+                  onClick={(e) => {
+                    onDelete(schedule);
+                  }}
+                  color="secondary"
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           );

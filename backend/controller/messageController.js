@@ -47,15 +47,12 @@ exports.sendAnnouncement = async (req, res) => {
   const file = req.file;
   const db = Db.db;
   let filePath = null;
-  const createAtMs = Date.now();
+  const scheduleId = Date.now(); //=scheduleId
   if (file) {
     filePath =
       req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
   }
-  let values = rooms.map((room) => {
-    return [userId, room, content, filePath, 1];
-  });
-  let query = `INSERT INTO messages(senderId, roomId, content,file, type) VALUES ?`;
+  let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type) VALUES ?`;
   if (
     scheduleTime &&
     new Date(Date.parse(scheduleTime)) - new Date(Date.now()) > 0
@@ -64,62 +61,59 @@ exports.sendAnnouncement = async (req, res) => {
     const scheduleTimeInMysql = new Date(scheduleTime)
       .toISOString()
       .replace(/T|\..+$/g, " ");
-    const insertToStoreIdQuery = `INSERT INTO announcement_schedule(senderId, roomId, content,file, type,time,createAtMs) VALUES ?`;
-    const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type FROM announcement_schedule WHERE scheduleId BETWEEN ? AND ?`;
-    const setDoneQuery = `UPDATE announcement_schedule SET done = true  WHERE scheduleId BETWEEN ? AND ?`;
+    const insertToStoreIdQuery = `INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,time,createAtMs) VALUES ?`;
     const storeValues = rooms.map((room) => {
       return [
+        scheduleId,
         userId,
         room,
         content,
         filePath,
         1,
         scheduleTimeInMysql,
-        createAtMs,
+        scheduleId,
       ];
     });
 
     const [storedSchedule] = await db.query(insertToStoreIdQuery, [
       storeValues,
     ]); //when server down, fetch schedule and excute
+    console.log(storedSchedule);
     if (new Date(Date.parse(scheduleTime)) - new Date(Date.now()) > 0) {
       const [
         getBackSchedule,
       ] = await db.query(
-        `SELECT * FROM announcement_schedule WHERE scheduleId BETWEEN ? AND ?`,
-        [
-          storedSchedule.insertId,
-          storedSchedule.insertId + storedSchedule.affectedRows,
-        ]
+        `SELECT * FROM announcement_schedule WHERE scheduleId=?`,
+        [scheduleId]
       );
-
+      console.log(getBackSchedule);
       userSocket.emit("schedule", {
         type: "SCHEDULE_START",
         schedule: {
           ...getBackSchedule[0],
         },
       });
+      //end-fixed
       schedule.scheduleJob(
-        `${userId}-${createAtMs}`,
+        `schedule-${scheduleId}`,
         scheduleTime,
         async (fireDate) => {
-          const scheduled = storedSchedule;
-          console.log(scheduled);
-          const range = [
-            scheduled.insertId,
-            scheduled.insertId + scheduled.affectedRows,
-          ];
+          console.log(scheduleId);
+          const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type FROM announcement_schedule WHERE scheduleId =?`;
           const [getBackSchedule] = await db.query(
             getBackStoredScheduleQuery,
-            range
+            scheduleId
           );
           //set done
-          await db.query(setDoneQuery, range);
+          const setDoneQuery = `UPDATE announcement_schedule SET done = true  WHERE scheduleId =?`;
+          await db.query(setDoneQuery, scheduleId);
           //sendAnnouncement
           const getBackScheduleValues = getBackSchedule.map((gBS) => {
             return Object.values(gBS);
           });
-          const [send] = await db.query(query, [getBackScheduleValues]);
+          const [send] = await db.query(sendAnnouncementQuery, [
+            getBackScheduleValues,
+          ]);
           const [
             getBack,
           ] = await db.query(
@@ -147,7 +141,11 @@ exports.sendAnnouncement = async (req, res) => {
   }
   //send immediately
   console.log("expried");
-  const [send] = await db.query(query, [values]);
+
+  let values = rooms.map((room) => {
+    return [userId, room, content, filePath, 1];
+  });
+  const [send] = await db.query(sendAnnouncementQuery, [values]);
   const [
     getBack,
   ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
@@ -177,14 +175,12 @@ exports.getScheduleDetails = async (req, res) => {
   const userId = req.decodedToken.userId;
   const db = Db.db;
   const { scheduleId } = req.query;
-  const getRequireInfoQuery =
-    "SELECT createAtMs from announcement_schedule WHERE scheduleId = ?";
   const getDetailsQuery =
-    "SELECT * FROM announcement_schedule WHERE senderId = ? AND createAtMs=? AND done=false";
+    "SELECT * FROM announcement_schedule WHERE senderId = ? AND scheduleId=? AND done=false";
   try {
-    const [info] = await db.query(getRequireInfoQuery, [scheduleId]);
-    const createAtMs = info[0].createAtMs;
-    const [details] = await db.query(getDetailsQuery, [userId, createAtMs]);
+    // const [info] = await db.query(getRequireInfoQuery, [scheduleId]);
+    // const scheduleId = info[0].scheduleId;
+    const [details] = await db.query(getDetailsQuery, [userId, scheduleId]);
     if (details.length > 0) {
       const mergedDetail = {
         ...details[0],
@@ -205,6 +201,7 @@ exports.getScheduleDetails = async (req, res) => {
 //edit schedule
 exports.editSchedule = async (req, res) => {
   const userId = req.decodedToken.userId;
+  const { scheduleId } = req.query;
   const db = Db.db;
   const newFile = req.file; //if(file) ==> change file
   let newFilePath = null;
@@ -213,20 +210,128 @@ exports.editSchedule = async (req, res) => {
       req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
   }
   const { roomIds, content, scheduleTime, file } = req.body;
-  if (newFilePath) {
-    console.log("file changes");
-  } else {
-    console.log("old file");
+  try {
+    const [getStoredSchedule] = await db.query(
+      "SELECT * FROM announcement_schedule WHERE scheduleId =? AND done=false",
+      scheduleId
+    );
+    const scheduleTimeInMysql = new Date(scheduleTime)
+      .toISOString()
+      .replace(/T|\..+$/g, " ");
+    if (getStoredSchedule.length <= 0) {
+      return res.status(404).json("Schedule have been sent!");
+    }
+    //delete old schedule
+    await db.query(
+      "DELETE FROM announcement_schedule WHERE scheduleId=?",
+      scheduleId
+    );
+    //add new schedule which has same id
+    let newScheduleValues;
+    if (newFilePath) {
+      console.log("file changes");
+      newScheduleValues = roomIds
+        .split(",")
+        .filter((r) => r)
+        .map((roomId) => {
+          return [
+            scheduleId,
+            userId,
+            roomId,
+            content,
+            newFilePath,
+            1,
+            scheduleTimeInMysql,
+          ];
+        });
+    } else {
+      const oldFilePath = getStoredSchedule[0].file;
+      newScheduleValues = roomIds
+        .split(",")
+        .filter((r) => r)
+        .map((roomId) => {
+          return [
+            scheduleId,
+            userId,
+            roomId,
+            content,
+            oldFilePath,
+            1,
+            scheduleTimeInMysql,
+          ];
+        });
+      console.log("old file");
+    }
+    console.log(newScheduleValues);
+    await db.query(
+      "INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,time) VALUES ?",
+      [newScheduleValues]
+    );
+    schedule.scheduledJobs[`schedule-${scheduleId}`].cancel();
+    schedule.scheduleJob(
+      `schedule-${scheduleId}`,
+      scheduleTime,
+      async (fireDate) => {
+        console.log(scheduleId);
+        const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type FROM announcement_schedule WHERE scheduleId =?`;
+        const [getBackSchedule] = await db.query(
+          getBackStoredScheduleQuery,
+          scheduleId
+        );
+        //set done
+        const setDoneQuery = `UPDATE announcement_schedule SET done = true  WHERE scheduleId =?`;
+        await db.query(setDoneQuery, scheduleId);
+        //sendAnnouncement
+        const getBackScheduleValues = getBackSchedule.map((gBS) => {
+          return Object.values(gBS);
+        });
+        const rooms = getBackScheduleValues.map((gBS) => {
+          return gBS.roomId;
+        });
+        let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type) VALUES ?`;
+        const [send] = await db.query(sendAnnouncementQuery, [
+          getBackScheduleValues,
+        ]);
+        const [
+          getBack,
+        ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
+          send.insertId,
+          send.insertId + +send.affectedRows,
+        ]);
+        console.log(fireDate);
+        // if (userSocket) {
+        for (let index in getBack) {
+          // userSocket.emit("messages", { ...getBack[index] });
+          // userSocket
+          socketIO.io
+            .in(`class-${rooms[index]}`)
+            .emit("messages", { ...getBack[index] });
+        }
+        // }
+      }
+    );
+    res.status(200).json("Oke");
+  } catch (error) {
+    res.status(500).json("Server Error");
+    throw error;
   }
-  console.log({
-    ...req.body,
-    newFilePath,
-  });
-  //edit query
-  const editQuery = `UPDATE announcement_schedule SET()`;
-  res.status(200).json("Oke");
 };
-
+exports.deleteSchedule = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const { scheduleId } = req.query;
+  const db = Db.db;
+  console.log("d");
+  try {
+    await db.query(
+      "DELETE FROM announcement_schedule WHERE scheduleId = ? AND senderId = ?",
+      [scheduleId, userId]
+    );
+    res.status(200).json("Delete success");
+  } catch (error) {
+    res.status(500).json("SERVER ERROR");
+    throw error;
+  }
+};
 exports.getMessages = async (req, res) => {
   const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
@@ -249,4 +354,34 @@ exports.getMessages = async (req, res) => {
   } catch (error) {
     res.status(404).json("Server error");
   }
+};
+exports.getFiles = async (req, res) => {
+  const { classId } = req.query;
+  console.log("GETFIE");
+  const db = Db.db;
+  const [[{ roomId }]] = await db.query(
+    "SELECT roomId FROM message_room WHERE classId = ?",
+    classId
+  );
+  const [files] = await db.query(
+    "SELECT * FROM messages WHERE roomId = ? AND file IS NOT NULL",
+    roomId
+  );
+  console.log(files);
+  setTimeout(() => {
+    res.status(200).json(files);
+  }, 500);
+};
+
+exports.getFileDetails = async (req, res) => {
+  const { messageId } = req.query;
+  const db = Db.db;
+  const [
+    [fileDetails],
+  ] = await db.query(
+    "SELECT m.*, ui.id as userId, ui.firstName as firstName,ui.lastname as lastName  FROM (SELECT * FROM messages m  WHERE id = ?) m INNER JOIN user_info ui ON m.senderId = ui.id",
+    [messageId]
+  );
+  console.log(fileDetails);
+  res.status(200).json(fileDetails);
 };

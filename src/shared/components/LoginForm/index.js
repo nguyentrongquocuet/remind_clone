@@ -4,8 +4,9 @@ import { CardActions, CardContent, TextField } from "@material-ui/core";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
 import "./LoginForm.scss";
+import WithGoogleBtn from "../../Elements/SignWithGoogleButton/WithGoogleBtn";
 
-const SignUpForm = (props) => {
+const LoginForm = (props) => {
   const { register, handleSubmit, errors, formState } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -19,7 +20,6 @@ const SignUpForm = (props) => {
     e.preventDefault();
     props.login(data);
   };
-
   return (
     <Card className="login login__wrapper" style={{ borderRadius: ".6rem" }}>
       {props.header}
@@ -58,7 +58,7 @@ const SignUpForm = (props) => {
 
         <CardActions className="no-pad">
           <Button
-            disabled={!formState.isValid}
+            disabled={!formState.isValid || props.loading}
             type="submit"
             className="loginform__button"
           >
@@ -67,18 +67,18 @@ const SignUpForm = (props) => {
         </CardActions>
         {/* <span>Or</span> */}
         <br />
+        <WithGoogleBtn className="loginform__button" />
         <Button
-          disabled
           className="loginform__button"
           onClick={(e) => {
-            alert("sign with google");
+            props.forgotPassword(formState.email);
           }}
         >
-          Login With Google
+          Forgot Password
         </Button>
       </form>
     </Card>
   );
 };
 
-export default SignUpForm;
+export default LoginForm;

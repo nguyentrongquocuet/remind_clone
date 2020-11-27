@@ -16,6 +16,7 @@ class DB {
         }
         console.log("DATABASE IS FINE");
       });
+
       this.db = db.promise();
     } catch (error) {
       throw error;

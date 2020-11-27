@@ -9,9 +9,10 @@ import MessItem from "../Sidebar/MesItem";
 import Modal from "../../Elements/Modal";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
-import "./MessagePanel.scss";
 import CreateClass from "../../../pages/Class/Modal/CreateClass";
 import PopupSubject from "../../Util/PopupSubject";
+import ModalSubject from "../../Util/ModalSubject";
+import "./MessagePanel.scss";
 const JoinClass = React.lazy(() =>
   import("../../../pages/Class/Modal/JoinClass")
 );
@@ -20,19 +21,29 @@ const MessagePanel = ({ loading }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [modalMode, setModal] = useState(null);
+  const { globalState, dispatch } = useContext(Context);
+
   const toggleModal = (mode) => {
     if (mode) setModal(mode);
     else setModal(null);
   };
-  // const [searching, setSearching] = useState(false);
+  useEffect(() => {
+    ModalSubject.subscribe((data) => {
+      switch (data.type) {
+        case "CREATE_CLASS":
+          toggleModal("create");
+          break;
+        case "JOIN_CLASS":
+          toggleModal("join");
+      }
+    });
+  }, []);
   useEffect(() => {
     if (!loading && searchQuery.length > 0) {
-      // setSearching(true);
       const time = setTimeout(async () => {
         try {
           const data = await ClassService.findClass(searchQuery);
           setSearchResult(data.data);
-          // setSearching(false);
         } catch (error) {
           error.response &&
             PopupSubject.next({
@@ -45,15 +56,12 @@ const MessagePanel = ({ loading }) => {
         }
       }, 1000);
       const f = () => {
-        // setSearching(false);
         clearTimeout(time);
         setSearchResult(null);
       };
       return () => f();
-      //hello i am john
     }
   }, [searchQuery]);
-  const { globalState, dispatch } = useContext(Context);
   if (loading) return <Loading />;
   return (
     <div className="messages__panel loading">
@@ -74,47 +82,62 @@ const MessagePanel = ({ loading }) => {
           onClose={(e) => toggleModal(null)}
           classNames={{ wrapper: "center", content: "form__modal" }}
         >
-          {modalMode === "join" ? (
+          {modalMode === "join" && (
             <JoinClass onClose={(e) => toggleModal(null)} />
-          ) : (
+          )}
+          {modalMode === "create" && (
             <CreateClass onClose={(e) => toggleModal(null)} />
           )}
         </Modal>
       </Suspense>
       <div className="sticky">
-        <HeaderNav
-          elements={[
-            {
-              onClick: (e) => setPanelMode((prev) => !prev),
-              text: "CLASSES",
-              active: !panelMode,
-            },
-            {
-              onClick: (e) => setPanelMode((prev) => !prev),
-              text: "CONTACT",
-              active: panelMode,
-            },
-          ]}
-        />
         <div className="join-or-create">
-          <Button variant="outlined" onClick={(e) => toggleModal("join")}>
-            <EmojiPeopleIcon />
-          </Button>
-          <Button variant="outlined" onClick={(e) => toggleModal("create")}>
-            <AddIcon />
-          </Button>
-        </div>
+          {globalState.userData.role !== 0 && (
+            <>
+              <span>Join Some Classes:</span>
+              <Button variant="outlined" onClick={(e) => toggleModal("join")}>
+                <EmojiPeopleIcon />
+              </Button>
+            </>
+          )}
 
-        <div className="user-search">
-          <TextField
-            onChange={(e) => {
-              const query = e.target.value;
-              setSearchQuery(query);
-            }}
-            text="Search"
-            placeholder="Search"
-          />
+          {globalState.userData.role === 0 && (
+            <>
+              <span>Create Your Class:</span>
+              <Button variant="outlined" onClick={(e) => toggleModal("create")}>
+                <AddIcon />
+              </Button>
+            </>
+          )}
         </div>
+        {Object.keys(globalState.classData).length > 0 && (
+          <>
+            <HeaderNav
+              elements={[
+                {
+                  onClick: (e) => setPanelMode((prev) => !prev),
+                  text: "CLASSES",
+                  active: !panelMode,
+                },
+                {
+                  onClick: (e) => setPanelMode((prev) => !prev),
+                  text: "CONTACT",
+                  active: panelMode,
+                },
+              ]}
+            />
+            <div className="user-search">
+              <TextField
+                onChange={(e) => {
+                  const query = e.target.value;
+                  setSearchQuery(query);
+                }}
+                text="Search"
+                placeholder="Search"
+              />
+            </div>
+          </>
+        )}
       </div>
       {loading ? (
         <Loading />

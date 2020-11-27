@@ -12,6 +12,7 @@ import { Context } from "./shared/Util/context";
 import { Suspense } from "react";
 import Authpreloader from "./shared/components/authpreloader/Authpreloader";
 import "./App.scss";
+import GoogleAuthPage from "./shared/components/GoogleAuthPage";
 const Login = React.lazy(() => import("./pages/Login"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Class = React.lazy(async () => {
@@ -22,7 +23,7 @@ function App() {
   const { globalState, dispatch } = useContext(Context);
   const { isLoggedIn, userData, settingUpIsDone } = globalState;
   let routes;
-
+  console.log(window.location.href);
   if (isLoggedIn) {
     // const width =
     //   window.innerWidth > 0 ? window.innerWidth : window.screen.width;
@@ -63,6 +64,12 @@ function App() {
     routes = (
       <Suspense fallback={<Authpreloader />}>
         <Switch>
+          <Route path="/with-github">
+            <div>Wait a few second</div>
+          </Route>
+          <Route path="/with-google">
+            <GoogleAuthPage />
+          </Route>
           <Route path="/login">
             <Login />
           </Route>

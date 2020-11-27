@@ -8,6 +8,7 @@ Router.post(
   multerMiddleWare.single("file"),
   controller.sendMessage
 );
+Router.get("/", authMiddleWare, controller.getMessages);
 Router.post(
   "/announcement",
   authMiddleWare,
@@ -20,6 +21,8 @@ Router.put(
   multerMiddleWare.single("file"),
   controller.editSchedule
 );
+Router.delete("/schedule", authMiddleWare, controller.deleteSchedule);
 Router.get("/schedule", authMiddleWare, controller.getScheduleDetails);
-Router.get("/", authMiddleWare, controller.getMessages);
+Router.get("/files", controller.getFiles);
+Router.get("/fileDetails", controller.getFileDetails);
 module.exports = Router;

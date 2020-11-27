@@ -70,9 +70,9 @@ const Members = (props) => {
                   <TableCell align="left">{member.joinAt}</TableCell>
                   <TableCell align="left">
                     {member.role == 0
-                      ? "Student"
-                      : member.role == 1
                       ? "Teacher"
+                      : member.role == 1
+                      ? "Student"
                       : "Parent"}
                   </TableCell>
                 </TableRow>

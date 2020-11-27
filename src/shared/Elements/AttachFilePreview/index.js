@@ -83,6 +83,7 @@ const AttachFilePreview = ({
   download,
   file,
   supportVideo = true,
+  showName = true,
   ...props
 }) => {
   const [preview, setPreview] = useState({
@@ -185,7 +186,7 @@ const AttachFilePreview = ({
           <img className="file-type-preview-image" src="/download.png" />
         )}
       </a>
-      <span className="file-name">{preview.name}</span>
+      {showName && <span className="file-name">{preview.name}</span>}
     </div>
   );
 };

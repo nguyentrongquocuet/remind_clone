@@ -1,13 +1,14 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CardActions, CardContent, TextField } from "@material-ui/core";
 import UserService from "../../../services/UserService";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
-import "./SignUpForm.scss";
 import PopupSubject from "../../Util/PopupSubject";
+import "./SignUpForm.scss";
+import WithGoogleBtn from "../../Elements/SignWithGoogleButton/WithGoogleBtn";
 
-const SignUpForm = (props) => {
+const SignUpForm = ({ initialMode = 1, ...props }) => {
   const { register, handleSubmit, watch, errors, formState } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -17,16 +18,33 @@ const SignUpForm = (props) => {
     },
     reValidateMode: "onChange",
   });
-
+  const [mode, setMode] = useState(1);
+  const [code, setCode] = useState({ code: "", email: "", data: null });
+  const sendCode = async () => {
+    try {
+      await UserService.confirmEmail(code.code, code.email);
+      props.onSuccess(code.data);
+    } catch (error) {
+      error.response &&
+        PopupSubject.next({
+          type: "WARN",
+          message: error.response ? error.response.data : "Some errors occured",
+          showTime: 5,
+        });
+    }
+  };
   const signup = useCallback(
     async (data) => {
       try {
+        setCode((prev) => {
+          return { ...prev, email: data.email, data: data };
+        });
         await UserService.signup(data);
-        props.onSuccess(data);
+        setMode(2);
       } catch (error) {
         error.response &&
           PopupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response
               ? error.response.data
               : "Some errors occured",
@@ -41,7 +59,6 @@ const SignUpForm = (props) => {
     e.preventDefault();
     signup(data);
   };
-
   const valdations = {
     email: {
       required: "Email is required!",
@@ -51,104 +68,139 @@ const SignUpForm = (props) => {
       },
     },
   };
+  if (mode === 1)
+    return (
+      <Card
+        className="signup"
+        style={{ borderRadius: ".6rem", backgroundColor: "red" }}
+      >
+        {props.header}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="no-pad">
+            <TextField
+              label="Email address"
+              fullWidth
+              variant="outlined"
+              style={{ marginBottom: "1rem" }}
+              className="no-pad"
+              name="email"
+              inputRef={register(valdations.email)}
+              helperText={errors.email ? errors.email.message : null}
+            />
+            <TextField
+              label="First Name"
+              fullWidth
+              variant="outlined"
+              style={{ marginBottom: "1rem" }}
+              className="no-pad"
+              name="firstname"
+              inputRef={register({
+                required: "Firstname is required!",
+                minLength: { value: 3, message: "At least 3 characters" },
+              })}
+              helperText={errors.firstname ? errors.firstname.message : null}
+            />
+            <TextField
+              label="Last Name"
+              fullWidth
+              variant="outlined"
+              style={{ marginBottom: "1rem" }}
+              className="no-pad"
+              name="lastname"
+              inputRef={register({
+                required: "Lastname is required!",
+                minLength: { value: 3, message: "At least 3 characters" },
+              })}
+              helperText={errors.lastname ? errors.lastname.message : null}
+            />
+            <TextField
+              type="password"
+              label="Password"
+              fullWidth
+              variant="outlined"
+              // style={{ marginBottom: "1rem" }}
+              className="no-pad"
+              name="password"
+              inputRef={register({
+                minLength: { value: 6, message: "At least 6 characters" },
+                required: "Password is required!",
+              })}
+              helperText={errors.password ? errors.password.message : null}
+            />
+            <TextField
+              type="password"
+              label="RePassword"
+              fullWidth
+              variant="outlined"
+              style={{ marginBottom: "1rem" }}
+              className="no-pad"
+              name="repassword"
+              inputRef={register({
+                minLength: { value: 6, message: "At least 6 characters" },
+                required: "RePassword is required!",
+                validate: (value) =>
+                  value === watch("password") || "2 passwords must be the same",
+              })}
+              helperText={errors.repassword ? errors.repassword.message : null}
+            />
+          </CardContent>
 
-  return (
-    <Card
-      className="signup"
-      style={{ borderRadius: ".6rem", backgroundColor: "red" }}
-    >
-      {props.header}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="no-pad">
-          <TextField
-            label="Email address"
-            fullWidth
-            variant="outlined"
-            style={{ marginBottom: "1rem" }}
-            className="no-pad"
-            name="email"
-            inputRef={register(valdations.email)}
-            helperText={errors.email ? errors.email.message : null}
-          />
-          <TextField
-            label="First Name"
-            fullWidth
-            variant="outlined"
-            style={{ marginBottom: "1rem" }}
-            className="no-pad"
-            name="firstname"
-            inputRef={register({
-              required: "Firstname is required!",
-              minLength: { value: 3, message: "At least 3 characters" },
-            })}
-            helperText={errors.firstname ? errors.firstname.message : null}
-          />
-          <TextField
-            label="Last Name"
-            fullWidth
-            variant="outlined"
-            style={{ marginBottom: "1rem" }}
-            className="no-pad"
-            name="lastname"
-            inputRef={register({
-              required: "Lastname is required!",
-              minLength: { value: 3, message: "At least 3 characters" },
-            })}
-            helperText={errors.lastname ? errors.lastname.message : null}
-          />
-          <TextField
-            type="password"
-            label="Password"
-            fullWidth
-            variant="outlined"
-            // style={{ marginBottom: "1rem" }}
-            className="no-pad"
-            name="password"
-            inputRef={register({
-              minLength: { value: 6, message: "At least 6 characters" },
-              required: "Password is required!",
-            })}
-            helperText={errors.password ? errors.password.message : null}
-          />
-          <TextField
-            type="password"
-            label="RePassword"
-            fullWidth
-            variant="outlined"
-            style={{ marginBottom: "1rem" }}
-            className="no-pad"
-            name="repassword"
-            inputRef={register({
-              minLength: { value: 6, message: "At least 6 characters" },
-              required: "RePassword is required!",
-              validate: (value) =>
-                value === watch("password") || "2 passwords must be the same",
-            })}
-            helperText={errors.repassword ? errors.repassword.message : null}
-          />
-        </CardContent>
-
-        <CardActions className="no-pad">
-          <Button
-            disabled={!formState.isValid}
-            type="submit"
-            className="signupform__button"
+          <CardActions className="no-pad">
+            <Button
+              disabled={!formState.isValid}
+              type="submit"
+              className="signupform__button"
+            >
+              Signup
+            </Button>
+          </CardActions>
+          <br />
+          <WithGoogleBtn className="signupform__button" />
+          {/* <Button
+            className={`with-github`}
+            onClick={(e) =>
+              (window.location.href =
+                "https://github.com/login/oauth/authorize?scope=user:email&client_id=636767112e25431263d5")
+            }
           >
-            Signup
-          </Button>
-        </CardActions>
-        <br />
-        <Button
-          className="signupform__button no-pad"
-          onClick={(e) => {
-            alert("sign with google");
+            With Github
+          </Button> */}
+        </form>
+      </Card>
+    );
+  if (mode === 2) {
+    return (
+      <Card
+        className="signup"
+        style={{ borderRadius: ".6rem", backgroundColor: "red" }}
+      >
+        {props.header}
+        <h3>
+          A email has been sent to your email:{" "}
+          <span className="email-verify">{code.email}</span>! Enter code to box
+          below
+        </h3>
+        <TextField
+          onChange={(e) => {
+            console.log(e.target.value);
+            setCode((prev) => {
+              return { ...prev, code: e.target.value };
+            });
           }}
+          value={code.code}
+          fullWidth
+        />
+        <Button
+          onClick={(e) => {
+            sendCode();
+          }}
+          className="signupform__button no-pad"
         >
-          Signup With Google
+          Confirm
         </Button>
-      </form>
-    </Card>
-  );
+      </Card>
+    );
+  }
 };
 
 export default SignUpForm;

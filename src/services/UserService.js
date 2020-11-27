@@ -55,5 +55,37 @@ export class UserService {
       // alert(error.response.data);
     }
   };
+  static confirmEmail = (code, email) => {
+    return BaseService.post("auth/confirmEmail", {
+      code: code,
+      email: email,
+    });
+  };
+  static confirmPasswordCode = (code, email, token) => {
+    return BaseService.post("auth/confirmPasswordCode", {
+      code: code,
+      email: email,
+      token: token,
+    });
+  };
+  static resetPassword = (email) => {
+    return BaseService.post("auth/resetPassword", {
+      email: email,
+    });
+  };
+  static changePasswordWithoutLogin = (email, password, repassword, token) => {
+    return BaseService.post("auth/changePasswordWithoutLogin", {
+      password: password,
+      repassword: repassword,
+      email: email,
+      token: token,
+    });
+  };
+  static googleAuth = (code) => {
+    console.log("FROM SERVICE", code);
+    return BaseService.post("auth/withGoogle", {
+      code: code,
+    });
+  };
 }
 export default UserService;

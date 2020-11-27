@@ -16,12 +16,16 @@
 }
 .header__logo p {
   font-size: 1.5rem;
+  font-weight: 700;
 }
 .space {
   flex: 1 1 auto;
 }
 .header__nav__e {
   margin-right: 1rem;
+  a {
+    font-weight: bold;
+  }
 }
 .header__actions {
   margin-left: auto;

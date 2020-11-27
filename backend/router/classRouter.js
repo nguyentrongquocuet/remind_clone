@@ -6,5 +6,4 @@ Router.get("/member", authMiddleware, controller.getMembers);
 Router.post("/join", authMiddleware, controller.joinClass);
 Router.post("/new", authMiddleware, controller.createClass);
 Router.get("/", authMiddleware, controller.getClass);
-Router.get("/dummy", controller.dummy);
 module.exports = Router;

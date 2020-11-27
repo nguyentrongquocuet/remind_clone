@@ -61,7 +61,6 @@ exports.getClass = async (req, res) => {
         socket.join(room);
       }
     }
-
     res.status(200).json(finalClasses);
   } catch (error) {
     throw error;

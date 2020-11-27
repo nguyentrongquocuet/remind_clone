@@ -20,6 +20,12 @@
   flex-direction: row;
   justify-content: space-around;
   margin: 0.5rem 0;
+  align-items: center;
+  span {
+    font-size: 1rem;
+    color: var(--primary);
+    cursor: pointer;
+  }
 }
 .user-search-loading {
   width: 40px;

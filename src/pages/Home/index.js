@@ -28,6 +28,7 @@ const Home = () => {
 
   const signUpSuccessHandler = async (data) => {
     // setMode();
+    console.log(data);
     try {
       const authData = await UserService.login({
         email: data.email,
