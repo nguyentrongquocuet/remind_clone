@@ -150,6 +150,7 @@ const MessagePanel = ({ loading }) => {
             <div className="messages__list">
               {searchResult.map((r) => (
                 <MessItem
+                  avatar={r.avatar}
                   path={r.classId}
                   key={r.classId}
                   name={r.name}
@@ -168,6 +169,7 @@ const MessagePanel = ({ loading }) => {
                 .filter((classs) => classs.owner == globalState.userData.id)
                 .map((filteredClass) => (
                   <MessItem
+                    avatar={filteredClass.avatar}
                     path={filteredClass.classId}
                     key={filteredClass.classId}
                     name={filteredClass.name}
@@ -177,6 +179,7 @@ const MessagePanel = ({ loading }) => {
                 ))
             : Object.values(globalState.classData).map((filteredClass) => (
                 <MessItem
+                  avatar={filteredClass.avatar}
                   path={filteredClass.classId}
                   key={filteredClass.classId}
                   name={filteredClass.name}

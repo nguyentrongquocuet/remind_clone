@@ -7,9 +7,18 @@ import Card from "../../Elements/Card";
 import PopupSubject from "../../Util/PopupSubject";
 import "./SignUpForm.scss";
 import WithGoogleBtn from "../../Elements/SignWithGoogleButton/WithGoogleBtn";
-
+import DateTimePicker from "../../Elements/DateTimePicker";
+import MenuItem from "@material-ui/core/MenuItem";
+import moment from "moment";
 const SignUpForm = ({ initialMode = 1, ...props }) => {
-  const { register, handleSubmit, watch, errors, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    errors,
+    formState,
+    getValues,
+  } = useForm({
     mode: "onChange",
     defaultValues: {
       email: "",
@@ -20,6 +29,10 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
   });
   const [mode, setMode] = useState(1);
   const [code, setCode] = useState({ code: "", email: "", data: null });
+  const [additionInfo, setAdditionInfo] = useState({
+    birthday: null,
+    gender: "Male",
+  });
   const sendCode = async () => {
     try {
       await UserService.confirmEmail(code.code, code.email);
@@ -39,7 +52,7 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
         setCode((prev) => {
           return { ...prev, email: data.email, data: data };
         });
-        await UserService.signup(data);
+        await UserService.signup({ ...data, ...additionInfo });
         setMode(2);
       } catch (error) {
         error.response &&
@@ -68,6 +81,7 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
       },
     },
   };
+  console.log(getValues());
   if (mode === 1)
     return (
       <Card
@@ -113,6 +127,54 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               })}
               helperText={errors.lastname ? errors.lastname.message : null}
             />
+            <DateTimePicker
+              label="Birthday"
+              fullWidth
+              variant="outlined"
+              type="date"
+              className="no-pad"
+              name="birthday"
+              onlyDate={true}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disableFuture
+              value={additionInfo.birthday}
+              format="yyyy-MM-dd"
+              onChange={(date) => {
+                console.log(moment(date).format("YYYY-MM-DD"));
+                setAdditionInfo((prev) => {
+                  return {
+                    ...prev,
+                    birthday: moment(date).format("YYYY-MM-DD"),
+                  };
+                });
+              }}
+              maxDate={new Date(new Date().setMonth(new Date().getMonth() - 60))
+                .toLocaleDateString()
+                .split("/")
+                .filter((s) => s)
+                .reverse()
+                .join("-")}
+              required
+            />
+            <TextField
+              select
+              variant="outlined"
+              className="no-pad"
+              label="Gender"
+              required
+              fullWidth
+              value={additionInfo.gender}
+              onChange={(e) => {
+                setAdditionInfo((prev) => {
+                  return { ...prev, gender: e.target.value };
+                });
+              }}
+            >
+              <MenuItem value="Male">Male</MenuItem>
+              <MenuItem value="Female">Female</MenuItem>
+            </TextField>
             <TextField
               type="password"
               label="Password"
@@ -147,7 +209,7 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
 
           <CardActions className="no-pad">
             <Button
-              disabled={!formState.isValid}
+              disabled={!formState.isValid || !additionInfo.birthday}
               type="submit"
               className="signupform__button"
             >
@@ -156,15 +218,6 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
           </CardActions>
           <br />
           <WithGoogleBtn className="signupform__button" />
-          {/* <Button
-            className={`with-github`}
-            onClick={(e) =>
-              (window.location.href =
-                "https://github.com/login/oauth/authorize?scope=user:email&client_id=636767112e25431263d5")
-            }
-          >
-            With Github
-          </Button> */}
         </form>
       </Card>
     );

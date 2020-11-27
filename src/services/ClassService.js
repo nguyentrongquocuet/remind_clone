@@ -56,20 +56,14 @@ export class ClassService {
     });
   };
 
-  static createClass = (className) => {
+  static createClass = (classInfo) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token) return new Error("Something went wrong!!!");
-    return BaseService.post(
-      `class/new`,
-      {
-        className: className,
+    return BaseService.post(`class/new`, classInfo, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    });
   };
 }
 export default ClassService;

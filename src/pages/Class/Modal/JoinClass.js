@@ -89,6 +89,7 @@ const JoinClass = ({ onClose }) => {
               <div className="messages__list">
                 {searchResult.map((r) => (
                   <MessItem
+                    avatar={r.avatar}
                     path={r.classId}
                     key={r.classId}
                     name={r.name}

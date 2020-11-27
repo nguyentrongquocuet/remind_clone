@@ -76,7 +76,7 @@ exports.signupPrepare = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { email, password, firstname, lastname } = req.body;
+  const { email, password, firstname, lastname, birthday, gender } = req.body;
 
   try {
     const [
@@ -115,8 +115,8 @@ exports.signupPrepare = async (req, res) => {
         const [
           addUserInfo,
         ] = await db.query(
-          `INSERT INTO user_info (id,firstName, lastName) VALUES(?,?,?)`,
-          [id, firstname, lastname]
+          `INSERT INTO user_info (id,firstName, lastName,birthday,gender ) VALUES(?,?,?,?,?)`,
+          [id, firstname, lastname, birthday, gender]
         );
         return res.status(200).json("Email sent");
       }

@@ -6,12 +6,19 @@ exports.createClass = async (req, res) => {
   const { userId } = req.decodedToken;
   const db = Db.db;
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
+  if (!className || className.length <= 0)
+    return res.status(400).json("Invalid class info");
   try {
+    let filePath = null;
+    if (req.file)
+      filePath = filePath =
+        req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
     const [
       addClass,
-    ] = await db.query(`INSERT INTO class(name, owner) VALUES (?,?)`, [
+    ] = await db.query(`INSERT INTO class(name, owner,avatar) VALUES (?,?,?)`, [
       className,
       userId,
+      filePath,
     ]);
     const [
       addToClassMember,
