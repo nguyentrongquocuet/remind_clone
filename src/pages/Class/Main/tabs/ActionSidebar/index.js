@@ -69,26 +69,26 @@ const ActionSidebar = (props) => {
       }
     });
     if (state.action === "people") {
-      try {
-        const getMembers = async () => {
-          const data = await ClassService.getClassMembers(
-            props.classId || classId
-          );
-          dispatch({
-            type: "SET_DATA",
-            action: "people",
-            payload: data.data,
-          });
-        };
-        getMembers();
-      } catch (error) {
-        error.response &&
-          PopupSubject.next({
-            showTime: 5,
-            type: "WARN",
-            message: error.response.data,
-          });
-      }
+      // try {
+      //   const getMembers = async () => {
+      //     const data = await ClassService.getClassMembers(
+      //       props.classId || classId
+      //     );
+      //     dispatch({
+      //       type: "SET_DATA",
+      //       action: "people",
+      //       payload: data.data,
+      //     });
+      //   };
+      //   getMembers();
+      // } catch (error) {
+      //   error.response &&
+      //     PopupSubject.next({
+      //       showTime: 5,
+      //       type: "WARN",
+      //       message: error.response.data,
+      //     });
+      // }
     } else {
       if (state.action === "files") {
         try {
@@ -176,14 +176,9 @@ const ActionSidebar = (props) => {
         ) : (
           <Loading className="actionsidebar__loading" />
         ))}
-      {state.action === "people" ? (
-        Object.keys(state.people).length > 0 ? (
-          // CLASS MEMBERS
-          <Members people={state.people} />
-        ) : (
-          <Loading className="actionsidebar__loading" />
-        )
-      ) : null}
+      {state.action === "people" && (
+        <Members classId={classId} people={state.people} />
+      )}
       {state.action === "settings" && <Settings />}
     </div>
   );

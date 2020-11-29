@@ -137,10 +137,17 @@
           align-items: center;
           height: 7rem;
           background-color: #fafafa;
-          p {
+
+          .yourfilewillbehere {
             display: none;
-            font-weight: 700;
-            padding-top: 1rem;
+          }
+          &.hightlight {
+            border-top: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary);
+            .yourfilewillbehere {
+              display: block;
+              animation: hightlight 1s linear infinite;
+            }
           }
           .preview {
             display: flex;
@@ -241,4 +248,15 @@
 .ck-rounded-corners .ck.ck-balloon-panel,
 .ck.ck-balloon-panel.ck-rounded-corners {
   z-index: 11 !important;
+}
+
+@keyframes hightlight {
+  from {
+    opacity: 0.5;
+    color: var(--secondary);
+  }
+  to {
+    opacity: 1;
+    color: var(--primary);
+  }
 }

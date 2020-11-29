@@ -17,6 +17,11 @@ import MessageService from "../../../services/MessageService";
 import DateTimePicker from "../../../shared/Elements/DateTimePicker";
 import PopupSubject from "../../../shared/Util/PopupSubject";
 
+const preventDefaults = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
 const objectFilter = (obj) => {
   const b = { ...obj };
   for (let c in b) {
@@ -132,23 +137,37 @@ const CreateAnnouncement = ({
       },
     });
   };
-  const fileHandler = async (e) => {
-    if (e.target.files[0].size / 1024 / 1024 > 2) {
-      e.target.value = null;
-      PopupSubject.next({
-        type: "ERROR",
-        showTime: 5,
-        message: "File too big, please choose other file less than 2MB!",
-      });
-    }
-    if (e.target.files[0]) {
-      const file = e.target.files[0];
+  const fileHandler = async (e, file) => {
+    if (file) {
+      if (file.size / 1024 / 1024 > 2) {
+        PopupSubject.next({
+          type: "WARN",
+          showTime: 5,
+          message: "File too big, please choose other file less than 2MB!",
+        });
+      }
       dispatch({
         type: "SET_FILE",
         payload: { file: file },
       });
+    } else {
+      if (e.target.files[0].size / 1024 / 1024 > 2) {
+        e.target.value = null;
+        PopupSubject.next({
+          type: "WARN",
+          showTime: 5,
+          message: "File too big, please choose other file less than 2MB!",
+        });
+      }
+      if (e.target.files[0]) {
+        const file = e.target.files[0];
+        dispatch({
+          type: "SET_FILE",
+          payload: { file: file },
+        });
+      }
+      e.target.value = null;
     }
-    e.target.value = null;
   };
   const commitAnnouncement = async () => {
     const classes = Object.keys(selectedClass.classes);
@@ -441,7 +460,28 @@ const CreateAnnouncement = ({
                 });
               }}
             />
-            <div className="announcement-file-preview">
+            <div
+              className="announcement-file-preview"
+              onDragEnter={(e) => {
+                preventDefaults(e);
+                e.currentTarget.classList.add("hightlight");
+              }}
+              onDragOver={(e) => {
+                preventDefaults(e);
+                e.currentTarget.classList.add("hightlight");
+              }}
+              onDragLeave={(e) => {
+                preventDefaults(e);
+                e.currentTarget.classList.remove("hightlight");
+              }}
+              onDrop={(e) => {
+                preventDefaults(e);
+                e.currentTarget.classList.remove("hightlight");
+                if (e.dataTransfer.files.length > 0) {
+                  fileHandler(null, e.dataTransfer.files[0]);
+                }
+              }}
+            >
               <div className="announcement-edit-actions">
                 <div
                   className="uploadfile"
@@ -497,7 +537,7 @@ const CreateAnnouncement = ({
                   />
                 </div>
               ) : (
-                <p>Your file will be here</p>
+                <p className="yourfilewillbehere">Your file will be here</p>
               )}
             </div>
           </div>

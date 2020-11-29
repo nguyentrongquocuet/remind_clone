@@ -67,7 +67,10 @@ const ClassMain = (props) => {
         <Avatar
           className="alter-avatar medium"
           alt="hello"
-          src="https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
+          src={
+            globalState.classData[classId].avatar ||
+            "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
+          }
         ></Avatar>
         <div className="text-info">
           <span title={className} className="break-word-ellipsis">
@@ -76,6 +79,7 @@ const ClassMain = (props) => {
           <p className="secondary">{`@${classId}`}</p>
         </div>
       </div>
+      <div className="invite">Invite</div>
     </>
   );
   return (

@@ -346,9 +346,11 @@ exports.googleAuth = async (req, res) => {
           }, "")
           .split(/\/$/)[0];
         const gender = userData.data.genders[0].formattedValue;
-        const [newUser] = await db.query(
-          "INSERT INTO user(email,verified) VALUES(?,1)",
-          vt.getPayload().email
+        const [
+          newUser,
+        ] = await db.query(
+          "INSERT INTO user(email,verified, refresh_token) VALUES(?,1,?)",
+          [vt.getPayload().email, tokens.refresh_token]
         );
         finalId = newUser.insertId;
         await db.query(

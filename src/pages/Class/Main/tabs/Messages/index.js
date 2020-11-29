@@ -158,23 +158,34 @@ const Messages = (props) => {
   }, [messagesState.fetching, messagesRef]);
 
   ///file effect
-  const fileHandler = async (e) => {
-    if (e.target.files.length > 0) {
-      if (e.target.files[0].size / 1024 / 1024 > 2) {
-        popupSubject.next({
-          type: "WARN",
-          showTime: 5,
-          message: "File too big, please choose other file less than 2MB!",
+  const fileHandler = async (e, file) => {
+    if (file) {
+      if (file.size / 1024 / 1024 > 2) {
+        setMessage((prev) => {
+          return { ...prev, file: file };
         });
-        e.target.value = null;
-        return;
       }
-      const file = e.target.files[0];
       setMessage((prev) => {
         return { ...prev, file: file };
       });
-      // messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      e.target.value = null;
+    } else {
+      if (e.target.files.length > 0) {
+        if (e.target.files[0].size / 1024 / 1024 > 2) {
+          popupSubject.next({
+            type: "WARN",
+            showTime: 5,
+            message: "File too big, please choose other file less than 2MB!",
+          });
+          e.target.value = null;
+          return;
+        }
+        const file = e.target.files[0];
+        setMessage((prev) => {
+          return { ...prev, file: file };
+        });
+        // messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        e.target.value = null;
+      }
     }
   };
 
@@ -262,6 +273,14 @@ const Messages = (props) => {
           <div className="message__input">
             <TextField
               type="textarea"
+              onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.dataTransfer.files.length > 0) {
+                  fileHandler(null, e.dataTransfer.files[0]);
+                }
+              }}
+              placeholder="You can drop file here!"
               onChange={(e) =>
                 setMessage((prev) => {
                   return { ...prev, content: e.target.value };

@@ -300,12 +300,10 @@ exports.editSchedule = async (req, res) => {
         ]);
         console.log(fireDate);
         // if (userSocket) {
-        for (let index in getBack) {
+        for (let back of getBack) {
           // userSocket.emit("messages", { ...getBack[index] });
           // userSocket
-          socketIO.io
-            .in(`class-${rooms[index]}`)
-            .emit("messages", { ...getBack[index] });
+          socketIO.io.in(`class-${back.roomId}`).emit("messages", { ...back });
         }
         // }
       }

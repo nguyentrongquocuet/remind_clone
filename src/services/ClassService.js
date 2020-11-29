@@ -43,7 +43,7 @@ export class ClassService {
       },
     });
   };
-  static getClassMembers = (classId) => {
+  static getClassMembers = (classId, role) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token || !classId) return new Error("Something went wrong!!!");
     return BaseService.get(`class/member`, {
@@ -52,6 +52,7 @@ export class ClassService {
       },
       params: {
         classId: classId,
+        role: role,
       },
     });
   };

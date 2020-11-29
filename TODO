@@ -15,8 +15,8 @@
 ✔ Preview dựa trên file type(Preview khi gửi) @done(20-11-22 01:36)
 ✔ sửa preview full @done(20-11-22 01:36)
 ✔ Gửi announcement @done(20-11-22 01:36)
-☐ Add people-request
-☐ invite people
+☐ Add people-request @started(20-11-29 20:44)
+☐ invite people @started(20-11-29 20:44)
 ☐ Show files
 ☐ use case:
 ☐ fetch tin nhắn => đã đọc đến tin nhắn đã fetch,
@@ -24,4 +24,4 @@
 ☐ nhận tin nhắn ==> nếu đang cùng class==> đã đọc
 ✔ hẹn giờ @done(20-11-22 19:33)
 ☐ senario sửa: sửa=> userid-createAtMs==> xoá schedule cũ thêm mới, setSchedule vào map
-☐ forgot password
+✔ forgot password @done(20-11-29 20:45)
