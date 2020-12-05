@@ -50,7 +50,7 @@ const SchedulePreview = ({ schedules, onClose }) => {
       if (error.response) {
         if (error.response.status === 401) {
           PopupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response.data || "Some errors occured",
             showTime: 5,
           });
@@ -76,7 +76,7 @@ const SchedulePreview = ({ schedules, onClose }) => {
       if (error.response) {
         if (error.response.status === 401) {
           PopupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response.data || "Some errors occured",
             showTime: 5,
           });
@@ -138,7 +138,14 @@ const SchedulePreview = ({ schedules, onClose }) => {
                 </Button>
                 <Button
                   onClick={(e) => {
-                    onDelete(schedule);
+                    PopupSubject.next({
+                      type: "CONFIRM",
+                      message:
+                        "Are you sure you want to delete this announcement?",
+                      onConfirm: (e) => onDelete(schedule),
+                      onCancel: null,
+                    });
+                    // onDelete(schedule);
                   }}
                   color="secondary"
                 >

@@ -32,7 +32,7 @@ const JoinClass = ({ onClose }) => {
       })
       .catch((error) => {
         popupSubject.next({
-          type: "ERROR",
+          type: "WARN",
           message: error.response ? error.response.data : "Some errors occured",
           showTime: 5,
         });
@@ -48,7 +48,7 @@ const JoinClass = ({ onClose }) => {
           // setSearching(false);
         } catch (error) {
           PopupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response
               ? error.response.data
               : "Some errors occured",

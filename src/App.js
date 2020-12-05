@@ -13,6 +13,9 @@ import { Suspense } from "react";
 import Authpreloader from "./shared/components/authpreloader/Authpreloader";
 import "./App.scss";
 import GoogleAuthPage from "./shared/components/GoogleAuthPage";
+import RedirectPage from "./shared/components/RedirectPage/RedirectPage";
+import JoinClassPage from "./shared/components/JoinClassPage/JoinClassPage";
+import ConnectChildPage from "./shared/components/ConnectChildPage/ConnectChildPage";
 const Login = React.lazy(() => import("./pages/Login"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Class = React.lazy(async () => {
@@ -21,13 +24,11 @@ const Class = React.lazy(async () => {
 const ChooseRole = React.lazy(() => import("./shared/components/ChooseRole"));
 function App() {
   const { globalState, dispatch } = useContext(Context);
-  const { isLoggedIn, userData, settingUpIsDone } = globalState;
+  const { isLoggedIn, userData } = globalState;
   let routes;
-  console.log(window.location.href);
-  if (isLoggedIn) {
-    // const width =
-    //   window.innerWidth > 0 ? window.innerWidth : window.screen.width;
+  console.log("yrk", globalState.redirectUrl);
 
+  if (isLoggedIn) {
     if (userData.role === null)
       routes = (
         <Suspense fallback={<Authpreloader />}>
@@ -43,7 +44,18 @@ function App() {
       routes = (
         <Suspense fallback={<Authpreloader />}>
           <Switch>
-            <Route exact path="/classes/:classId/:action">
+            {globalState.redirectUrl && (
+              <Route path="**">
+                <RedirectPage redirect={globalState.redirectUrl} />
+              </Route>
+            )}
+            <Route exact path="/connect">
+              <ConnectChildPage />
+            </Route>
+            <Route exact path="/join">
+              <JoinClassPage />
+            </Route>
+            <Route exact path="/classes/:classId/private/:userId">
               <Class />
             </Route>
             <Route exact path="/classes/:classId">
@@ -64,19 +76,22 @@ function App() {
     routes = (
       <Suspense fallback={<Authpreloader />}>
         <Switch>
-          <Route path="/with-github">
+          <Route exact path="/with-github">
             <div>Wait a few second</div>
           </Route>
-          <Route path="/with-google">
+          <Route exact path="/with-google">
             <GoogleAuthPage />
           </Route>
-          <Route path="/login">
+          <Route exact path="/login">
             <Login />
           </Route>
-          <Route path="/" exact>
+          <Route exact path="/" exact>
             <Home />
           </Route>
-          <Redirect to="/" />
+          <Route exact path="*">
+            <RedirectPage />
+          </Route>
+          <Redirect to="*" />
         </Switch>
       </Suspense>
     );

@@ -1,5 +1,10 @@
 import BaseService from "./BaseService";
 import * as local from "../shared/Util/LocalStorage";
+
+const clearAuthData = () => {
+  local.deleteFromLocalStorage("token", "userData", "classData");
+};
+
 const getLocalData = () => {
   const { token, expiresIn, userData } = local.getFromLocalStorage(
     "token",
@@ -7,11 +12,11 @@ const getLocalData = () => {
     "userData"
   );
   if (!token) {
-    localStorage.clear();
+    clearAuthData();
     return null;
   } else {
     if (Date.parse(expiresIn) - new Date() < 0) {
-      localStorage.clear();
+      clearAuthData();
       return null;
     }
   }
@@ -40,7 +45,7 @@ export class UserService {
     const data = getLocalData();
 
     if (!data) {
-      localStorage.clear();
+      clearAuthData();
       return;
     }
     let newUserData;
@@ -51,7 +56,7 @@ export class UserService {
       local.saveToLocalStorage({ userData: newUserData.data });
       return { ...data, userData: newUserData.data };
     } catch (error) {
-      localStorage.clear();
+      clearAuthData();
       // alert(error.response.data);
     }
   };
@@ -85,6 +90,33 @@ export class UserService {
     console.log("FROM SERVICE", code);
     return BaseService.post("auth/withGoogle", {
       code: code,
+    });
+  };
+  static getConnectChildUrl = () => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    return BaseService.get("auth/connectUrl", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  };
+  static connectChild = (connectToken) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    return BaseService.post(
+      "auth/connectChild",
+      {
+        connectToken: connectToken,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  };
+  static getUserInfo = (userId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    return BaseService.get("auth/info", {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        userId: userId,
+      },
     });
   };
 }

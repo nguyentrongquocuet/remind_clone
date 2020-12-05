@@ -3,9 +3,9 @@ export function saveToLocalStorage(obj) {
     localStorage.setItem(entry[0], JSON.stringify(entry[1]));
   }
 }
-export function deleteFromLocalStorage(obj) {
-  for (const entry of Object.entries(obj)) {
-    localStorage.removeItem(entry[0]);
+export function deleteFromLocalStorage(...keys) {
+  for (const key of keys) {
+    localStorage.removeItem(key);
   }
 }
 export function getFromLocalStorage(...key) {

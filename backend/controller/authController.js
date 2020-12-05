@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const Db = require("../Database/db");
 const transporter = require("../Mailer/Mailer.js");
 const OAUTH = require("../Utils/googleOath");
+const Redis = require("../configs/Redis");
 //login with {email, password}
 exports.login = async (req, res) => {
   const { email, password } = req.body;
@@ -21,7 +22,6 @@ exports.login = async (req, res) => {
     if (findUsingEmail[0].verified == 0) {
       const code = Math.floor(Math.random() * 10000);
       const mail = {
-        from: "daasunnkidd@gmail.com", // Địa chỉ email của người gửi
         to: email, // Địa chỉ email của người gửi
         subject: "Verify your email", // Tiêu đề mail
         text: "Remind", // Nội dung mail dạng text
@@ -51,14 +51,26 @@ exports.login = async (req, res) => {
       const [userInfo] = await db.query(`SELECT * FROM user_info WHERE id=?`, [
         findUsingEmail[0].id,
       ]);
-
+      const [children] = await db.query(
+        `SELECT * FROM relationship r INNER JOIN user_info ui ON r.parentId=? AND r.childId=ui.id`,
+        findUsingEmail[0].id
+      );
+      console.log(children);
       const token = jwt.sign(payload, SECRET_KEY, {
         expiresIn: 360000,
       });
       const userData = {
         ...userInfo[0],
         name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
+        children: [...children],
       };
+      // Redis.cache.set(
+      //   `user_data-${userInfo[0].id}`,
+      //   JSON.stringify(userInfo[0])
+      // );
+      // Redis.cache.get("user_data-28", (e, r) => {
+      //   console.log(e, r);
+      // });
       return res.status(200).json({
         token,
         expiresIn: 360000,
@@ -90,7 +102,6 @@ exports.signupPrepare = async (req, res) => {
     }
     const code = Math.floor(Math.random() * 10000);
     const mail = {
-      from: "daasunnkidd@gmail.com", // Địa chỉ email của người gửi
       to: email, // Địa chỉ email của người gửi
       subject: "Verify your email", // Tiêu đề mail
       text: "Remind", // Nội dung mail dạng text
@@ -210,7 +221,6 @@ exports.resetPassword = async (req, res) => {
     }
     const code = Math.floor(Math.random() * 10000);
     const mail = {
-      from: "daasunnkidd@gmail.com", // Địa chỉ email của người gửi
       to: email, // Địa chỉ email của người gửi
       subject: "Reset Password", // Tiêu đề mail
       text: "Remind", // Nội dung mail dạng text
@@ -328,7 +338,6 @@ exports.googleAuth = async (req, res) => {
         "SELECT * FROM user WHERE email = ?",
         vt.getPayload().email
       );
-      finalId = searchUser[0].id;
       console.log(searchUser);
       if (searchUser.length <= 0) {
         //signup
@@ -354,13 +363,15 @@ exports.googleAuth = async (req, res) => {
         );
         finalId = newUser.insertId;
         await db.query(
-          "INSERT INTO user_info(id,firstName, lastName, dateOfBirth, gender, avatar) VALUES(?,?,?,?,?,?)",
+          "INSERT INTO user_info(id,firstName, lastName, birthday, gender, avatar) VALUES(?,?,?,?,?,?)",
           [newUser.insertId, firstName, lastName, birthday, gender, avatar]
         );
         console.log(vt.getPayload());
         // res.status(201).json({
         //   message: "Now you can login using Google Account",
         // });
+      } else {
+        finalId = searchUser[0].id;
       }
       //login
       const [userInfo] = await db.query(`SELECT * FROM user_info WHERE id=?`, [
@@ -386,4 +397,57 @@ exports.googleAuth = async (req, res) => {
     console.log(error);
     res.status(401).json("invalid credentials");
   }
+};
+
+exports.getConnectChildUrl = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const token = jwt.sign(
+    {
+      parentId: userId,
+    },
+    SECRET_KEY
+  );
+  const url = `${process.env.CLIENT_URL}/connect?token=${token}`;
+  res.status(200).json({
+    url: url,
+  });
+};
+
+exports.connectChild = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const { connectToken } = req.body;
+  const db = Db.db;
+  try {
+    const { parentId } = jwt.verify(connectToken, SECRET_KEY);
+    const [
+      connect,
+    ] = await db.query(
+      "INSERT INTO relationship(parentId, childId) VALUES(?,?)",
+      [parentId, userId]
+    );
+    console.log(parentId, userId);
+    res.status(200).json("You and your parent are connected");
+  } catch (error) {
+    console.log(error);
+    if (error.errno === 1062) {
+      return res
+        .status(409)
+        .json("Two people are already connected, no need to reconnect!");
+    }
+    res.status(404).json("The url is incorrect or has been modified");
+  }
+};
+
+exports.getUserInfo = async (req, res) => {
+  const { userId } = req.query;
+  console.log(req.query);
+  const db = Db.db;
+  const [userInfo] = await db.query(
+    "SELECT * FROM user_info WHERE id = ?",
+    userId
+  );
+  if (userInfo.length <= 0) {
+    return res.status(404).json("User not found!");
+  }
+  return res.status(200).json(userInfo[0]);
 };

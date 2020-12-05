@@ -24,7 +24,7 @@ const ChooseRole = () => {
       } catch (error) {
         error.response &&
           PopupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response
               ? error.response.data
               : "Some errors occured",

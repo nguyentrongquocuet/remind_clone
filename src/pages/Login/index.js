@@ -8,12 +8,14 @@ import Button from "../../shared/Elements/Button";
 import PopupSubject from "../../shared/Util/PopupSubject";
 import { TextField } from "@material-ui/core";
 import NewPassword from "./NewPassword";
+import { useHistory } from "react-router-dom";
 //1:login,2:enter email for reset, 3: enter code, 4r:
 const Login = () => {
-  const { dispatch } = useContext(Context);
+  const { dispatch, globalState } = useContext(Context);
   //login with {email, password}
   const [mode, setMode] = useState(1);
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
   const [code, setCode] = useState({
     code: "",
     email: "",

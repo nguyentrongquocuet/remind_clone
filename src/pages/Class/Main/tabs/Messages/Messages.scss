@@ -86,3 +86,38 @@
     }
   }
 }
+.private-info {
+  display: flex;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  .private-label {
+    align-self: flex-start;
+    font-size: 0.6em;
+    margin-left: 0.5rem;
+    color: #b00020;
+  }
+  .back-to-class {
+    margin-left: auto;
+    text-transform: capitalize;
+  }
+  .info-wrapper {
+    display: flex;
+    align-items: center;
+    .small {
+      grid-template: "avatar";
+      margin-right: 0.5rem;
+    }
+    .name {
+      grid-template: "name";
+    }
+    .role {
+      color: var(--secondary);
+      grid-template: "role";
+    }
+  }
+}

@@ -9,24 +9,71 @@ import MessItem from "../Sidebar/MesItem";
 import Modal from "../../Elements/Modal";
 import AddIcon from "@material-ui/icons/Add";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
+import FaceIcon from "@material-ui/icons/Face";
 import CreateClass from "../../../pages/Class/Modal/CreateClass";
 import PopupSubject from "../../Util/PopupSubject";
 import ModalSubject from "../../Util/ModalSubject";
 import "./MessagePanel.scss";
+import ConnectChild from "../../../pages/Class/Modal/ConnectChild";
+import { useHistory, useParams } from "react-router-dom";
+import ROLE from "../../Util/ROLE";
+import MessageService from "../../../services/MessageService";
 const JoinClass = React.lazy(() =>
   import("../../../pages/Class/Modal/JoinClass")
 );
+
+const toggleChildrenClass = (e) => {
+  document.getElementById("children-class-checkbox").click();
+};
 const MessagePanel = ({ loading }) => {
-  const [panelMode, setPanelMode] = useState(false);
+  const [panelMode, setPanelMode] = useState("classes");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [modalMode, setModal] = useState(null);
   const { globalState, dispatch } = useContext(Context);
-
+  const [childClasses, setChildClasses] = useState(null);
+  const [privateData, setPrivateData] = useState(null);
+  const role = ROLE[globalState.userData.role];
+  const history = useHistory();
+  const { classId } = useParams();
+  const getChildrenClasses = async (e) => {
+    const classes = await ClassService.getChildClasses();
+    setChildClasses(classes.data);
+    console.log(classes.data);
+  };
   const toggleModal = (mode) => {
     if (mode) setModal(mode);
     else setModal(null);
   };
+  const joinClass = (classD) => {
+    ClassService.joinClass(classD.classId)
+      .then((data) => {
+        dispatch({
+          type: "ADD_CLASS",
+          payload: data.data,
+        });
+        PopupSubject.next({
+          type: "SUCCESS",
+          message: `You've joined ${classD.name}`,
+          showTime: 5,
+        });
+        history.push(`/classes/${classD.classId}`);
+      })
+      .catch((error) => {
+        PopupSubject.next({
+          type: "WARN",
+          message: error.response ? error.response.data : "Some errors occured",
+          showTime: 5,
+        });
+      });
+  };
+  useEffect(async () => {
+    if (panelMode === "private") {
+      //fetch private chat room of this class
+      const privateData = await MessageService.getPrivateChatData(classId);
+      setPrivateData(privateData.data);
+    }
+  }, [panelMode]);
   useEffect(() => {
     ModalSubject.subscribe((data) => {
       switch (data.type) {
@@ -35,8 +82,11 @@ const MessagePanel = ({ loading }) => {
           break;
         case "JOIN_CLASS":
           toggleModal("join");
+        case "CONNECT_CHILD":
+          toggleModal("connect-child");
       }
     });
+    getChildrenClasses();
   }, []);
   useEffect(() => {
     if (!loading && searchQuery.length > 0) {
@@ -47,7 +97,7 @@ const MessagePanel = ({ loading }) => {
         } catch (error) {
           error.response &&
             PopupSubject.next({
-              type: "ERROR",
+              type: "WARN",
               message: error.response
                 ? error.response.data
                 : "Some errors occured",
@@ -88,11 +138,12 @@ const MessagePanel = ({ loading }) => {
           {modalMode === "create" && (
             <CreateClass onClose={(e) => toggleModal(null)} />
           )}
+          {modalMode === "connect-child" && <ConnectChild />}
         </Modal>
       </Suspense>
       <div className="sticky">
         <div className="join-or-create">
-          {globalState.userData.role !== 0 && (
+          {role !== "Teacher" && (
             <>
               <span>Join Some Classes:</span>
               <Button variant="outlined" onClick={(e) => toggleModal("join")}>
@@ -100,8 +151,18 @@ const MessagePanel = ({ loading }) => {
               </Button>
             </>
           )}
-
-          {globalState.userData.role === 0 && (
+          {role === "Parent" && (
+            <>
+              <span>Connect to your children:</span>
+              <Button
+                variant="outlined"
+                onClick={(e) => toggleModal("connect-child")}
+              >
+                <FaceIcon />
+              </Button>
+            </>
+          )}
+          {role === "Teacher" && (
             <>
               <span>Create Your Class:</span>
               <Button variant="outlined" onClick={(e) => toggleModal("create")}>
@@ -110,21 +171,32 @@ const MessagePanel = ({ loading }) => {
             </>
           )}
         </div>
+
         {Object.keys(globalState.classData).length > 0 && (
           <>
             <HeaderNav
-              elements={[
-                {
-                  onClick: (e) => setPanelMode((prev) => !prev),
-                  text: "CLASSES",
-                  active: !panelMode,
-                },
-                {
-                  onClick: (e) => setPanelMode((prev) => !prev),
-                  text: "CONTACT",
-                  active: panelMode,
-                },
-              ]}
+              elements={
+                classId
+                  ? [
+                      {
+                        onClick: (e) => setPanelMode("classes"),
+                        text: "CLASSES",
+                        active: panelMode === "classes",
+                      },
+                      {
+                        onClick: (e) => setPanelMode("private"),
+                        text: "CONVERSATIONS",
+                        active: panelMode === "private",
+                      },
+                    ]
+                  : [
+                      {
+                        onClick: (e) => setPanelMode("classes"),
+                        text: "CLASSES",
+                        active: panelMode === "classes",
+                      },
+                    ]
+              }
             />
             <div className="user-search">
               <TextField
@@ -162,22 +234,41 @@ const MessagePanel = ({ loading }) => {
         ) : (
           <h4 style={{ textAlign: "center" }}>No result</h4>
         )
-      ) : (
-        <div className="messages__list">
-          {panelMode
-            ? Object.values(globalState.classData)
-                .filter((classs) => classs.owner == globalState.userData.id)
-                .map((filteredClass) => (
-                  <MessItem
-                    avatar={filteredClass.avatar}
-                    path={filteredClass.classId}
-                    key={filteredClass.classId}
-                    name={filteredClass.name}
-                    unread={filteredClass.unread}
-                    active={false}
-                  ></MessItem>
-                ))
-            : Object.values(globalState.classData).map((filteredClass) => (
+      ) : panelMode === "classes" ? (
+        <>
+          {role === "Parent" && (
+            <>
+              <h3 onClick={toggleChildrenClass}>Your childen's classes</h3>
+              <input
+                style={{ display: "none" }}
+                type="checkbox"
+                id="children-class-checkbox"
+              />
+              <div className="messages__list">
+                {childClasses ? (
+                  Object.values(childClasses).map((filteredClass) => (
+                    <MessItem
+                      onClick={(e) => joinClass(filteredClass)}
+                      avatar={filteredClass.avatar}
+                      path={filteredClass.classId}
+                      key={filteredClass.classId}
+                      name={filteredClass.name}
+                      unread={filteredClass.unread}
+                      active={false}
+                    ></MessItem>
+                  ))
+                ) : (
+                  <Loading />
+                )}
+              </div>
+            </>
+          )}
+
+          <div className="messages__list">
+            <h3>Your classes</h3>
+            {Object.values(globalState.classData)
+              // .filter((classs) => classs.owner == globalState.userData.id)
+              .map((filteredClass) => (
                 <MessItem
                   avatar={filteredClass.avatar}
                   path={filteredClass.classId}
@@ -187,7 +278,26 @@ const MessagePanel = ({ loading }) => {
                   active={false}
                 ></MessItem>
               ))}
+          </div>
+        </>
+      ) : privateData ? (
+        <div className="messages-list">
+          {privateData.map((p) => {
+            return (
+              <MessItem
+                avatar={p.avatar}
+                path={`${classId}/private/${p.id}`}
+                key={p.id}
+                name={`${p.firstName} ${p.lastName}`}
+                // unread={p.unread}
+                active={false}
+              ></MessItem>
+            );
+          })}
         </div>
+      ) : (
+        // <p>{JSON.stringify(privateData)}</p>
+        <Loading />
       )}
     </div>
   );

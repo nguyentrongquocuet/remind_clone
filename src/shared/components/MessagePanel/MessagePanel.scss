@@ -12,12 +12,18 @@
     }
   }
 }
+#children-class-checkbox:checked + .messages__list {
+  height: 0;
+  display: none;
+  opacity: 0;
+}
 .messages__list {
   padding: 1rem 0.2rem;
+  transition: 0.25s;
 }
 .join-or-create {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-around;
   margin: 0.5rem 0;
   align-items: center;
@@ -30,4 +36,12 @@
 .user-search-loading {
   width: 40px;
   margin: 0 auto;
+}
+.class__sidebar {
+  h3 {
+    cursor: pointer;
+    color: var(--primary);
+    user-select: none;
+    // padding-top: 0.5rem;
+  }
 }

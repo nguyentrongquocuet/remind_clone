@@ -8,11 +8,18 @@ const GoogleAuthPage = () => {
   const code = new URLSearchParams(useLocation().search).get("code");
   const { dispatch } = useContext(Context);
   const history = useHistory();
+  if (!code) history.push("/");
   useEffect(() => {
     const auth = async (code) => {
       try {
         const authData = await UserService.googleAuth(code);
         console.log("authData", authData);
+        const url = localStorage.getItem("redirectUrl");
+        let redirectUrl;
+        if (url && url != "undefined") {
+          redirectUrl = JSON.parse(url);
+        }
+
         dispatch({
           1: {
             type: "SET_TOKEN",
@@ -25,9 +32,17 @@ const GoogleAuthPage = () => {
           3: {
             type: "LOGIN_SUCCESS",
           },
+          4: {
+            type: "SET_REDIRECT_URL",
+            payload: {
+              url: redirectUrl,
+            },
+          },
         });
       } catch (error) {
-        if (error.response.status === 401) {
+        console.log(error);
+        if (error.response && error.response.status === 401) {
+          history.push("/login");
           PopupSubject.next({
             type: "WARN",
             message: error.response

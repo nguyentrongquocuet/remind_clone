@@ -177,7 +177,11 @@ const ActionSidebar = (props) => {
           <Loading className="actionsidebar__loading" />
         ))}
       {state.action === "people" && (
-        <Members classId={classId} people={state.people} />
+        <Members
+          expanded={props.expanded}
+          classId={classId}
+          people={state.people}
+        />
       )}
       {state.action === "settings" && <Settings />}
     </div>

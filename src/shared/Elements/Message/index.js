@@ -6,7 +6,8 @@ import { Context } from "../../Util/context";
 import { Avatar } from "@material-ui/core";
 import AttachFilePreview from "../AttachFilePreview";
 import localTime from "../../Util/convertToLocaleTime";
-const Message = ({ message, senderData, onPreview }) => {
+import ModalSubject from "../../Util/ModalSubject";
+const Message = ({ message, senderData, onPreview, classAvatar }) => {
   const [ref, visible] = useLazy(
     () => {
       ref.current.src = ref.current.getAttribute("data-src");
@@ -55,13 +56,24 @@ const Message = ({ message, senderData, onPreview }) => {
       placement={own ? "left" : "right"}
     >
       <div
+        onClick={(e) =>
+          ModalSubject.next({
+            type: "VIEW_PEOPLE",
+            data: {
+              event: e,
+              userId: senderData.id,
+            },
+          })
+        }
         className="popper__element"
         style={{
           cursor: "pointer",
-          marginLeft: ".5rem",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          width: "120%",
+          position: "relative",
+          left: "-.5rem",
         }}
       >
         {!own && <p>{senderData ? senderData.name : "dummy"}</p>}
@@ -119,30 +131,30 @@ const Message = ({ message, senderData, onPreview }) => {
   }
 
   return (
-    <div className={`announcement ${own ? "owner" : ""}`}>
-      <header
-        className="announcement__header"
-        onMouseLeave={(e) => {
-          handleClick("off", e);
-        }}
-        onMouseOver={(e) => {
-          handleClick("on", e);
-        }}
-      >
+    <div
+      onMouseLeave={(e) => {
+        handleClick("off", e);
+      }}
+      onMouseOver={(e) => {
+        handleClick("on", e);
+      }}
+      className={`announcement ${own ? "owner" : ""}`}
+    >
+      <header className="announcement__header">
         <Avatar
           className="alter-avatar small"
           alt="message"
           src={
-            senderData
-              ? senderData.avatar
-                ? "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
-                : ""
-              : ""
+            classAvatar ||
+            "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
           }
         >
           VL
         </Avatar>
-        <span>{senderData ? senderData.name : "Loading..."}</span>
+        <div className="announcement-info">
+          <span>{senderData ? senderData.name : "Loading..."}</span>
+          <span className="announcement-target">{message.target}</span>
+        </div>
       </header>
       <div className="announcement__content">
         <div

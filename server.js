@@ -4,6 +4,7 @@ const OATH = require("./backend/Utils/googleOath");
 const port = process.env.SERVER_PORT || 5000;
 
 const DB = require("./backend/Database/db");
+// const Redis = require("./backend/configs/Redis");
 require("dotenv").config();
 try {
   DB.init();
@@ -11,6 +12,7 @@ try {
   const server = require("http").createServer(app);
   socketIO.init(server, app);
   OATH.init();
+  // Redis.init();
   server.listen(port, () => {
     console.log("Listening at port", port);
   });

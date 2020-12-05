@@ -32,7 +32,7 @@ const CreateClass = ({ onClose }) => {
       history.push(`/classes/${classData.data.classId}`);
     } catch (error) {
       PopupSubject.next({
-        type: "ERROR",
+        type: "WARN",
         message: error.response ? error.response.data : "Some errors occured",
         showTime: 5,
       });

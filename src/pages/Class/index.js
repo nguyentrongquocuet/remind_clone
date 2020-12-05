@@ -1,4 +1,10 @@
-import React, { Suspense, useEffect, useContext, useState } from "react";
+import React, {
+  Suspense,
+  useEffect,
+  useContext,
+  useState,
+  useReducer,
+} from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { Context } from "../../shared/Util/context";
 import RealTimeService from "../../services/RealTimeService";
@@ -13,14 +19,50 @@ import CreateAnnouncement from "./Modal/CreateAnnouncement";
 import Modal from "../../shared/Elements/Modal";
 import popupSubject from "../../shared/Util/PopupSubject";
 import SchedulePreview from "./Modal/SchedulePreview";
+import InviteToClass from "./Modal/InviteToClass";
+import { Popper } from "@material-ui/core";
+import PeopleInfo from "./Modal/PeopleInfo";
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 const ClassMain = React.lazy(() => import("./Main"));
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "TOGGLE_PREVIEW_IMAGE":
+      return { ...state, previewImage: action.payload };
+    case "TOGGLE_CREATE_ANNOUNCEMENT":
+      return {
+        ...state,
+        createAnnouncementMode: state.createAnnouncementMode
+          ? null
+          : action.payload,
+      };
+    case "TOGGLE_PREVIEW_SCHEDULE":
+      return { ...state, previewSchedule: action.payload };
+    case "TOGGLE_INVITE":
+      return { ...state, inviteMode: action.payload };
+    case "TOGGLE_CONNECT_CHILD":
+      return { ...state, connectChildMode: action.payload };
+    default:
+      return state;
+  }
+};
+
 const Class = () => {
   const { globalState, dispatch } = useContext(Context);
   const [loading, setLoading] = useState(true);
-  const [previewImage, setPreviewImage] = useState(false);
-  const [createAnnouncementMode, toggleAnnouncement] = useState(null);
-  const [previewSchedule, setPreviewSchedule] = useState(null);
+  const [modalState, modalDispatch] = useReducer(reducer, {
+    previewImage: false,
+    createAnnouncementMode: false,
+    previewSchedule: false,
+    inviteMode: false,
+    connectChildMode: false,
+  });
+  console.log("CHECK_MODAL", modalState);
+  const {
+    previewImage,
+    createAnnouncementMode,
+    previewSchedule,
+    inviteMode,
+  } = modalState;
   const { classId } = useParams();
   const history = useHistory();
   useEffect(() => {
@@ -29,19 +71,41 @@ const Class = () => {
     }
   }, [classId, loading]);
   useEffect(() => {
-    ModalSubject.asObservable().subscribe((data) => {
+    ModalSubject.subscribe((data) => {
       switch (data.type) {
         case "PREVIEW_IMAGE":
-          setPreviewImage(data.data);
+          modalDispatch({
+            type: "TOGGLE_PREVIEW_IMAGE",
+            payload: data.data,
+          });
           break;
         case "CREATE_ANNOUNCEMENT":
-          toggleAnnouncement((prev) => {
-            if (!prev) return { ...data.data };
-            else return null;
+          modalDispatch({
+            type: "TOGGLE_CREATE_ANNOUNCEMENT",
+            payload: { ...data.data },
           });
           break;
         case "PREVIEW_SCHEDULE":
-          setPreviewSchedule(data.data.schedules);
+          modalDispatch({
+            type: "TOGGLE_PREVIEW_SCHEDULE",
+            payload: data.data.schedules,
+          });
+          break;
+        case "INVITE_PEOPLE":
+          modalDispatch({
+            type: "TOGGLE_INVITE",
+            payload: true,
+          });
+          break;
+        case "CONNECT_CHILD":
+          modalDispatch({
+            type: "TOGGLE_CONNECT_CHILD",
+            payload: true,
+          });
+          break;
+        case "VIEW_PEOPLE":
+          setAnchorEl(data.data.event.currentTarget);
+          setUserId(data.data.userId);
         default:
           break;
       }
@@ -62,7 +126,7 @@ const Class = () => {
         popupSubject.next({
           showTime: 5,
           message: error.response ? error.response.data : "Some errors occured",
-          type: "ERROR",
+          type: "WARN",
         });
       });
     return () => () => ModalSubject.unsubscribe();
@@ -76,6 +140,7 @@ const Class = () => {
           if (classs.roomId == id) cId = classs.classId;
         }
         if (
+          globalState.classData[cId] &&
           data.senderId !== globalState.userData.id &&
           (!classId || cId != classId)
         ) {
@@ -85,8 +150,21 @@ const Class = () => {
     });
     return () => sub.unsubscribe();
   }, [globalState.classData, classId]);
+
+  //test poper
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [userId, setUserId] = useState(null);
   return (
     <>
+      <Popper placement="right-end" open={open} anchorEl={anchorEl}>
+        <PeopleInfo
+          onClose={(e) => {
+            setAnchorEl(null);
+          }}
+          id={userId}
+        />
+      </Popper>
       {!loading ? (
         <>
           <div className="main">
@@ -107,14 +185,29 @@ const Class = () => {
                 <ClassMain loading={loading} />
                 {previewImage && (
                   <ImagePreview
-                    onClose={(e) => setPreviewImage(null)}
+                    onClose={(e) =>
+                      modalDispatch({
+                        type: "TOGGLE_PREVIEW_IMAGE",
+                      })
+                    }
                     previewObject={previewImage}
                   />
                 )}
                 {createAnnouncementMode && !loading && (
                   <Modal
                     open={Boolean(createAnnouncementMode)}
-                    onClose={(e) => toggleAnnouncement(null)}
+                    onClose={(e) => {
+                      popupSubject.next({
+                        type: "CONFIRM",
+                        message:
+                          "Are you sure you want to discard this announcement?",
+                        onConfirm: (e) =>
+                          modalDispatch({
+                            type: "TOGGLE_CREATE_ANNOUNCEMENT",
+                          }),
+                        onCancel: null,
+                      });
+                    }}
                     classNames={{ wrapper: "center", content: "form__modal" }}
                   >
                     <CreateAnnouncement
@@ -124,15 +217,46 @@ const Class = () => {
                           message: message || "You've created a schedule",
                           type: "SUCCESS",
                         });
-                        toggleAnnouncement(null);
+                        modalDispatch({
+                          type: "TOGGLE_CREATE_ANNOUNCEMENT",
+                        });
                       }}
                       {...createAnnouncementMode}
                     />
                   </Modal>
                 )}
+                {inviteMode && (
+                  <Modal
+                    open={Boolean(inviteMode)}
+                    onClose={(e) =>
+                      modalDispatch({
+                        type: "TOGGLE_INVITE",
+                      })
+                    }
+                    classNames={{ wrapper: "center", content: "form__modal" }}
+                  >
+                    <InviteToClass
+                      classId={classId}
+                      onDone={(e) =>
+                        modalDispatch({
+                          type: "TOGGLE_INVITE",
+                        })
+                      }
+                      onClose={(e) =>
+                        modalDispatch({
+                          type: "TOGGLE_INVITE",
+                        })
+                      }
+                    />
+                  </Modal>
+                )}
                 {previewSchedule && (
                   <Modal
-                    onClose={(e) => setPreviewSchedule(null)}
+                    onClose={(e) =>
+                      modalDispatch({
+                        type: "TOGGLE_PREVIEW_SCHEDULE",
+                      })
+                    }
                     open={Boolean(previewSchedule)}
                     classNames={{
                       wrapper: "schedule-preview-modal center",
@@ -182,9 +306,18 @@ const Class = () => {
                       and more!
                     </p>
                   )}
-                  <p>
-                    <span></span>
-                  </p>
+                  {globalState.userData.role === 2 && (
+                    <p>
+                      <span
+                        onClick={(e) => {
+                          ModalSubject.next({ type: "CONNECT_CHILD" });
+                        }}
+                      >
+                        Connect
+                      </span>{" "}
+                      to connect to your children!
+                    </p>
+                  )}
                 </div>
               </Suspense>
             )}

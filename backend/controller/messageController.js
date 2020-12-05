@@ -2,11 +2,12 @@ const socketIO = require("../configs/socketIO");
 const schedule = require("node-schedule");
 
 const Db = require("../Database/db");
+const { ROLE } = require("../Utils/ROLE");
 exports.sendMessage = async (req, res) => {
   const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
   const file = req.file;
-
+  const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   const { content } = req.body;
   const db = Db.db;
   let filePath = null;
@@ -30,9 +31,11 @@ exports.sendMessage = async (req, res) => {
       "to",
       socketIO.socketId.get(userId)
     );
-    socketIO.io.sockets.connected[socketIO.socketId.get(userId)]
-      .to(`class-${roomId}`)
-      .emit("messages", { ...getBack[0] });
+    console.log(socket.rooms);
+    if (!socket.rooms[`class-${roomId}-all`]) {
+      socket.join(`class-${roomId}-all`);
+    }
+    socket.to(`class-${roomId}-all`).emit("messages", { ...getBack[0] });
     return res.status(200).json(getBack[0]);
   } catch (error) {
     throw error;
@@ -40,10 +43,16 @@ exports.sendMessage = async (req, res) => {
 };
 exports.sendAnnouncement = async (req, res) => {
   const userId = req.decodedToken.userId;
+  console.log(req.body);
   const { roomIds, content, scheduleTime } = req.body;
   const userSocket =
     socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
-  const rooms = roomIds.split(",").map((c) => c);
+  const rooms = Object.fromEntries(
+    roomIds.split(",").map((s) => {
+      return s.split(":");
+    })
+  );
+  console.log(rooms);
   const file = req.file;
   const db = Db.db;
   let filePath = null;
@@ -52,7 +61,7 @@ exports.sendAnnouncement = async (req, res) => {
     filePath =
       req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
   }
-  let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type) VALUES ?`;
+  let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type,target) VALUES ?`;
   if (
     scheduleTime &&
     new Date(Date.parse(scheduleTime)) - new Date(Date.now()) > 0
@@ -61,15 +70,16 @@ exports.sendAnnouncement = async (req, res) => {
     const scheduleTimeInMysql = new Date(scheduleTime)
       .toISOString()
       .replace(/T|\..+$/g, " ");
-    const insertToStoreIdQuery = `INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,time,createAtMs) VALUES ?`;
-    const storeValues = rooms.map((room) => {
+    const insertToStoreIdQuery = `INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,target,time,createAtMs) VALUES ?`;
+    const storeValues = Object.entries(rooms).map((room) => {
       return [
         scheduleId,
         userId,
-        room,
+        room[0],
         content,
         filePath,
         1,
+        room[1],
         scheduleTimeInMysql,
         scheduleId,
       ];
@@ -99,7 +109,7 @@ exports.sendAnnouncement = async (req, res) => {
         scheduleTime,
         async (fireDate) => {
           console.log(scheduleId);
-          const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type FROM announcement_schedule WHERE scheduleId =?`;
+          const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type,target FROM announcement_schedule WHERE scheduleId =?`;
           const [getBackSchedule] = await db.query(
             getBackStoredScheduleQuery,
             scheduleId
@@ -122,12 +132,13 @@ exports.sendAnnouncement = async (req, res) => {
           );
           console.log(fireDate);
           // if (userSocket) {
-          for (let index in getBack) {
+          for (let back of getBack) {
             // userSocket.emit("messages", { ...getBack[index] });
             // userSocket
-            socketIO.io
-              .in(`class-${rooms[index]}`)
-              .emit("messages", { ...getBack[index] });
+            userSocket.emit("messages", { ...back });
+            userSocket
+              .to(`class-${back.roomId}-${back.target}`)
+              .emit("messages", { ...back });
           }
           // }
         }
@@ -142,8 +153,8 @@ exports.sendAnnouncement = async (req, res) => {
   //send immediately
   console.log("expried");
 
-  let values = rooms.map((room) => {
-    return [userId, room, content, filePath, 1];
+  let values = Object.entries(rooms).map((room) => {
+    return [userId, room[0], content, filePath, 1, room[1]];
   });
   const [send] = await db.query(sendAnnouncementQuery, [values]);
   const [
@@ -154,12 +165,13 @@ exports.sendAnnouncement = async (req, res) => {
   ]);
 
   // if (userSocket) {
-  for (let index in getBack) {
+  for (let back of getBack) {
     // userSocket.emit("messages", { ...getBack[index] });
     // userSocket
-    socketIO.io
-      .in(`class-${rooms[index]}`)
-      .emit("messages", { ...getBack[index] });
+    userSocket.emit("messages", { ...back });
+    userSocket
+      .to(`class-${back.roomId}-${back.target}`)
+      .emit("messages", { ...back });
   }
   // }
 
@@ -186,7 +198,8 @@ exports.getScheduleDetails = async (req, res) => {
         ...details[0],
         roomIds: Object.fromEntries(
           details.map((detail) => {
-            return [detail.roomId, "all"];
+            //TODO: GET ANNOUNCEMENT TARGET:parent, student...
+            return [detail.roomId, detail.target];
           })
         ),
       };
@@ -201,6 +214,8 @@ exports.getScheduleDetails = async (req, res) => {
 //edit schedule
 exports.editSchedule = async (req, res) => {
   const userId = req.decodedToken.userId;
+  const userSocket =
+    socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   const { scheduleId } = req.query;
   const db = Db.db;
   const newFile = req.file; //if(file) ==> change file
@@ -210,6 +225,11 @@ exports.editSchedule = async (req, res) => {
       req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
   }
   const { roomIds, content, scheduleTime, file } = req.body;
+  const rooms = Object.fromEntries(
+    roomIds.split(",").map((s) => {
+      return s.split(":");
+    })
+  );
   try {
     const [getStoredSchedule] = await db.query(
       "SELECT * FROM announcement_schedule WHERE scheduleId =? AND done=false",
@@ -230,41 +250,37 @@ exports.editSchedule = async (req, res) => {
     let newScheduleValues;
     if (newFilePath) {
       console.log("file changes");
-      newScheduleValues = roomIds
-        .split(",")
-        .filter((r) => r)
-        .map((roomId) => {
-          return [
-            scheduleId,
-            userId,
-            roomId,
-            content,
-            newFilePath,
-            1,
-            scheduleTimeInMysql,
-          ];
-        });
+      newScheduleValues = Object.entries(rooms).map((room) => {
+        return [
+          scheduleId,
+          userId,
+          room[0],
+          content,
+          newFilePath,
+          1,
+          room[1],
+          scheduleTimeInMysql,
+        ];
+      });
     } else {
       const oldFilePath = getStoredSchedule[0].file;
-      newScheduleValues = roomIds
-        .split(",")
-        .filter((r) => r)
-        .map((roomId) => {
-          return [
-            scheduleId,
-            userId,
-            roomId,
-            content,
-            oldFilePath,
-            1,
-            scheduleTimeInMysql,
-          ];
-        });
+      newScheduleValues = Object.entries(rooms).map((room) => {
+        return [
+          scheduleId,
+          userId,
+          room[0],
+          content,
+          oldFilePath,
+          1,
+          room[1],
+          scheduleTimeInMysql,
+        ];
+      });
       console.log("old file");
     }
     console.log(newScheduleValues);
     await db.query(
-      "INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,time) VALUES ?",
+      "INSERT INTO announcement_schedule(scheduleId, senderId, roomId, content,file, type,target, time) VALUES ?",
       [newScheduleValues]
     );
     schedule.scheduledJobs[`schedule-${scheduleId}`].cancel();
@@ -273,7 +289,7 @@ exports.editSchedule = async (req, res) => {
       scheduleTime,
       async (fireDate) => {
         console.log(scheduleId);
-        const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type FROM announcement_schedule WHERE scheduleId =?`;
+        const getBackStoredScheduleQuery = `SELECT senderId, roomId, content, file, type,target FROM announcement_schedule WHERE scheduleId =?`;
         const [getBackSchedule] = await db.query(
           getBackStoredScheduleQuery,
           scheduleId
@@ -288,7 +304,7 @@ exports.editSchedule = async (req, res) => {
         const rooms = getBackScheduleValues.map((gBS) => {
           return gBS.roomId;
         });
-        let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type) VALUES ?`;
+        let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type,target) VALUES ?`;
         const [send] = await db.query(sendAnnouncementQuery, [
           getBackScheduleValues,
         ]);
@@ -303,7 +319,10 @@ exports.editSchedule = async (req, res) => {
         for (let back of getBack) {
           // userSocket.emit("messages", { ...getBack[index] });
           // userSocket
-          socketIO.io.in(`class-${back.roomId}`).emit("messages", { ...back });
+          userSocket.emit("messages", { ...back });
+          userSocket
+            .to(`class-${back.roomId}-${back.target}`)
+            .emit("messages", { ...back });
         }
         // }
       }
@@ -335,12 +354,14 @@ exports.getMessages = async (req, res) => {
   const roomId = req.query.roomId;
   const db = Db.db;
   console.log("Get message");
+  const role = req.userData.role;
+  console.log("role", ROLE[role]);
   try {
     const [
       messages,
     ] = await db.query(
-      `SELECT * FROM messages WHERE roomId= ? ORDER BY createAt`,
-      [roomId]
+      `SELECT * FROM messages WHERE roomId= ? AND (target='all' OR target=?) ORDER BY createAt`,
+      [roomId, ROLE[role]]
     );
     const [
       schedules,
@@ -377,9 +398,70 @@ exports.getFileDetails = async (req, res) => {
   const [
     [fileDetails],
   ] = await db.query(
-    "SELECT m.*, ui.id as userId, ui.firstName as firstName,ui.lastname as lastName  FROM (SELECT * FROM messages m  WHERE id = ?) m INNER JOIN user_info ui ON m.senderId = ui.id",
+    "SELECT m.*, ui.id as userId, ui.firstName as firstName,ui.lastname as lastName, ui.avatar as avatar  FROM (SELECT * FROM messages m  WHERE id = ?) m INNER JOIN user_info ui ON m.senderId = ui.id",
     [messageId]
   );
   console.log(fileDetails);
   res.status(200).json(fileDetails);
+};
+
+exports.initialPrivateRoom = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const db = Db.db;
+  const { receiverId } = req.body;
+  if (userId === receiverId) {
+    return res.status(409).json("You cant message to yourself!");
+  }
+  const [usersExist] = await db.query(
+    "SELECT * FROM user_info WHERE id IN (?)",
+    [[userId, receiverId]]
+  );
+  if (usersExist.length < 2) {
+    return res.status(404).json("User not found!");
+  }
+  let [
+    roomIsAvailable,
+  ] = await db.query(
+    "SELECT * FROM message_room WHERE privateMember = ? or privateMember= ?",
+    [`${userId},${receiverId}`, `${receiverId},${userId}`]
+  );
+  if (roomIsAvailable.length === 0) {
+    await db.query(
+      "INSERT INTO message_room(privateMember,member1, member2) VALUE(?,?,?)",
+      [`${userId},${receiverId}`, userId, receiverId]
+    );
+    [
+      roomIsAvailable,
+    ] = await db.query(
+      "SELECT * FROM message_room WHERE privateMember = ? or privateMember= ?",
+      [`${userId},${receiverId}`, `${receiverId},${userId}`]
+    );
+  }
+  console.log(roomIsAvailable[0]);
+  res.status(200).json(roomIsAvailable[0]);
+};
+
+exports.getPrivateConversationData = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const { classId } = req.query;
+  const db = Db.db;
+  const [
+    privateRooms,
+  ] = await db.query(
+    "SELECT * FROM message_room WHERE (member2 =? AND member1 IN (SELECT userId FROM class_member WHERE classId = ?)) or (member1 = ? AND member2 IN (SELECT userId FROM class_member WHERE classId = ?))",
+    [userId, classId, userId, classId]
+  );
+  const userSet = new Set(
+    privateRooms
+      .map((r) => [r.member1, r.member2])
+      .flat()
+      .filter((u) => u !== userId)
+  );
+  const userList = Array.from(userSet.values());
+  console.log(userList);
+  const [
+    getUsersDetails,
+  ] = await db.query("SELECT * FROM user_info WHERE id IN (?)", [userList]);
+
+  res.status(200).json(getUsersDetails);
 };

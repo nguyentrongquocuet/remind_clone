@@ -44,6 +44,7 @@ const reducer = (state, action) => {
           ...state.classes,
           [action.payload.classId]: action.payload.type,
         },
+        dirty: true,
       };
       break;
     case "NORMAL_CHOOSING":
@@ -51,6 +52,7 @@ const reducer = (state, action) => {
         out = {
           ...state,
           classes: { ...state.classes, [action.payload.classId]: null },
+          dirty: true,
         };
       } else {
         out = {
@@ -59,14 +61,15 @@ const reducer = (state, action) => {
             ...state.classes,
             [action.payload.classId]: action.payload.type,
           },
+          dirty: true,
         };
       }
       break;
     case "SET_CONTENT":
-      out = { ...state, content: action.payload.text };
+      out = { ...state, content: action.payload.text, dirty: true };
       break;
     case "SET_FILE":
-      out = { ...state, file: action.payload.file };
+      out = { ...state, file: action.payload.file, dirty: true };
       break;
     case "TOGGLE_SCHEDULE":
       out = { ...state, schedule: !state.schedule };
@@ -78,6 +81,7 @@ const reducer = (state, action) => {
       out = {
         ...state,
         scheduleTime: timeStr,
+        dirty: true,
       };
       break;
     default:
@@ -124,6 +128,7 @@ const CreateAnnouncement = ({
         : null,
     schedule:
       mode !== "create" ? (initialValuesMemorized ? true : false) : false,
+    dirty: false,
   });
   const [stage, setStage] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -169,14 +174,14 @@ const CreateAnnouncement = ({
       e.target.value = null;
     }
   };
+  console.log(selectedClass);
   const commitAnnouncement = async () => {
-    const classes = Object.keys(selectedClass.classes);
-    //getRoomIds
-    const roomIds = Object.values(globalState.classData)
-      .filter((classData) => {
-        return classes.includes("" + classData.classId);
+    const roomIds = Object.entries(selectedClass.classes)
+      .map((c) => {
+        return `${globalState.classData[c[0]].roomId}:${c[1]}`;
       })
-      .map((classData) => classData.roomId);
+      .join(",");
+    console.log("check-room", roomIds);
     const announcementData = new FormData();
     //same for both edit and create
     announcementData.append("content", selectedClass.content);
@@ -213,7 +218,7 @@ const CreateAnnouncement = ({
       );
     } catch (error) {
       PopupSubject.next({
-        type: "ERROR",
+        type: "WARN",
         message: error.response ? error.response.data : "Some errors occured",
         showTime: 5,
       });
@@ -414,20 +419,6 @@ const CreateAnnouncement = ({
             />
           </div>
           <div className="announcement-edit-content__textfield">
-            {/* <TextField
-              placeholder="Type your message here"
-              type="textarea"
-              rows={7}
-              onChange={(e) => {
-                dispatch({
-                  type: "SET_CONTENT",
-                  payload: {
-                    text: e.target.value.trim(),
-                  },
-                });
-              }}
-              value={selectedClass.content}
-            /> */}
             <CKEditor
               editor={ClassicEditor}
               data={selectedClass.content}
@@ -441,11 +432,7 @@ const CreateAnnouncement = ({
                   "link",
                   "numberedList",
                   "bulletedList",
-                  // "imageUpload",
                   "insertTable",
-                  // "tableColumn",
-                  // "tableRow",
-                  // "mergeTableCells",
                   "mediaEmbed",
                   "|",
                   "undo",
@@ -519,9 +506,6 @@ const CreateAnnouncement = ({
                         ? selectedClass.file
                         : null
                     }
-
-                    // fileName={selectedClass.file.name}
-                    // type={selectedClass.file.type}
                   />
                   <CancelIcon
                     className="cancel-preview"

@@ -1,0 +1,54 @@
+.connect-child {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  h1 {
+    width: 100%;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--secondary);
+  }
+  p {
+    margin: 1rem 0;
+    color: var(--primary);
+  }
+
+  .copy {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    code {
+      display: block;
+      max-width: 70%;
+      overflow: hidden;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      background-color: var(--blockhover);
+    }
+    span {
+      position: relative;
+      &:hover {
+        .MuiSvgIcon-root {
+          fill: var(--blockhover);
+        }
+      }
+      &::after {
+        content: "Copy";
+        font-size: 0.6em;
+        position: absolute;
+        left: 0.7rem;
+        top: -0.5rem;
+        color: var(--primary);
+      }
+      .MuiSvgIcon-root {
+        margin-left: 0.5rem;
+        cursor: pointer;
+      }
+    }
+  }
+}

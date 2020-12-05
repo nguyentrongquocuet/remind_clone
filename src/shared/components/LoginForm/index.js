@@ -5,6 +5,7 @@ import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
 import "./LoginForm.scss";
 import WithGoogleBtn from "../../Elements/SignWithGoogleButton/WithGoogleBtn";
+import VALIDATOR from "../../Util/Validator";
 
 const LoginForm = (props) => {
   const { register, handleSubmit, errors, formState } = useForm({
@@ -33,11 +34,8 @@ const LoginForm = (props) => {
             className="no-pad"
             name="email"
             inputRef={register({
-              required: "Email is required!",
-              pattern: {
-                value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]{2,})*$/,
-                message: "Invalid email address format",
-              },
+              ...VALIDATOR.EMAIL.REQUIRED,
+              ...VALIDATOR.EMAIL.PARTTERN,
             })}
             helperText={errors.email ? errors.email.message : null}
           />
@@ -49,8 +47,7 @@ const LoginForm = (props) => {
             className="no-pad"
             name="password"
             inputRef={register({
-              minLength: { value: 6, message: "At least 6 digits" },
-              required: "Password is required!",
+              ...VALIDATOR.PASSWORD,
             })}
             helperText={errors.password ? errors.password.message : null}
           />

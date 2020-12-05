@@ -5,9 +5,9 @@
 ✔ autoAuth @done(20-10-27 16:06)
 ✔ class's main @done(20-10-30 23:13)
 ✔ joinclass @done(20-11-06 14:28)
-☐ sửa lại preview ảnh
-☐ bỏ css inline
-☐ bỏ !important
+✔ sửa lại preview ảnh @done(20-11-30 15:59)
+✔ bỏ css inline @done(20-11-30 15:59)
+✔ bỏ !important @done(20-11-30 15:59)
 ✔ tham gia lớp, tạo lớp @done(20-11-18 07:33)
 ✔ xử lý khi chưa có lớp @done(20-11-18 07:33)
 ✔ chức năng nhắn tin - socketio @done(20-11-18 07:33)
@@ -15,9 +15,9 @@
 ✔ Preview dựa trên file type(Preview khi gửi) @done(20-11-22 01:36)
 ✔ sửa preview full @done(20-11-22 01:36)
 ✔ Gửi announcement @done(20-11-22 01:36)
-☐ Add people-request @started(20-11-29 20:44)
-☐ invite people @started(20-11-29 20:44)
-☐ Show files
+Add people-request
+invite people
+Show files
 ☐ use case:
 ☐ fetch tin nhắn => đã đọc đến tin nhắn đã fetch,
 ☐ gửi tin nhắn ==> set đã đọc
@@ -25,3 +25,7 @@
 ✔ hẹn giờ @done(20-11-22 19:33)
 ☐ senario sửa: sửa=> userid-createAtMs==> xoá schedule cũ thêm mới, setSchedule vào map
 ✔ forgot password @done(20-11-29 20:45)
+✔ nhắn private:đang trục trặc @done(20-12-05 19:28)
+✔ invite class sử dụng token @done(20-12-04 17:24)
+✔ connect children @done(20-12-04 17:24)
+☐ Lam trang admin

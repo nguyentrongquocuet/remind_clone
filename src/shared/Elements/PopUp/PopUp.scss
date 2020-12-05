@@ -9,7 +9,7 @@
   position: absolute;
   z-index: 999999;
   top: 3rem;
-  animation: popup ease forwards;
+
   p {
     font-size: 0.8rem;
     margin-right: 0.25rem;
@@ -23,6 +23,25 @@
   }
   &.warn {
     background-color: #e15461;
+  }
+  &.confirm {
+    display: flex;
+    flex-direction: column;
+    background-color: #fafafa;
+    .confirm-message {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      margin-bottom: 2rem;
+      p {
+        color: var(--primary);
+      }
+    }
+    .confirm-choice {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }
 

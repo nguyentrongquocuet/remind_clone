@@ -19,6 +19,17 @@ export class ClassService {
       }
     );
   };
+  static invite = (invitationList, classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token || !classId) return new Error("Something went wrong!!!");
+    return BaseService.post(
+      `class/invite`,
+      { invitationList: invitationList, classId: classId },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+  };
   static leaveClass = (classId) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token || !classId) return new Error("Something went wrong!!!");
@@ -53,6 +64,19 @@ export class ClassService {
       params: {
         classId: classId,
         role: role,
+      },
+    });
+  };
+
+  static getChildClasses = (childId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong!!!");
+    return BaseService.get(`class/child`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        childId: childId,
       },
     });
   };

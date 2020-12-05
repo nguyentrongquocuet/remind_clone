@@ -4,6 +4,8 @@ import Button from "../../shared/Elements/Button";
 import { useForm } from "react-hook-form";
 import UserService from "../../services/UserService";
 import PopupSubject from "../../shared/Util/PopupSubject";
+import VALIDATOR from "../../shared/Util/Validator";
+
 const NewPassword = ({ onSuccess }) => {
   const { register, handleSubmit, watch, errors, formState } = useForm({
     mode: "onChange",
@@ -166,8 +168,7 @@ const NewPassword = ({ onSuccess }) => {
         className="no-pad newpassword"
         name="password"
         inputRef={register({
-          minLength: { value: 6, message: "At least 6 characters" },
-          required: "Password is required!",
+          ...VALIDATOR.PASSWORD,
         })}
         helperText={errors.password ? errors.password.message : null}
       />
@@ -180,8 +181,7 @@ const NewPassword = ({ onSuccess }) => {
         className="no-pad newpassword"
         name="repassword"
         inputRef={register({
-          minLength: { value: 6, message: "At least 6 characters" },
-          required: "RePassword is required!",
+          ...VALIDATOR.PASSWORD,
           validate: (value) =>
             value === watch("password") || "2 passwords must be the same",
         })}

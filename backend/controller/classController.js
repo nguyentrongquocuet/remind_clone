@@ -1,6 +1,6 @@
 const socketIO = require("../configs/socketIO");
 const Db = require("../Database/db");
-
+const transporter = require("../Mailer/Mailer.js");
 exports.createClass = async (req, res) => {
   const { className } = req.body;
   const { userId } = req.decodedToken;
@@ -72,6 +72,30 @@ exports.getClass = async (req, res) => {
   } catch (error) {
     throw error;
   }
+};
+
+exports.getChildrenClasses = async (req, res) => {
+  const userId = req.decodedToken.userId;
+  const db = Db.db;
+  // const {childId} = req.query;
+  const [childList] = await db.query(
+    "SELECT * FROM relationship WHERE parentId = ?",
+    userId
+  );
+  console.log(childList);
+  const child = childList.map((c) => c.childId);
+  console.log(child);
+  const [
+    classes,
+  ] = await db.query(
+    "SELECT * FROM class_member cm INNER JOIN class c ON cm.userId IN (?) AND c.classId = cm.classId",
+    [child]
+  );
+  const finalClasses = classes.reduce((prev, cur) => {
+    prev[cur.classId] = cur;
+    return prev;
+  }, {});
+  res.status(200).json(finalClasses);
 };
 // SELECT * FROM class_member cm INNER JOIN class c ON  cm.userId =?
 //     AND cm.classId=c.classId
@@ -173,7 +197,36 @@ exports.joinClass = async (req, res) => {
 
       return res.status(200).json(getDataBack[0]);
     } catch (error) {
-      throw error;
+      if (error.errno === 1062) {
+        return res.status(409).json("You have already joined this class!");
+      } else console.log(error);
     }
   } else return res.status(500).json("invalid classId");
+};
+
+exports.sendInvitation = async (req, res) => {
+  const { invitationList, classId } = req.body;
+  const db = Db.db;
+  console.log(classId);
+  const [classInfo] = await db.query(
+    "SELECT * FROM class WHERE classId = ?",
+    classId
+  );
+  const className = classInfo[0].name;
+  const inviteSet = new Set();
+  for (const person of Object.values(invitationList)) {
+    inviteSet.add(person.email);
+    console.log(person);
+  }
+  const mailList = Array.from(inviteSet.values());
+  await transporter.sendMail({
+    to: mailList,
+    subject: "New invitation from Remind", // Tiêu đề mail
+    text: "Click this link to join my class 😘", // Nội dung mail dạng text
+    html: `<div style="text-align:left;padding-left:2rem;">
+    <h2>Someone wants to invite you to join a class named<span style="color:#546A8C"> ${className}</span> , if interested, please click on the link below😉</h2>
+    <a target="_blank" href="${process.env.CLIENT_URL}/join?classId=${classId}">Join</a>
+    </div>`, // Nội dung mail dạng html
+  });
+  return res.status(200).json("Success");
 };

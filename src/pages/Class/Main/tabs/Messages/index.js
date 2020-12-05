@@ -10,7 +10,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { Context } from "../../../../../shared/Util/context";
 import RealTimeService from "../../../../../services/RealTimeService";
 import MessageService from "../../../../../services/MessageService";
-import { Card } from "@material-ui/core";
+import { Avatar, Button, Card } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import CancelIcon from "@material-ui/icons/Cancel";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
@@ -22,11 +22,13 @@ import "./Messages.scss";
 import AttachFilePreview from "../../../../../shared/Elements/AttachFilePreview";
 import popupSubject from "../../../../../shared/Util/PopupSubject";
 import FileSubject from "../../../../../shared/Util/FileSubject";
+import ROLE from "../../../../../shared/Util/ROLE";
 const Message = React.lazy(() =>
   import("../../../../../shared/Elements/Message")
 );
 //TOTO: CACHE MESSAGES DATA
 const Messages = (props) => {
+  const { privateChat, privateRoomData, privateUserInfo, loading } = props;
   const [messagesState, setMessagesState] = useState({
     messages: [],
     schedules: [],
@@ -40,15 +42,20 @@ const Messages = (props) => {
   const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
-  let roomId = globalState.classData[classId].roomId;
+  let roomId = privateChat
+    ? privateRoomData.roomId
+    : globalState.classData[classId].roomId;
   if (!roomId) history.push("/classes");
 
   let messagesRef = useRef(null);
-  let { loading } = props;
   const isOwner = useMemo(
     () => globalState.classData[classId].owner === globalState.userData.id,
     [classId, globalState]
   );
+  const classAvatar = useMemo(() => globalState.classData[classId].avatar, [
+    classId,
+  ]);
+  const backToClass = (e) => history.push(`/classes/${classId}`);
   const sendMessage = () => {
     if (message.content.trim().length > 0 || message.file) {
       const messageData = new FormData();
@@ -73,7 +80,7 @@ const Messages = (props) => {
         })
         .catch((error) =>
           popupSubject.next({
-            type: "ERROR",
+            type: "WARN",
             message: error.response
               ? error.response.data
               : "Some errors occured",
@@ -83,7 +90,10 @@ const Messages = (props) => {
     }
   };
   useEffect(() => {
-    roomId = globalState.classData[classId].roomId;
+    if (!privateChat) {
+      roomId = globalState.classData[classId].roomId;
+    }
+
     const sub = RealTimeService.IOSubject.subscribe((data) => {
       switch (data.type) {
         case "MESSAGES":
@@ -118,7 +128,6 @@ const Messages = (props) => {
   //TODO: ADD TRY_CATCH
   useEffect(() => {
     //fetch messages and schedules
-
     const fetchMessages = () => {
       MessageService.getMessages(roomId, globalState.token)
         .then((data) => {
@@ -137,11 +146,11 @@ const Messages = (props) => {
             message: error.response
               ? error.response.data
               : "Some errors occured",
-            type: "ERROR",
+            type: "WARN",
           })
         );
     };
-    if (!loading && messagesState.fetching) {
+    if (!loading || roomId) {
       fetchMessages();
     }
     return () =>
@@ -156,7 +165,8 @@ const Messages = (props) => {
     }, 100);
     return () => clearTimeout(timeout);
   }, [messagesState.fetching, messagesRef]);
-
+  // useEffect(() => {
+  // }, [privateChat]);
   ///file effect
   const fileHandler = async (e, file) => {
     if (file) {
@@ -200,6 +210,43 @@ const Messages = (props) => {
           />
         ) : (
           <>
+            {privateChat && (
+              <div className="private-info">
+                {privateUserInfo ? (
+                  <>
+                    <div className="info-wrapper">
+                      <Avatar className="small" src={privateUserInfo.avatar} />
+                      <div className="info">
+                        <div className="name">
+                          <span className="name">
+                            {privateUserInfo.firstName}{" "}
+                          </span>
+                          <span className="name">
+                            {privateUserInfo.lastName}
+                          </span>
+                        </div>
+                        <span className="role">
+                          {ROLE[privateUserInfo.role]}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="private-label">Private</span>
+                    <Button
+                      className="back-to-class"
+                      size="small"
+                      variant="outlined"
+                      color="default"
+                      onClick={backToClass}
+                    >
+                      Back to class
+                    </Button>
+                  </>
+                ) : (
+                  <Loading />
+                )}
+              </div>
+            )}
+
             <div className="fix" style={{ flex: "1" }}></div>
             <div className="allmessages" ref={messagesRef}>
               {messagesState.messages.map((m) => {
@@ -213,6 +260,7 @@ const Messages = (props) => {
                         },
                       })
                     }
+                    classAvatar={classAvatar}
                     senderData={
                       globalState.classData[classId].members
                         ? globalState.classData[classId].members[m.senderId]

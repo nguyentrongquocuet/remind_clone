@@ -10,6 +10,7 @@ import WithGoogleBtn from "../../Elements/SignWithGoogleButton/WithGoogleBtn";
 import DateTimePicker from "../../Elements/DateTimePicker";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
+import VALIDATOR from "../../Util/Validator";
 const SignUpForm = ({ initialMode = 1, ...props }) => {
   const {
     register,
@@ -98,8 +99,12 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               style={{ marginBottom: "1rem" }}
               className="no-pad"
               name="email"
-              inputRef={register(valdations.email)}
-              helperText={errors.email ? errors.email.message : null}
+              required
+              inputRef={register({
+                ...VALIDATOR.EMAIL.REQUIRED,
+                ...VALIDATOR.EMAIL.PARTTERN,
+              })}
+              error={errors.email ? errors.email.message : null}
             />
             <TextField
               label="First Name"
@@ -108,11 +113,12 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               style={{ marginBottom: "1rem" }}
               className="no-pad"
               name="firstname"
+              required
               inputRef={register({
-                required: "Firstname is required!",
-                minLength: { value: 3, message: "At least 3 characters" },
+                ...VALIDATOR.NAME.REQUIRED.FIRST,
+                ...VALIDATOR.NAME.MINLENGTH,
               })}
-              helperText={errors.firstname ? errors.firstname.message : null}
+              error={errors.firstname ? errors.firstname.message : null}
             />
             <TextField
               label="Last Name"
@@ -121,11 +127,12 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               style={{ marginBottom: "1rem" }}
               className="no-pad"
               name="lastname"
+              required
               inputRef={register({
-                required: "Lastname is required!",
-                minLength: { value: 3, message: "At least 3 characters" },
+                ...VALIDATOR.NAME.REQUIRED.LAST,
+                ...VALIDATOR.NAME.MINLENGTH,
               })}
-              helperText={errors.lastname ? errors.lastname.message : null}
+              error={errors.lastname ? errors.lastname.message : null}
             />
             <DateTimePicker
               label="Birthday"
@@ -183,11 +190,11 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               // style={{ marginBottom: "1rem" }}
               className="no-pad"
               name="password"
+              required
               inputRef={register({
-                minLength: { value: 6, message: "At least 6 characters" },
-                required: "Password is required!",
+                ...VALIDATOR.PASSWORD,
               })}
-              helperText={errors.password ? errors.password.message : null}
+              error={errors.password ? errors.password.message : null}
             />
             <TextField
               type="password"
@@ -197,13 +204,13 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               style={{ marginBottom: "1rem" }}
               className="no-pad"
               name="repassword"
+              required
               inputRef={register({
-                minLength: { value: 6, message: "At least 6 characters" },
-                required: "RePassword is required!",
+                ...VALIDATOR.PASSWORD,
                 validate: (value) =>
                   value === watch("password") || "2 passwords must be the same",
               })}
-              helperText={errors.repassword ? errors.repassword.message : null}
+              error={errors.repassword ? errors.repassword.message : null}
             />
           </CardContent>
 

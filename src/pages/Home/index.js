@@ -52,7 +52,7 @@ const Home = () => {
     } catch (error) {
       if (error.response) {
         PopupSubject.next({
-          type: "ERROR",
+          type: "WARN",
           message: error.response ? error.response.data : "Some errors occured",
           showTime: 5,
         });

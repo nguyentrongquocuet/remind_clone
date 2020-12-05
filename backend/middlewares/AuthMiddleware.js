@@ -8,11 +8,15 @@ const authMiddleware = async (req, res, next) => {
       SECRET_KEY
     );
     const { userId } = decodedToken;
-    const [user] = await db.db.query(`SELECT * FROM user where id = ?`, [
-      userId,
-    ]);
+    const [
+      user,
+    ] = await db.db.query(
+      `SELECT * FROM user u INNER JOIN user_info ui ON u.id=? AND u.verified= true`,
+      [userId]
+    );
     if (user.length < 0) throw new Error("User Not Found");
     req.decodedToken = decodedToken;
+    req.userData = user[0];
     next();
   } catch (error) {
     res.status(401).json("invalid token");

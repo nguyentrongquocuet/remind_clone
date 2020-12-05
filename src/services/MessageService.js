@@ -91,5 +91,33 @@ export class MessageService {
       },
     });
   };
+  static initialPrivateRoom = (receiverId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong!!!");
+    return BaseService.post(
+      "message/initialPrivateRoom",
+      {
+        receiverId: receiverId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
+
+  static getPrivateChatData = (classId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong!!!");
+    return BaseService.get("message/getPrivateConversationData", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        classId: classId,
+      },
+    });
+  };
 }
 export default MessageService;

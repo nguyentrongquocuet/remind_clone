@@ -24,7 +24,23 @@
 .authform {
   max-width: 600px;
 }
-
+.center {
+  .confirm.form__modal {
+    padding: 1rem;
+    .confirm-message {
+      p {
+        // font-weight: bold;
+        color: var(--primary);
+        font-size: 1rem;
+      }
+      margin-bottom: 2rem;
+    }
+    .confirm-choice {
+      display: flex;
+      justify-content: space-around;
+    }
+  }
+}
 @media screen and (max-width: 800px) {
   .authform {
     margin-left: 1rem;

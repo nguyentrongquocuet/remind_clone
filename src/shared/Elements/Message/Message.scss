@@ -4,13 +4,17 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  // overflow: hidden;
   padding: 0.5rem 1rem;
   // background-color: var(--secondary);
   border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
-  background-color: #0077b6;
+  background-color: #abc4d6;
   margin-bottom: 0.25rem;
   text-align: left;
   font-size: 0.9rem;
+  a {
+    text-decoration: underline;
+  }
   .file-preview {
     max-width: calc(280px - 2rem);
     video {
@@ -26,7 +30,7 @@
     cursor: pointer;
     max-width: 280px;
     background-color: whitesmoke;
-
+    overflow: hidden;
     .image-placeholder {
       opacity: 0;
       width: 280px;
@@ -56,6 +60,7 @@
 .announcement {
   @extend .message;
   padding: 0;
+  position: relative;
   &__header {
     cursor: pointer;
     display: flex;
@@ -66,7 +71,18 @@
     align-items: center;
     width: 100%;
     background-color: #ffffff;
-    border: 1px solid var(--primary);
+    border: 1px solid #abc4d6;
+    .announcement-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      span.announcement-target {
+        // font-weight: normal;
+        font-size: 0.7em;
+        color: var(--secondary);
+        text-transform: capitalize;
+      }
+    }
     span {
       // font-size: 1rem;
       font-weight: 650;

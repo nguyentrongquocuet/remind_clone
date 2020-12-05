@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useState } from "react";
 import App from "./App";
 import Auth from "./auth";
-import UserService from "./services/UserService";
 import * as local from "./shared/Util/LocalStorage";
 import RealTimeService from "./services/RealTimeService";
 import PopUp from "./shared/Elements/PopUp";
 import popupSubject from "./shared/Util/PopupSubject";
 const { Context } = require("./shared/Util/context");
+
 const reducer = (context, actions) => {
   let outContext = context;
   if (typeof actions === "object") {
@@ -91,6 +91,10 @@ const contextReducer = (context, action) => {
           [action.payload.classId]: action.payload,
         },
       };
+    case "SET_REDIRECT_URL":
+      return { ...context, redirectUrl: action.payload.url };
+    case "CLEAR_REDIRECT_URL":
+      return { ...context, redirectUrl: null };
     case "LOGOUT":
       localStorage.clear();
       return {};
@@ -129,38 +133,6 @@ const Store = () => {
         dispatch({ type: "LOGOUT" });
       }
     });
-    if (!globalState.toggleSignup)
-      UserService.auth()
-        .then((data) => {
-          if (!data) {
-            dispatch({
-              type: "LOGOUT",
-            });
-          } else {
-            dispatch({
-              1: {
-                type: "SET_TOKEN",
-                payload: data.token,
-              },
-              2: {
-                type: "SET_USER_DATA",
-                payload: data.userData,
-              },
-              3: {
-                type: "LOGIN_SUCCESS",
-              },
-            });
-          }
-        })
-        .catch((error) =>
-          popupSubject.next({
-            type: "ERROR",
-            message: error.response
-              ? error.response.data
-              : "Some errors occured",
-            showTime: 5,
-          })
-        );
   }, []);
   useEffect(() => {
     if (globalState.isLoggedIn && !globalState.settingUpIsDone) {

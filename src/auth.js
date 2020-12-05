@@ -5,16 +5,11 @@ import { Context } from "./shared/Util/context";
 import popUpSubject from "./shared/Util/PopupSubject";
 
 const Auth = ({ setAuth }) => {
-  const { dispatch, globalState } = useContext(Context);
-  const { isLoggedIn, userData } = globalState;
+  const { dispatch } = useContext(Context);
   useEffect(() => {
     UserService.auth()
       .then((data) => {
-        if (!data) {
-          dispatch({
-            type: "LOGOUT",
-          });
-        } else {
+        if (data) {
           dispatch({
             1: {
               type: "SET_TOKEN",
@@ -29,12 +24,13 @@ const Auth = ({ setAuth }) => {
             },
           });
         }
+
         // setTimeout(() => setAuth(true), 1000);
         setAuth(true);
       })
       .catch((error) =>
         popUpSubject.next({
-          type: "ERROR",
+          type: "WARN",
           message: error.response ? error.response.data : "Some errors occured",
           showTime: 5,
         })

@@ -1,0 +1,36 @@
+.only-file-preview {
+  max-height: 90vh;
+  max-width: 600px;
+  padding-bottom: 1rem;
+  overflow-y: auto;
+  .info {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+    .info-head {
+      text-transform: uppercase;
+      margin: 0.25rem 0;
+      color: var(--secondary);
+      font-size: 0.95rem;
+    }
+    .message-preview {
+      width: 100%;
+      .message {
+        a {
+          filter: brightness(150%);
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .info-avatar {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      .name {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+}

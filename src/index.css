@@ -67,6 +67,8 @@ code {
 }
 #root {
   overflow: hidden;
+  max-width: 1500px;
+  margin: 0 auto;
 }
 .sticky {
   position: sticky;

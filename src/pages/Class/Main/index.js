@@ -14,18 +14,50 @@ import "./Main.scss";
 import Skeleton from "@material-ui/lab/Skeleton";
 import ClassService from "../../../services/ClassService";
 import popUpSubject from "../../../shared/Util/PopupSubject";
+import ModalSubject from "../../../shared/Util/ModalSubject";
+import UserService from "../../../services/UserService";
+import MessageService from "../../../services/MessageService";
+import Loading from "../../../shared/components/Loading";
 const Messages = React.lazy(() => import("./tabs/Messages"));
+const toggleInvite = () => {
+  ModalSubject.next({
+    type: "INVITE_PEOPLE",
+  });
+};
 const ClassMain = (props) => {
   const { globalState, dispatch } = useContext(Context);
 
   const history = useHistory();
-  const classId = useParams().classId;
+  const { classId, userId } = useParams();
   const [checked, setCheck] = useState(false);
   const [expanded, setExpand] = useState(false);
+  const [privateUserInfo, setPrivateUserInfo] = useState(null);
+  const [privateRoomData, setPrivateRoomData] = useState(null);
+  const [initializing, setInitializing] = useState(true);
   const toggleExpand = useCallback(() => setExpand((prev) => !prev), []);
-  useEffect(() => {
+
+  const privateChatPrepare = async () => {
+    setExpand(false);
+    setInitializing(true);
+    try {
+      const privateRoomData = await MessageService.initialPrivateRoom(userId);
+      setPrivateRoomData(privateRoomData.data);
+    } catch (error) {
+      if (error.response) {
+        popUpSubject.next({
+          type: "WARN",
+          message: error.response.data,
+          showTime: 4,
+        });
+      }
+    } finally {
+      setInitializing(false);
+    }
+  };
+  useEffect(async () => {
     if (!props.loading) {
       let flag = false;
+
       for (const id of Object.keys(globalState.classData)) {
         if (id == classId) {
           flag = true;
@@ -41,7 +73,7 @@ const ClassMain = (props) => {
             })
             .catch((error) =>
               popUpSubject.next({
-                type: "ERROR",
+                type: "WARN",
                 message: error.response
                   ? error.response.data
                   : "Some errors occured",
@@ -54,10 +86,22 @@ const ClassMain = (props) => {
         setCheck(false);
         history.push("/");
       }
+      if (userId) {
+        privateChatPrepare();
+        const userInfo = await UserService.getUserInfo(userId);
+        setPrivateUserInfo(userInfo.data);
+      } else {
+        setPrivateUserInfo(null);
+        setPrivateRoomData(null);
+        setInitializing(false);
+      }
     }
     return () => setCheck(false);
-  }, [props.loading, classId]);
+  }, [props.loading, classId, userId]);
 
+  useEffect(async () => {
+    if (!userId) setInitializing(false);
+  }, [userId]);
   // if (props.loading || !checked) return <Loading />;
   const className = globalState.classData[classId].name;
 
@@ -79,7 +123,9 @@ const ClassMain = (props) => {
           <p className="secondary">{`@${classId}`}</p>
         </div>
       </div>
-      <div className="invite">Invite</div>
+      <div className="invite" onClick={toggleInvite}>
+        Invite
+      </div>
     </>
   );
   return (
@@ -89,18 +135,28 @@ const ClassMain = (props) => {
         <Suspense
           fallback={<Skeleton className="messages__wrapper" variant="rect" />}
         >
-          <Messages
-            expanded={expanded}
-            toggleExpand={toggleExpand}
-            loading={!checked || props.loading}
-          />
+          {!initializing ? (
+            <Messages
+              classId={classId}
+              privateChat={Boolean(privateUserInfo)}
+              privateUserInfo={privateUserInfo}
+              privateRoomData={privateRoomData}
+              expanded={expanded}
+              toggleExpand={toggleExpand}
+              loading={!checked || initializing || props.loading}
+            />
+          ) : (
+            <Loading />
+          )}
         </Suspense>
         {/* {room__info--right COMPONENT} */}
-        <ActionSidebar
-          expanded={expanded}
-          toggleExpand={toggleExpand}
-          classId={classId}
-        />
+        {!privateUserInfo && (
+          <ActionSidebar
+            expanded={expanded}
+            toggleExpand={toggleExpand}
+            classId={classId}
+          />
+        )}
       </div>
     </Main>
   );

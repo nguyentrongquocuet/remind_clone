@@ -1,5 +1,5 @@
 const DB = require("../Database/db");
-
+const { ROLE } = require("../Utils/ROLE");
 class SocketIO {
   init(server, app) {
     this.socketId = new Map();
@@ -13,10 +13,18 @@ class SocketIO {
           const [
             classData,
           ] = await DB.db.query(
-            "SELECT * from class_member cm inner join message_room mr on cm.classId = mr.classId  where cm.userId=?",
+            "SELECT * from user_info ui inner join class_member cm on cm.userId=? and ui.id=cm.userId inner join message_room mr on cm.classId = mr.classId",
             [userId]
           );
-          classData.map((c) => socket.join(`class-${c.roomId}`));
+          classData.map((c) => {
+            socket.join(`class-${c.roomId}-all`);
+            socket.join(`class-${c.roomId}-${ROLE[c.role]}`);
+          });
+          const [privateRoom] = await DB.db.query(
+            "SELECT * FROM message_room WHERE privateMember REGEXP ?",
+            `((^${userId},)|,${userId}$)`
+          );
+          privateRoom.map((r) => socket.join(`class-${r.roomId}-all`));
           this.socketId.set(userId, socket.id);
           console.log("oke");
           socket.emit("auth", { socketId: socket.id });
