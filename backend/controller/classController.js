@@ -1,6 +1,49 @@
 const socketIO = require("../configs/socketIO");
 const Db = require("../Database/db");
 const transporter = require("../Mailer/Mailer.js");
+const Redis = require("../configs/Redis");
+
+const cacheClasses = async (classesData) => {
+  if (classesData.classId) {
+    const cachedData = await Redis.getAsync(`class-${classesData.classId}`);
+    if (!cachedData) {
+      await Redis.setAsync(
+        `class-${classesData.classId}`,
+        JSON.stringify(classesData)
+      );
+      await Redis.setAsync(
+        `class-room-${classesData.roomId}`,
+        JSON.stringify(classesData)
+      );
+    }
+  } else {
+    for (const classData of Object.values(classesData)) {
+      const cachedData = await Redis.getAsync(`class-${classData.classId}`);
+      if (!cachedData)
+        await Redis.setAsync(
+          `class-${classData.classId}`,
+          JSON.stringify(classData)
+        );
+      await Redis.setAsync(
+        `class-room-${classData.roomId}`,
+        JSON.stringify(classData)
+      );
+    }
+  }
+};
+
+const cacheUsers = (membersData) => {
+  for (const member of Object.values(membersData)) {
+    if (member.id)
+      Redis.cache.get(`user-${member.id}`, (err, rep) => {
+        console.log(err, rep);
+        if (!err && !rep) {
+          Redis.cache.set(`user-${member.id}`, JSON.stringify(member));
+        }
+      });
+  }
+};
+
 exports.createClass = async (req, res) => {
   const { className } = req.body;
   const { userId } = req.decodedToken;
@@ -41,6 +84,7 @@ exports.createClass = async (req, res) => {
     }
 
     res.send(data[0]);
+    cacheClasses(data[0]);
   } catch (error) {
     res.status(404).json("Something went wrong!");
     throw error;
@@ -69,6 +113,8 @@ exports.getClass = async (req, res) => {
       }
     }
     res.status(200).json(finalClasses);
+    //cache to redis
+    cacheClasses(finalClasses);
   } catch (error) {
     throw error;
   }
@@ -95,6 +141,7 @@ exports.getChildrenClasses = async (req, res) => {
     prev[cur.classId] = cur;
     return prev;
   }, {});
+  cacheClasses(finalClasses);
   res.status(200).json(finalClasses);
 };
 // SELECT * FROM class_member cm INNER JOIN class c ON  cm.userId =?
@@ -161,6 +208,7 @@ exports.getMembers = async (req, res) => {
     setTimeout(() => {
       res.status(200).json(finalMembers);
     }, 500);
+    cacheUsers(finalMembers);
   } catch (error) {
     throw error;
   }

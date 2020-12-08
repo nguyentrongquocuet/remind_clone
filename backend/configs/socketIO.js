@@ -7,7 +7,12 @@ class SocketIO {
     this.io.set("match origin protocol", true);
     this.io.set("origins", "http://localhost:3000");
     app.set("io", this.io);
-    this.io.on("connection", (socket) => {
+    this.io.use(async (socket, next) => {
+      await DB.db.query("UPDATE analysis SET amount = amount+1 WHERE id=2");
+      next();
+    });
+    this.io.on("connection", async (socket) => {
+      console.log("CONNECT TO", socket.id);
       socket.on("auth", async (userId) => {
         if (userId) {
           const [

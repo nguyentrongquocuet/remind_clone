@@ -106,7 +106,12 @@ const Login = () => {
             login={submitFormHandler}
           />
         )}
-        {mode === 2 && <NewPassword onSuccess={() => setMode(1)} />}
+        {mode === 2 && (
+          <NewPassword
+            onClose={() => setMode(1)}
+            onSuccess={() => setMode(1)}
+          />
+        )}
         {mode === 3 && (
           <div className="confirm-code center">
             <h3>Verify code have been sent to your email.Enter Code Below</h3>

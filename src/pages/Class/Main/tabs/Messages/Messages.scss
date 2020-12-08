@@ -1,3 +1,24 @@
+.messages__wrapper {
+  flex-grow: 1;
+  height: 100%;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+  border-right: 1px solid var(--headborder);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  // justify-content: flex-end;
+  &::after {
+    content: "";
+    display: block;
+    width: calc(100%);
+    height: 1rem;
+    position: absolute;
+    top: -0.5rem;
+    left: 0;
+    background-color: #fafafa;
+    filter: blur(0.5rem);
+  }
+}
 .messages__wrapper.expanded {
   display: none;
 }
@@ -12,13 +33,32 @@
     }
   }
 }
-.allmessages {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1rem;
+.fix {
   overflow-y: auto;
-  overflow-x: hidden;
+  transform: rotate(180deg);
+  direction: rtl;
+  height: 100%;
+  margin-bottom: 0.5rem;
+
+  .allmessages {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    // overflow-y: auto;
+    // overflow-x: hidden;
+    direction: ltr;
+    .message__wrapper,
+    .announcement {
+      transform: rotate(180deg) !important;
+      align-self: flex-end;
+      overflow: visible;
+    }
+    .owner {
+      align-self: flex-start !important;
+    }
+  }
 }
+
 .incoming-schedules {
   display: flex;
   flex-direction: row;
@@ -93,7 +133,7 @@
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
   flex-direction: row;
   align-items: center;
-  margin-bottom: 0.5rem;
+  // margin-bottom: 0.5rem;
   padding: 0.5rem;
   .private-label {
     align-self: flex-start;

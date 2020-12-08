@@ -54,52 +54,54 @@ const ClassMain = (props) => {
       setInitializing(false);
     }
   };
-  useEffect(async () => {
-    if (!props.loading) {
-      let flag = false;
-
-      for (const id of Object.keys(globalState.classData)) {
-        if (id == classId) {
-          flag = true;
-          ClassService.getClassMembers(classId)
-            .then((data) => {
-              dispatch({
-                type: "SET_CLASS_MEMBER",
-                classId: classId,
-                payload: data.data,
-              });
-              setCheck(true);
-              return;
-            })
-            .catch((error) =>
-              popUpSubject.next({
-                type: "WARN",
-                message: error.response
-                  ? error.response.data
-                  : "Some errors occured",
-                showTime: 5,
+  useEffect(() => {
+    const checkAndGetClassMembers = async () => {
+      if (!props.loading) {
+        let flag = false;
+        for (const id of Object.keys(globalState.classData)) {
+          if (id == classId) {
+            flag = true;
+            ClassService.getClassMembers(classId)
+              .then((data) => {
+                dispatch({
+                  type: "SET_CLASS_MEMBER",
+                  classId: classId,
+                  payload: data.data,
+                });
+                setCheck(true);
+                return;
               })
-            );
+              .catch((error) =>
+                popUpSubject.next({
+                  type: "WARN",
+                  message: error.response
+                    ? error.response.data
+                    : "Some errors occured",
+                  showTime: 5,
+                })
+              );
+          }
+        }
+        if (!flag) {
+          setCheck(false);
+          history.push("/");
+        }
+        if (userId) {
+          privateChatPrepare();
+          const userInfo = await UserService.getUserInfo(userId);
+          setPrivateUserInfo(userInfo.data);
+        } else {
+          setPrivateUserInfo(null);
+          setPrivateRoomData(null);
+          setInitializing(false);
         }
       }
-      if (!flag) {
-        setCheck(false);
-        history.push("/");
-      }
-      if (userId) {
-        privateChatPrepare();
-        const userInfo = await UserService.getUserInfo(userId);
-        setPrivateUserInfo(userInfo.data);
-      } else {
-        setPrivateUserInfo(null);
-        setPrivateRoomData(null);
-        setInitializing(false);
-      }
-    }
+    };
+    checkAndGetClassMembers();
     return () => setCheck(false);
   }, [props.loading, classId, userId]);
 
-  useEffect(async () => {
+  useEffect(() => {
     if (!userId) setInitializing(false);
   }, [userId]);
   // if (props.loading || !checked) return <Loading />;

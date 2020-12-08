@@ -17,6 +17,7 @@ import ROLE from "../../../../../shared/Util/ROLE";
 import moment from "moment";
 import "./Members.scss";
 import PeopleInfo from "../../../Modal/PeopleInfo";
+import useFind from "../../../../../shared/Util/useFind";
 const sort = (field = "id", desc = -1) => {
   if (desc === 0) desc = 1;
   return (a, b) => {
@@ -51,6 +52,7 @@ const reducer = (state, action) => {
       };
   }
 };
+const makeFilterField = (e) => e.firstName + " " + e.lastName;
 const Members = (props) => {
   const { classId } = props;
   //for get info
@@ -61,6 +63,7 @@ const Members = (props) => {
     setUserId(id);
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
+  const [setQuery, searchFilter] = useFind("", "i");
 
   const open = Boolean(anchorEl);
   const [sortOptions, setSortOptions] = useState({ field: "name", desc: -1 });
@@ -77,7 +80,6 @@ const Members = (props) => {
     people: null,
     filterRole: null,
   });
-
   useEffect(() => {
     try {
       const getMembers = async () => {
@@ -120,7 +122,7 @@ const Members = (props) => {
       {state.people ? (
         <div>
           <div className="actions">
-            <TextField placeholder="Search people" />
+            <TextField onChange={setQuery} placeholder="Search people" />
             <div
               className="filter"
               onClick={(e) => {
@@ -241,6 +243,7 @@ const Members = (props) => {
                   <TableBody>
                     {Object.values(state.people)
                       .filter(filter(state.filterRole))
+                      .filter((e) => searchFilter.test(makeFilterField(e)))
                       .sort(sort(sortOptions.field, sortOptions.desc))
                       .map((member) => (
                         <TableRow key={member.id}>

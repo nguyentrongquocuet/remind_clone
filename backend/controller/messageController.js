@@ -3,6 +3,47 @@ const schedule = require("node-schedule");
 
 const Db = require("../Database/db");
 const { ROLE } = require("../Utils/ROLE");
+const Redis = require("../configs/Redis");
+
+const sendAnnouncement = async (values, sendAnnouncementQuery, userSocket) => {
+  const [send] = await Db.db.query(sendAnnouncementQuery, [values]);
+  const [
+    getBack,
+  ] = await Db.db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
+    send.insertId,
+    send.insertId + send.insertId + send.affectedRows,
+  ]);
+
+  userSocket.emit("schedule", {
+    type: "SCHEDULE_DONE",
+  });
+  let classList = [];
+  for (let back of getBack) {
+    classList.push({
+      ...JSON.parse(await Redis.getAsync(`class-room-${back.roomId}`)),
+      target: back.target,
+    });
+    userSocket.emit("messages", { ...back });
+    userSocket
+      .to(`class-${back.roomId}-${back.target}`)
+      .emit("messages", { ...back });
+  }
+  console.log(classList);
+  let promiseList = [];
+  classList.forEach(async (classData) => {
+    promiseList.push(
+      Db.db.query(
+        `SELECT * FROM user_info WHERE id IN (SELECT userId FROM class_member WHERE classId = ?) ${
+          classData.target !== "all" ? "AND role =?" : ""
+        }`,
+        [classData.classId, ROLE[classData.target]]
+      )
+    );
+  });
+  console.log((await Promise.all(promiseList)).map((list) => list[0]));
+  return classList;
+};
+
 exports.sendMessage = async (req, res) => {
   const userId = req.decodedToken.userId;
   const roomId = req.query.roomId;
@@ -25,13 +66,6 @@ exports.sendMessage = async (req, res) => {
     const [getBack] = await db.query(`SELECT * FROM messages WHERE id = ?`, [
       send.insertId,
     ]);
-    console.log(
-      "from",
-      socketIO.socketId.entries(),
-      "to",
-      socketIO.socketId.get(userId)
-    );
-    console.log(socket.rooms);
     if (!socket.rooms[`class-${roomId}-all`]) {
       socket.join(`class-${roomId}-all`);
     }
@@ -43,7 +77,6 @@ exports.sendMessage = async (req, res) => {
 };
 exports.sendAnnouncement = async (req, res) => {
   const userId = req.decodedToken.userId;
-  console.log(req.body);
   const { roomIds, content, scheduleTime } = req.body;
   const userSocket =
     socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
@@ -52,7 +85,6 @@ exports.sendAnnouncement = async (req, res) => {
       return s.split(":");
     })
   );
-  console.log(rooms);
   const file = req.file;
   const db = Db.db;
   let filePath = null;
@@ -121,25 +153,29 @@ exports.sendAnnouncement = async (req, res) => {
           const getBackScheduleValues = getBackSchedule.map((gBS) => {
             return Object.values(gBS);
           });
-          const [send] = await db.query(sendAnnouncementQuery, [
+          await sendAnnouncement(
             getBackScheduleValues,
-          ]);
-          const [
-            getBack,
-          ] = await db.query(
-            `SELECT * FROM messages WHERE id BETWEEN ? AND ?`,
-            [send.insertId, send.insertId + +send.affectedRows]
-          );
-          console.log(fireDate);
-          // if (userSocket) {
-          for (let back of getBack) {
-            // userSocket.emit("messages", { ...getBack[index] });
-            // userSocket
-            userSocket.emit("messages", { ...back });
+            sendAnnouncementQuery,
             userSocket
-              .to(`class-${back.roomId}-${back.target}`)
-              .emit("messages", { ...back });
-          }
+          );
+          // const [send] = await db.query(sendAnnouncementQuery, [
+          //   getBackScheduleValues,
+          // ]);
+          // const [
+          //   getBack,
+          // ] = await db.query(
+          //   `SELECT * FROM messages WHERE id BETWEEN ? AND ?`,
+          //   [send.insertId, send.insertId + +send.affectedRows]
+          // );
+          // console.log(fireDate);
+          // userSocket.emit("schedule", {
+          //   type: "SCHEDULE_DONE",
+          // });
+          // for (let back of getBack) {
+          //   userSocket.emit("messages", { ...back });
+          //   userSocket
+          //     .to(`class-${back.roomId}-${back.target}`)
+          //     .emit("messages", { ...back });
           // }
         }
       );
@@ -151,31 +187,31 @@ exports.sendAnnouncement = async (req, res) => {
     }
   }
   //send immediately
-  console.log("expried");
+  console.log("expired");
 
   let values = Object.entries(rooms).map((room) => {
     return [userId, room[0], content, filePath, 1, room[1]];
   });
-  const [send] = await db.query(sendAnnouncementQuery, [values]);
-  const [
-    getBack,
-  ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
-    send.insertId,
-    send.insertId + send.insertId + send.affectedRows,
-  ]);
+  sendAnnouncement(values, sendAnnouncementQuery, userSocket);
+  // const [send] = await db.query(sendAnnouncementQuery, [values]);
+  // const [
+  //   getBack,
+  // ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
+  //   send.insertId,
+  //   send.insertId + send.insertId + send.affectedRows,
+  // ]);
 
-  // if (userSocket) {
-  for (let back of getBack) {
-    // userSocket.emit("messages", { ...getBack[index] });
-    // userSocket
-    userSocket.emit("messages", { ...back });
-    userSocket
-      .to(`class-${back.roomId}-${back.target}`)
-      .emit("messages", { ...back });
-  }
+  // userSocket.emit("schedule", {
+  //   type: "SCHEDULE_DONE",
+  // });
+  // for (let back of getBack) {
+  //   userSocket.emit("messages", { ...back });
+  //   userSocket
+  //     .to(`class-${back.roomId}-${back.target}`)
+  //     .emit("messages", { ...back });
   // }
 
-  return res.status(200).json({
+  res.status(200).json({
     rooms,
     userId,
     filePath,
@@ -190,15 +226,12 @@ exports.getScheduleDetails = async (req, res) => {
   const getDetailsQuery =
     "SELECT * FROM announcement_schedule WHERE senderId = ? AND scheduleId=? AND done=false";
   try {
-    // const [info] = await db.query(getRequireInfoQuery, [scheduleId]);
-    // const scheduleId = info[0].scheduleId;
     const [details] = await db.query(getDetailsQuery, [userId, scheduleId]);
     if (details.length > 0) {
       const mergedDetail = {
         ...details[0],
         roomIds: Object.fromEntries(
           details.map((detail) => {
-            //TODO: GET ANNOUNCEMENT TARGET:parent, student...
             return [detail.roomId, detail.target];
           })
         ),
@@ -305,25 +338,29 @@ exports.editSchedule = async (req, res) => {
           return gBS.roomId;
         });
         let sendAnnouncementQuery = `INSERT INTO messages(senderId, roomId, content,file, type,target) VALUES ?`;
-        const [send] = await db.query(sendAnnouncementQuery, [
+        await sendAnnouncement(
           getBackScheduleValues,
-        ]);
-        const [
-          getBack,
-        ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
-          send.insertId,
-          send.insertId + +send.affectedRows,
-        ]);
-        console.log(fireDate);
-        // if (userSocket) {
-        for (let back of getBack) {
-          // userSocket.emit("messages", { ...getBack[index] });
-          // userSocket
-          userSocket.emit("messages", { ...back });
+          sendAnnouncementQuery,
           userSocket
-            .to(`class-${back.roomId}-${back.target}`)
-            .emit("messages", { ...back });
-        }
+        );
+        userSocket.emit("schedule", {
+          type: "SCHEDULE_DONE",
+        });
+        // const [send] = await db.query(sendAnnouncementQuery, [
+        //   getBackScheduleValues,
+        // ]);
+        // const [
+        //   getBack,
+        // ] = await db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
+        //   send.insertId,
+        //   send.insertId + +send.affectedRows,
+        // ]);
+        // console.log(fireDate);
+        // for (let back of getBack) {
+        //   userSocket.emit("messages", { ...back });
+        //   userSocket
+        //     .to(`class-${back.roomId}-${back.target}`)
+        //     .emit("messages", { ...back });
         // }
       }
     );
@@ -335,6 +372,8 @@ exports.editSchedule = async (req, res) => {
 };
 exports.deleteSchedule = async (req, res) => {
   const userId = req.decodedToken.userId;
+  const userSocket =
+    socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   const { scheduleId } = req.query;
   const db = Db.db;
   console.log("d");
@@ -343,6 +382,12 @@ exports.deleteSchedule = async (req, res) => {
       "DELETE FROM announcement_schedule WHERE scheduleId = ? AND senderId = ?",
       [scheduleId, userId]
     );
+    userSocket.emit("schedule", {
+      type: "SCHEDULE_CANCEL",
+      // schedule: {
+      //   ...getBackSchedule[0],
+      // },
+    });
     res.status(200).json("Delete success");
   } catch (error) {
     res.status(500).json("SERVER ERROR");
@@ -351,11 +396,10 @@ exports.deleteSchedule = async (req, res) => {
 };
 exports.getMessages = async (req, res) => {
   const userId = req.decodedToken.userId;
-  const roomId = req.query.roomId;
+  const { roomId } = req.query;
   const db = Db.db;
   console.log("Get message");
   const role = req.userData.role;
-  console.log("role", ROLE[role]);
   try {
     const [
       messages,
@@ -374,9 +418,27 @@ exports.getMessages = async (req, res) => {
     res.status(404).json("Server error");
   }
 };
+
+exports.getSchedules = async (req, res) => {
+  const { roomId } = req.query;
+  const userId = req.decodedToken.userId;
+  const db = Db.db;
+  try {
+    const [
+      schedules,
+    ] = await db.query(
+      `SELECT * FROM announcement_schedule WHERE roomId = ? AND senderId = ? AND done = false`,
+      [roomId, userId]
+    );
+    res.status(200).json(schedules);
+  } catch (error) {
+    console.log("Error");
+    return res.status(500).json("Server Error!");
+  }
+};
+
 exports.getFiles = async (req, res) => {
   const { classId } = req.query;
-  console.log("GETFIE");
   const db = Db.db;
   const [[{ roomId }]] = await db.query(
     "SELECT roomId FROM message_room WHERE classId = ?",
@@ -386,7 +448,6 @@ exports.getFiles = async (req, res) => {
     "SELECT * FROM messages WHERE roomId = ? AND file IS NOT NULL",
     roomId
   );
-  console.log(files);
   setTimeout(() => {
     res.status(200).json(files);
   }, 500);
@@ -445,10 +506,11 @@ exports.getPrivateConversationData = async (req, res) => {
   const userId = req.decodedToken.userId;
   const { classId } = req.query;
   const db = Db.db;
+  console.log(req.query);
   const [
     privateRooms,
   ] = await db.query(
-    "SELECT * FROM message_room WHERE (member2 =? AND member1 IN (SELECT userId FROM class_member WHERE classId = ?)) or (member1 = ? AND member2 IN (SELECT userId FROM class_member WHERE classId = ?))",
+    "SELECT * FROM message_room WHERE (member2 = ? AND member1 IN (SELECT userId FROM class_member WHERE classId = ?)) or (member1 = ? AND member2 IN (SELECT userId FROM class_member WHERE classId = ?))",
     [userId, classId, userId, classId]
   );
   const userSet = new Set(
@@ -459,6 +521,7 @@ exports.getPrivateConversationData = async (req, res) => {
   );
   const userList = Array.from(userSet.values());
   console.log(userList);
+  if (userList.length === 0) return res.status(200).json([]);
   const [
     getUsersDetails,
   ] = await db.query("SELECT * FROM user_info WHERE id IN (?)", [userList]);

@@ -21,7 +21,6 @@ const Message = ({ message, senderData, onPreview, classAvatar }) => {
   const own = message.senderId == userId;
 
   // if(content.type==="text")
-  const [anchorEl, setAnchorEl] = useState(null);
   useLayoutEffect(() => {
     if (message.type === 1) {
       const messElement = document.getElementById(`message${message.id}`);
@@ -36,50 +35,12 @@ const Message = ({ message, senderData, onPreview, classAvatar }) => {
       }
     }
   }, [message]);
-  const handleClick = (type, event) => {
-    event.preventDefault();
-    if (type === "off") {
-      if (anchorEl) setAnchorEl(null);
-    } else {
-      if (!anchorEl) setAnchorEl(event.currentTarget);
-    }
-  };
-  const open = Boolean(anchorEl);
   // CAN USE FOR MESSAGE REACTING
   const popper = (
-    <Popper
-      width="fit-content"
-      className="secondary"
-      // id={id}
-      open={open}
-      anchorEl={anchorEl}
-      placement={own ? "left" : "right"}
-    >
-      <div
-        onClick={(e) =>
-          ModalSubject.next({
-            type: "VIEW_PEOPLE",
-            data: {
-              event: e,
-              userId: senderData.id,
-            },
-          })
-        }
-        className="popper__element"
-        style={{
-          cursor: "pointer",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          width: "120%",
-          position: "relative",
-          left: "-.5rem",
-        }}
-      >
-        {!own && <p>{senderData ? senderData.name : "dummy"}</p>}
-        <p>{localTime(message.createAt) || "now"}</p>
-      </div>
-    </Popper>
+    <div className="message-time-info">
+      {!own && <p className="name">{senderData ? senderData.name : "dummy"}</p>}
+      <p>{localTime(message.createAt) || "now"}</p>
+    </div>
   );
 
   const text =
@@ -103,43 +64,42 @@ const Message = ({ message, senderData, onPreview, classAvatar }) => {
     ) : null;
 
     return (
-      <div
-        onMouseLeave={(e) => {
-          handleClick("off", e);
-        }}
-        onMouseOver={(e) => {
-          handleClick("on", e);
-        }}
-        className={`message ${own ? "owner" : ""}`}
-      >
-        {normalMessage}
-        {message.file && (
-          <div ref={ref}>
-            <AttachFilePreview
-              // imgRef={ref}
-              onClick={onPreview}
-              className="image"
-              fileUrl={message.file}
-              visible={visible}
-            />
-          </div>
-        )}
+      <div className={`message__wrapper  ${own ? "owner" : ""}`}>
+        <Avatar
+          onClick={(e) =>
+            ModalSubject.next({
+              type: "VIEW_PEOPLE",
+              data: {
+                event: e,
+                userId: senderData.id,
+              },
+            })
+          }
+          className="small"
+          src={senderData ? senderData.avatar : " "}
+        ></Avatar>
+        <div className={`message`}>
+          {normalMessage}
+          {message.file && (
+            <div ref={ref}>
+              <AttachFilePreview
+                // imgRef={ref}
+                onClick={onPreview}
+                className="image"
+                fileUrl={message.file}
+                visible={visible}
+              />
+            </div>
+          )}
 
-        {popper}
+          {popper}
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      onMouseLeave={(e) => {
-        handleClick("off", e);
-      }}
-      onMouseOver={(e) => {
-        handleClick("on", e);
-      }}
-      className={`announcement ${own ? "owner" : ""}`}
-    >
+    <div className={`announcement ${own ? "owner" : ""}`}>
       <header className="announcement__header">
         <Avatar
           className="alter-avatar small"

@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 
-import ClassService from "../../../../../services/ClassService";
 import HeaderNav from "../../../../../shared/Elements/HeaderNav";
 import Loading from "../../../../../shared/components/Loading";
 import "./ActionSidebar.scss";

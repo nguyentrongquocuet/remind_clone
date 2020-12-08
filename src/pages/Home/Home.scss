@@ -41,8 +41,7 @@
 .MuiButton-root.banner__signup {
   padding: 1rem 6rem;
 }
-.form__header {
-}
+
 #modal-hook .center {
   display: flex;
   justify-content: center;
@@ -51,6 +50,9 @@
 .form__modal {
   // pointer-events: none;
   width: fit-content;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+
   .signupform__wrapper {
     // pointer-events: none;
     display: flex;

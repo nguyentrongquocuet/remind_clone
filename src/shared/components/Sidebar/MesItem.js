@@ -1,6 +1,5 @@
 import { Avatar } from "@material-ui/core";
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import "./MesItem.scss";
 const MessItem = ({
@@ -11,9 +10,9 @@ const MessItem = ({
   message,
   // active,
   unread,
+  owner = false,
   ...props
 }) => {
-  const history = useHistory();
   return (
     <NavLink
       to={path ? `/classes/${path}` : "#"}
@@ -21,18 +20,12 @@ const MessItem = ({
       className={`sidebar__part__e classitem ${unread && "unread"}`}
       activeClassName={"item--active"}
     >
-      <Avatar
-        src={
-          avatar ||
-          "https://remind.imgix.net/2e24f4f6-1f7e-4dad-aab9-94f69e462d45/math.svg"
-        }
-        className="medium "
-        alt={name}
-      ></Avatar>
+      <Avatar src={avatar} className="medium " alt={name}></Avatar>
       <div title={name} className="messitem">
         <span className="break-word-ellipsis">{name}</span>
         <span className="break-word-ellipsis">{message}</span>
       </div>
+      {owner && <img className="class-owner-icon small" src="/crown.svg" />}
     </NavLink>
   );
 };

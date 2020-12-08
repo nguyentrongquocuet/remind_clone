@@ -1,0 +1,9 @@
+.admin-overall {
+  padding: 1rem;
+  .overall-info {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+}

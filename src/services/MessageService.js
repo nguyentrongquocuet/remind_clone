@@ -43,6 +43,20 @@ export class MessageService {
       },
     });
   };
+
+  static getSchedules = (roomId) => {
+    const token = JSON.parse(localStorage.getItem("token"));
+    if (!token) return new Error("Something went wrong");
+    return BaseService.get(`message/schedules`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        roomId: roomId,
+      },
+    });
+  };
+
   static getScheduleDetails = (scheduleId) => {
     const token = JSON.parse(localStorage.getItem("token"));
     if (!token) return new Error("Something went wrong");

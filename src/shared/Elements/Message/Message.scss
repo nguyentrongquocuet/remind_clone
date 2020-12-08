@@ -1,15 +1,35 @@
+.message__wrapper {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0.25rem;
+  border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
+  .small {
+    align-self: flex-end;
+    margin: 0 1px;
+    cursor: pointer;
+  }
+  &.owner {
+    flex-direction: row-reverse;
+    margin-left: 0.25rem;
+    .small {
+      display: none;
+    }
+    .message {
+      border-radius: 0.7rem 0.7rem 0.2rem 0.7rem;
+    }
+  }
+}
 .message {
   width: fit-content;
   max-width: 280px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  // overflow: hidden;
-  padding: 0.5rem 1rem;
+  overflow: hidden;
+  margin-top: auto;
   // background-color: var(--secondary);
   border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
   background-color: #abc4d6;
-  margin-bottom: 0.25rem;
   text-align: left;
   font-size: 0.9rem;
   a {
@@ -24,7 +44,7 @@
   }
   .image {
     padding-left: 0;
-    margin-left: -1rem;
+    // margin-left: -1rem;
     background-size: cover;
     max-height: 120px;
     cursor: pointer;
@@ -39,6 +59,8 @@
     }
   }
   &__content {
+    padding: 0.5rem 1rem;
+
     p {
       word-wrap: normal;
       word-break: break-word;
@@ -46,12 +68,35 @@
     }
     // margin-bottom: 0.5rem;
   }
+  .message-time-info {
+    cursor: pointer;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    // width: fit-content;
+    font-size: 0.7rem;
+    top: -1rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 0.25rem;
+    border-radius: 4px;
+    p {
+      width: fit-content;
+      color: wheat;
+      white-space: nowrap;
+      max-width: unset;
+    }
+  }
+  &:hover .message-time-info {
+    display: flex;
+  }
 }
 .message.owner {
   // @extend .message;
   align-self: flex-end;
   background-color: var(--primary);
   border-radius: 0.7rem 0.7rem 0.2rem 0.7rem;
+  margin-left: 0.25rem;
 }
 .message.popper__element {
   display: flex;
@@ -59,6 +104,7 @@
 }
 .announcement {
   @extend .message;
+  margin-bottom: 0.25rem;
   padding: 0;
   position: relative;
   &__header {

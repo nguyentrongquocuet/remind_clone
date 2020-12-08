@@ -48,4 +48,10 @@ Router.get(
   authMiddleWare,
   controller.getPrivateConversationData
 );
+Router.get(
+  "/schedules",
+  authMiddleWare,
+  roleCheck("teacher"),
+  controller.getSchedules
+);
 module.exports = Router;

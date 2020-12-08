@@ -233,7 +233,10 @@ const Class = () => {
                         type: "TOGGLE_INVITE",
                       })
                     }
-                    classNames={{ wrapper: "center", content: "form__modal" }}
+                    classNames={{
+                      wrapper: "center",
+                      content: "form__modal invite",
+                    }}
                   >
                     <InviteToClass
                       classId={classId}

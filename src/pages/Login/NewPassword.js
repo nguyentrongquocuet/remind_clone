@@ -6,7 +6,7 @@ import UserService from "../../services/UserService";
 import PopupSubject from "../../shared/Util/PopupSubject";
 import VALIDATOR from "../../shared/Util/Validator";
 
-const NewPassword = ({ onSuccess }) => {
+const NewPassword = ({ onSuccess, onClose }) => {
   const { register, handleSubmit, watch, errors, formState } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -123,6 +123,9 @@ const NewPassword = ({ onSuccess }) => {
           >
             Confirm
           </Button>
+          <Button onClick={onClose} color="primary">
+            Back
+          </Button>
         </div>
       </>
     );
@@ -152,6 +155,9 @@ const NewPassword = ({ onSuccess }) => {
           disabled={loading}
         >
           Resend
+        </Button>
+        <Button onClick={(e) => setMode(1)} color="primary">
+          Back
         </Button>
       </div>
     );
@@ -194,6 +200,13 @@ const NewPassword = ({ onSuccess }) => {
         color="primary"
       >
         Confirm
+      </Button>
+      <Button
+        style={{ marginLeft: "1rem" }}
+        onClick={(e) => setMode(1)}
+        color="primary"
+      >
+        Back
       </Button>
     </form>
   );

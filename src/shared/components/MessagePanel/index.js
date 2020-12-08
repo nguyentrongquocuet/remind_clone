@@ -26,15 +26,17 @@ const toggleChildrenClass = (e) => {
   document.getElementById("children-class-checkbox").click();
 };
 const MessagePanel = ({ loading }) => {
+  const { globalState, dispatch } = useContext(Context);
   const [panelMode, setPanelMode] = useState("classes");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [modalMode, setModal] = useState(null);
-  const { globalState, dispatch } = useContext(Context);
   const [childClasses, setChildClasses] = useState(null);
   const [privateData, setPrivateData] = useState(null);
+  const [conSearch, setConSearch] = useState("");
   const role = ROLE[globalState.userData.role];
   const history = useHistory();
+  const { userData } = globalState;
   const { classId } = useParams();
   const getChildrenClasses = async (e) => {
     const classes = await ClassService.getChildClasses();
@@ -67,11 +69,15 @@ const MessagePanel = ({ loading }) => {
         });
       });
   };
-  useEffect(async () => {
+
+  useEffect(() => {
     if (panelMode === "private") {
-      //fetch private chat room of this class
-      const privateData = await MessageService.getPrivateChatData(classId);
-      setPrivateData(privateData.data);
+      const getPrivateChatData = async () => {
+        //fetch private chat room of this class
+        const privateData = await MessageService.getPrivateChatData(classId);
+        setPrivateData(privateData.data);
+      };
+      getPrivateChatData();
     }
   }, [panelMode]);
   useEffect(() => {
@@ -104,12 +110,15 @@ const MessagePanel = ({ loading }) => {
               showTime: 5,
             });
         }
+        setConSearch(searchQuery);
       }, 1000);
       const f = () => {
         clearTimeout(time);
         setSearchResult(null);
       };
       return () => f();
+    } else {
+      setConSearch("");
     }
   }, [searchQuery]);
   if (loading) return <Loading />;
@@ -213,7 +222,7 @@ const MessagePanel = ({ loading }) => {
       </div>
       {loading ? (
         <Loading />
-      ) : searchQuery.length > 0 ? (
+      ) : searchQuery.length > 0 && panelMode === "classes" ? (
         !searchResult ? (
           <Loading className="user-search-loading" />
         ) : searchResult.length > 0 ? (
@@ -222,6 +231,7 @@ const MessagePanel = ({ loading }) => {
             <div className="messages__list">
               {searchResult.map((r) => (
                 <MessItem
+                  owner={r.owner === userData.id}
                   avatar={r.avatar}
                   path={r.classId}
                   key={r.classId}
@@ -270,6 +280,7 @@ const MessagePanel = ({ loading }) => {
               // .filter((classs) => classs.owner == globalState.userData.id)
               .map((filteredClass) => (
                 <MessItem
+                  owner={filteredClass.owner === userData.id}
                   avatar={filteredClass.avatar}
                   path={filteredClass.classId}
                   key={filteredClass.classId}
@@ -282,18 +293,23 @@ const MessagePanel = ({ loading }) => {
         </>
       ) : privateData ? (
         <div className="messages-list">
-          {privateData.map((p) => {
-            return (
-              <MessItem
-                avatar={p.avatar}
-                path={`${classId}/private/${p.id}`}
-                key={p.id}
-                name={`${p.firstName} ${p.lastName}`}
-                // unread={p.unread}
-                active={false}
-              ></MessItem>
-            );
-          })}
+          {privateData
+            .filter((p) => {
+              const reg = new RegExp(conSearch, "i");
+              return reg.test(`${p.firstName} ${p.lastName}`);
+            })
+            .map((p) => {
+              return (
+                <MessItem
+                  avatar={p.avatar}
+                  path={`${classId}/private/${p.id}`}
+                  key={p.id}
+                  name={`${p.firstName} ${p.lastName}`}
+                  // unread={p.unread}
+                  active={false}
+                ></MessItem>
+              );
+            })}
         </div>
       ) : (
         // <p>{JSON.stringify(privateData)}</p>

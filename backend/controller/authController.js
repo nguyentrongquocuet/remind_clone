@@ -64,13 +64,6 @@ exports.login = async (req, res) => {
         name: `${userInfo[0].firstName} ${userInfo[0].lastName}`,
         children: [...children],
       };
-      // Redis.cache.set(
-      //   `user_data-${userInfo[0].id}`,
-      //   JSON.stringify(userInfo[0])
-      // );
-      // Redis.cache.get("user_data-28", (e, r) => {
-      //   console.log(e, r);
-      // });
       return res.status(200).json({
         token,
         expiresIn: 360000,

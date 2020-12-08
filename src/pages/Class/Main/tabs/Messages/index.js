@@ -28,7 +28,13 @@ const Message = React.lazy(() =>
 );
 //TOTO: CACHE MESSAGES DATA
 const Messages = (props) => {
-  const { privateChat, privateRoomData, privateUserInfo, loading } = props;
+  const {
+    privateChat,
+    privateRoomData,
+    privateUserInfo,
+    loading,
+    expanded,
+  } = props;
   const [messagesState, setMessagesState] = useState({
     messages: [],
     schedules: [],
@@ -39,6 +45,7 @@ const Messages = (props) => {
     file: null,
     schedules: null,
   });
+  const [refreshSchedules, setRefreshSchedules] = useState(false);
   const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
@@ -104,18 +111,7 @@ const Messages = (props) => {
           }
           break;
         case "SCHEDULE":
-          switch (data.action) {
-            case "START":
-              setMessagesState((prev) => {
-                return {
-                  ...prev,
-                  schedules: [...prev.schedules, data.payload],
-                };
-              });
-              break;
-            default:
-              break;
-          }
+          setRefreshSchedules(true);
         default:
           break;
       }
@@ -126,6 +122,30 @@ const Messages = (props) => {
     };
   }, [roomId, classId]);
   //TODO: ADD TRY_CATCH
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const schedulesData = await MessageService.getSchedules(roomId);
+        setMessagesState((prev) => {
+          return { ...prev, schedules: [...schedulesData.data] };
+        });
+        setRefreshSchedules(false);
+      } catch (error) {
+        popupSubject.next({
+          type: "WARN",
+          message: error.response
+            ? error.response.data
+            : "Something went wrong!",
+          showTime: 4,
+        });
+      }
+    };
+    if (refreshSchedules) {
+      fetchSchedules();
+    }
+  }, [refreshSchedules, roomId]);
+
   useEffect(() => {
     //fetch messages and schedules
     const fetchMessages = () => {
@@ -156,17 +176,6 @@ const Messages = (props) => {
     return () =>
       setMessagesState({ fetching: true, messages: [], schedules: [] });
   }, [roomId, classId, loading]);
-  // setTimeout(() => setIsLoading(false), 1000);
-  useLayoutEffect(() => {
-    const timeout = setTimeout(() => {
-      if (!messagesState.fetching && !loading) {
-        messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      }
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, [messagesState.fetching, messagesRef]);
-  // useEffect(() => {
-  // }, [privateChat]);
   ///file effect
   const fileHandler = async (e, file) => {
     if (file) {
@@ -201,7 +210,7 @@ const Messages = (props) => {
 
   return (
     <>
-      <div className={`messages__wrapper ${props.expanded ? "expanded" : ""}`}>
+      <div className={`messages__wrapper ${expanded ? "expanded" : ""}`}>
         {loading || messagesState.fetching ? (
           <Loading
             className="messages__wrapper"
@@ -247,30 +256,31 @@ const Messages = (props) => {
               </div>
             )}
 
-            <div className="fix" style={{ flex: "1" }}></div>
-            <div className="allmessages" ref={messagesRef}>
-              {messagesState.messages.map((m) => {
-                return (
-                  <Message
-                    onPreview={(e) =>
-                      ModalSubject.next({
-                        type: "PREVIEW_IMAGE",
-                        data: {
-                          path: m.file || "/logo.png",
-                        },
-                      })
-                    }
-                    classAvatar={classAvatar}
-                    senderData={
-                      globalState.classData[classId].members
-                        ? globalState.classData[classId].members[m.senderId]
-                        : { no: 1 }
-                    }
-                    key={m.id || -1}
-                    message={m}
-                  />
-                );
-              })}
+            <div className="fix">
+              <div className="allmessages" ref={messagesRef}>
+                {messagesState.messages.map((m) => {
+                  return (
+                    <Message
+                      onPreview={(e) =>
+                        ModalSubject.next({
+                          type: "PREVIEW_IMAGE",
+                          data: {
+                            path: m.file || "/logo.png",
+                          },
+                        })
+                      }
+                      classAvatar={classAvatar}
+                      senderData={
+                        globalState.classData[classId].members
+                          ? globalState.classData[classId].members[m.senderId]
+                          : { no: 1 }
+                      }
+                      key={m.id || -1}
+                      message={m}
+                    />
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
