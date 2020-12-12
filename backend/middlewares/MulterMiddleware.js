@@ -1,5 +1,5 @@
 const multer = require("multer");
-const removeVietnameseTones = require("../Utils/removeVietnameseTone");
+const AnalysisDb = require("../Database/AnalysisDb");
 const MIMETYPE = {
   "image/png": "png",
   "image/jpg": "jpg",
@@ -22,6 +22,7 @@ const storage = new multer.diskStorage({
       .filter((e) => e);
     const name = ogName + "-" + Date.now() + ogExt;
     cb(null, name);
+    AnalysisDb.db.query("UPDATE analysis SET amount=amount+1 WHERE id = 5");
   },
 });
 module.exports = multer({ storage: storage });

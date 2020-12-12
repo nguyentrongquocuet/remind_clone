@@ -111,7 +111,12 @@ const Members = (props) => {
   }, [expanded]);
   return (
     <>
-      <Popper placement="right-end" open={open} anchorEl={anchorEl}>
+      <Popper
+        className="app-popper"
+        placement="right-end"
+        open={open}
+        anchorEl={anchorEl}
+      >
         <PeopleInfo
           onClose={(e) => {
             setAnchorEl(null);

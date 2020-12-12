@@ -45,10 +45,10 @@ function App() {
       routes = (
         <Suspense fallback={<Authpreloader />}>
           <Switch>
-            <Route path="/admin/:action">
+            <Route path="/admin/:mode">
               <Admin />
             </Route>
-            <Route path="/admin/:action/:mode">
+            <Route path="/admin/:mode/action">
               <Admin />
             </Route>
             <Redirect to="/admin/overall"></Redirect>

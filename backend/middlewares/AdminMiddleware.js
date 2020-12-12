@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = require("../configs/jwt");
 const db = require("../Database/db");
+const SystemError = require("../models/Error");
 const adminMiddleware = async (req, res, next) => {
   try {
     const decodedToken = jwt.verify(
@@ -14,12 +15,14 @@ const adminMiddleware = async (req, res, next) => {
       `SELECT * FROM (SELECT * FROM user WHERE id = ?  AND verified = true) u INNER JOIN (SELECT * FROM user_info WHERE id= ? AND role=3) ui ON u.id=ui.id`,
       [userId, userId]
     );
-    if (user.length < 0) return res.status(401).json("Invalid token");
+    if (user.length < 0) next(new SystemError(401, "Invalid token!"));
+    // return res.status(401).json("Invalid token");
     req.decodedToken = decodedToken;
     req.userData = user[0];
     next();
   } catch (error) {
-    return res.status(401).json("Invalid token");
+    next(new SystemError(401, "Invalid token!"));
+    // return res.status(401).json("Invalid token");
   }
 };
 module.exports = adminMiddleware;

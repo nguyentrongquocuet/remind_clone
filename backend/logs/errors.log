@@ -1,0 +1,550 @@
+[2020-12-12 12:10:15] Code: 404 Error: FILE NOT FOUND
+    at C:\WORKSPACE\remind\backend\app.js:38:8
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"POST",
+  "path":"/api/file",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:11:5] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:11:40] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+
+[2020-12-12 12:12:25] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:12:36] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:13:33] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"07392eb7-f0f4-4f62-94ed-b6a15bbe690e",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:13:54] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13/n RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0sh",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"baef9ba7-b63c-4c38-8d36-bcb745029934",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:16:49] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"9a4bdbad-b2db-422c-9e62-dda569b1adb6",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:42:35] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"2e64f3d2-e0e4-4541-9b26-56032ad8cb4d",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:44:11] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"51c107b4-b242-4463-9aa5-6ea285d55276",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:44:26] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"135f010f-9e0e-4735-b801-1c9fa27f6797",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:44:53] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"8dd55393-b8cc-4c43-8304-b8054bca4791",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:45:10] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"146a08cc-2941-4cb4-b175-3c35c2bceb08",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:50:3] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"48ded997-4031-46e6-9c9a-cc87d5e5efeb",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:51:25] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"e3dfc7ad-015c-4e0a-ac80-8ad3e49d920e",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:52:02] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"66f17961-9add-430c-9943-115aa5c1ce6b",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+2020-12-12 12:54:32  Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"e30040f9-0fed-4be9-b439-163799561eba",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}
+[2020-12-12 12:55:14 ] Code: 401 Error: Invalid token!
+    at adminMiddleware (C:\WORKSPACE\remind\backend\middlewares\AdminMiddleware.js:24:10)
+    at Layer.handle [as handle_request] (C:\WORKSPACE\remind\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:317:13)
+    at C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:335:12)
+    at next (C:\WORKSPACE\remind\node_modules\express\lib\router\index.js:275:10)
+    at cors (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:188:7)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:224:17
+    at originCallback (C:\WORKSPACE\remind\node_modules\cors\lib\index.js:214:15)
+    at C:\WORKSPACE\remind\node_modules\cors\lib\index.js:219:13
+ RequestInfo:
+{
+  "headers":{
+    "content-type":"application/json",
+    "authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyWQiOjI4LCJpYXQiOjE2MDc0MjQ3MDgsImV4cCI6MTYwNzc4NDcwOH0.zdFhanSmA6Klq7NbJpAWCheJmM0nXDAmEF_Y1rg0shg",
+    "user-agent":"PostmanRuntime/7.26.8",
+    "accept":"*/*",
+    "postman-token":"4c3c0944-8247-41c0-9712-520fdfb85bde",
+    "host":"localhost:5000",
+    "accept-encoding":"gzip, deflate, br",
+    "connection":"keep-alive",
+    "content-length":"22"
+  },
+  "hostname":"localhost",
+  "ip":"::1",
+  "method":"GET",
+  "path":"/api/admin/userAmount",
+  "body":{
+    "classId":41
+  },
+  "params":{},
+  "query":{}
+}

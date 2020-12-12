@@ -1,14 +1,16 @@
 import React, { useCallback } from "react";
 import { useHistory } from "react-router-dom";
+import Loading from "../../../shared/components/Loading";
 import "./InfoCard.scss";
 const InfoCard = ({
   className,
   icon,
-  amount,
+  data,
   text,
   footerText,
   path,
   onClick,
+  unavailable,
 }) => {
   const history = useHistory();
   const onDirect = useCallback(
@@ -16,7 +18,7 @@ const InfoCard = ({
     []
   );
   const clickHandler = onClick || onDirect;
-  return (
+  return data ? (
     <div
       onClick={clickHandler}
       title={text}
@@ -31,7 +33,7 @@ const InfoCard = ({
         <div className="admin-info-card__content__info">
           <span className="admin-info-card__content__info__text">{text}</span>
           <span className="admin-info-card__content__info__amount">
-            {amount}
+            {data.amount || "(coming soon)"}
           </span>
         </div>
       </div>
@@ -40,7 +42,9 @@ const InfoCard = ({
         <p>{footerText}</p>
       </div>
     </div>
-  );
+  ) : !unavailable ? (
+    <Loading />
+  ) : null;
 };
 
 export default InfoCard;

@@ -157,7 +157,12 @@ const Class = () => {
   const [userId, setUserId] = useState(null);
   return (
     <>
-      <Popper placement="right-end" open={open} anchorEl={anchorEl}>
+      <Popper
+        className="app-popper"
+        placement="right-end"
+        open={open}
+        anchorEl={anchorEl}
+      >
         <PeopleInfo
           onClose={(e) => {
             setAnchorEl(null);

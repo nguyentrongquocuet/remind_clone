@@ -38,7 +38,7 @@ const Messages = (props) => {
   const [messagesState, setMessagesState] = useState({
     messages: [],
     schedules: [],
-    fetching: true,
+    fetched: false,
   });
   const [message, setMessage] = useState({
     content: "",
@@ -149,12 +149,15 @@ const Messages = (props) => {
   useEffect(() => {
     //fetch messages and schedules
     const fetchMessages = () => {
+      setMessagesState((prev) => {
+        return { ...prev, fetched: true };
+      });
       MessageService.getMessages(roomId, globalState.token)
         .then((data) => {
           dispatch({ type: "SET_READ", id: classId });
           setMessagesState((prev) => {
             return {
-              fetching: false,
+              fetched: true,
               messages: [...data.data.messages],
               schedules: [...data.data.schedules],
             };
@@ -170,11 +173,19 @@ const Messages = (props) => {
           })
         );
     };
-    if (!loading || roomId) {
-      fetchMessages();
+    if (!loading) {
+      if (roomId) {
+        // setMessagesState((prev) => {
+        //   return { ...prev, fetched: false };
+        // });
+        if (!messagesState.fetched) {
+          console.log("FETCH MESSAGES");
+          fetchMessages();
+        }
+      }
     }
     return () =>
-      setMessagesState({ fetching: true, messages: [], schedules: [] });
+      setMessagesState({ fetched: false, messages: [], schedules: [] });
   }, [roomId, classId, loading]);
   ///file effect
   const fileHandler = async (e, file) => {

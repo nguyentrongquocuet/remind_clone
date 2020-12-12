@@ -92,8 +92,8 @@ const MessagePanel = ({ loading }) => {
           toggleModal("connect-child");
       }
     });
-    getChildrenClasses();
-  }, []);
+    if (role === "parent") getChildrenClasses();
+  }, [role]);
   useEffect(() => {
     if (!loading && searchQuery.length > 0) {
       const time = setTimeout(async () => {

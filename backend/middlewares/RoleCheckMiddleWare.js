@@ -1,4 +1,5 @@
 const Db = require("../Database/db");
+const SystemError = require("../models/Error");
 
 const ROLE = {
   0: "teacher",
@@ -18,13 +19,16 @@ const roleCheck = (...role) => {
       userId
     );
     if (getRole.length <= 0) {
-      return res.status(404).json("Unknown user");
+      return next(new SystemError(404, "Unknown user"));
     }
     if (role.includes(ROLE[getRole[0].role])) return next();
     else
-      return res
-        .status(401)
-        .json(`You must be a ${role.join(" or ")} to perform this action!`);
+      return next(
+        new SystemError(
+          401,
+          `You must be a ${role.join(" or ")} to perform this action!`
+        )
+      );
   };
 };
 

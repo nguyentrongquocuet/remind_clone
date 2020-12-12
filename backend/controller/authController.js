@@ -5,8 +5,9 @@ const Db = require("../Database/db");
 const transporter = require("../Mailer/Mailer.js");
 const OAUTH = require("../Utils/googleOath");
 const Redis = require("../configs/Redis");
+const SystemError = require("../models/Error");
 //login with {email, password}
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   const db = Db.db;
   try {
@@ -14,10 +15,8 @@ exports.login = async (req, res) => {
       `SELECT * FROM user WHERE email=?`,
       [email]
     );
-    if (findUsingEmail.length <= 0) {
-      return res.status(404).json("Email not found");
-    } else if (findUsingEmail[0].password !== password) {
-      return res.status(404).json("Wrong password");
+    if (findUsingEmail.length <= 0 || findUsingEmail[0].password !== password) {
+      throw new SystemError(404, "Wrong email or password!!!");
     }
     if (findUsingEmail[0].verified == 0) {
       const code = Math.floor(Math.random() * 10000);
@@ -41,7 +40,7 @@ exports.login = async (req, res) => {
             code,
             email,
           ]);
-          return res.status(401).json("Please Verify Your Email!");
+          throw new SystemError(401, "Please Verify Your Email!");
         }
       });
     } else {
@@ -71,15 +70,15 @@ exports.login = async (req, res) => {
       });
     }
   } catch (error) {
-    throw error;
+    return next(error);
   }
 };
 //SignUp with {email, password, repassword, firstname, lastname}
-exports.signupPrepare = async (req, res) => {
+exports.signupPrepare = async (req, res, next) => {
   const db = Db.db;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new SystemError(400, JSON.stringify(errors.array()));
   }
   const { email, password, firstname, lastname, birthday, gender } = req.body;
 
@@ -91,7 +90,7 @@ exports.signupPrepare = async (req, res) => {
     if (checkIfEmailExist.length > 0) {
       // console.log(checkIfEmailExist);
       // handle forgot password
-      return res.status(401).json("Email has been used");
+      throw new SystemError(401, "Email has been used");
     }
     const code = Math.floor(Math.random() * 10000);
     const mail = {
@@ -126,11 +125,11 @@ exports.signupPrepare = async (req, res) => {
       }
     });
   } catch (error) {
-    throw error;
+    return next(error);
   }
 };
 
-exports.setRole = async (req, res) => {
+exports.setRole = async (req, res, next) => {
   const { userId } = req.decodedToken;
   const { roleId } = req.body;
   const db = Db.db;
@@ -139,7 +138,7 @@ exports.setRole = async (req, res) => {
       userId,
     ]);
     if (role.length < 0 || role[0].role !== null) {
-      throw new Error("Setting role is not available");
+      throw new SystemError(404, "Setting role is not available");
     }
     await db.query(`UPDATE user_info SET role = ? WHERE id=?`, [
       roleId,
@@ -153,12 +152,11 @@ exports.setRole = async (req, res) => {
       res.status(200).json(newRole[0]);
     }, 3000);
   } catch (error) {
-    res.status(404).json("Something went wrong!!!");
-    throw error;
+    next(error);
   }
 };
 
-exports.authenticate = async (req, res) => {
+exports.authenticate = async (req, res, next) => {
   const { userId } = req.decodedToken;
   const db = Db.db;
   try {
@@ -174,15 +172,15 @@ exports.authenticate = async (req, res) => {
     };
     return res.status(200).json(userData);
   } catch (error) {
-    throw error;
+    next(error);
   }
 };
 
-exports.confirmEmail = async (req, res) => {
+exports.confirmEmail = async (req, res, next) => {
   const db = Db.db;
   const { email, code } = req.body;
   console.log(req.body);
-  if (!code || code.length <= 0) return res.status(404).json("Wrong code!");
+  if (!code || code.length <= 0) throw new SystemError(401, "Wrong code!!!");
   try {
     const [
       confirmed,
@@ -190,16 +188,15 @@ exports.confirmEmail = async (req, res) => {
       email,
       code,
     ]);
-    if (confirmed.length <= 0) return res.status(404).json("Wrong code!");
+    if (confirmed.length <= 0) throw new SystemError(401, "Wrong code!!!");
     await db.query("UPDATE user SET verified=true WHERE id=?", confirmed[0].id);
     res.status(200).json("oke");
   } catch (error) {
-    res.status(500).json("SERVER ERROR");
-    throw error;
+    next(error);
   }
 };
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res, next) => {
   console.log("resetPassword");
   const { email } = req.body;
   console.log(req.body);
@@ -209,9 +206,8 @@ exports.resetPassword = async (req, res) => {
       `SELECT * FROM user WHERE email=?`,
       [email]
     );
-    if (findUsingEmail.length <= 0) {
-      return res.status(404).json("Email not found");
-    }
+    if (findUsingEmail.length <= 0)
+      throw new SystemError(404, "Email not found!!!");
     const code = Math.floor(Math.random() * 10000);
     const mail = {
       to: email, // Địa chỉ email của người gửi
@@ -249,26 +245,26 @@ exports.resetPassword = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json("server error");
-    throw error;
+    next(error);
   }
 };
 
-exports.confirmPasswordCode = async (req, res) => {
+exports.confirmPasswordCode = async (req, res, next) => {
   const db = Db.db;
   const { email, code, token } = req.body;
   console.log(req.body);
-  if (!code || code.length <= 0) return res.status(404).json("Wrong code!");
+  if (!code || code.length <= 0) throw new SystemError(401, "Wrong code!!!");
   try {
     const decodedToken = jwt.verify(token, SECRET_KEY);
-    if (decodedToken.email != email) return res.status(404).json("Wrong code!");
+    if (decodedToken.email != email)
+      throw new SystemError(401, "Wrong code!!!");
     const [
       confirmed,
     ] = await db.query("SELECT * FROM user WHERE email=? AND verifyCode = ?", [
       email,
       code,
     ]);
-    if (confirmed.length <= 0) return res.status(404).json("Wrong code!");
+    if (confirmed.length <= 0) throw new SystemError(401, "Wrong code!!!");
     const newToken = jwt.sign(
       {
         email: email,
@@ -283,39 +279,37 @@ exports.confirmPasswordCode = async (req, res) => {
       expiresIn: 60,
     });
   } catch (error) {
-    res.status(500).json("Invalid authentication credentials!");
-    throw error;
+    next(error);
   }
 };
 
-exports.changePasswordWithoutLogin = async (req, res) => {
+exports.changePasswordWithoutLogin = async (req, res, next) => {
   const db = Db.db;
   const { email, password, repassword, token } = req.body;
   console.log(req.body);
   if (password != repassword)
-    return res.status(404).json("Two passwords not match!");
+    throw new SystemError(401, "Two passwords not match!");
   try {
     const decodedToken = jwt.verify(token, SECRET_KEY);
     if (decodedToken.email != email)
-      return res.status(404).json("Invalid authentication credentials!");
+      throw new SystemError(401, "Invalid authentication credentials!");
     const [searchUser] = await db.query(
       "SELECT * FROM user WHERE email = ?",
       email
     );
     if (searchUser.length <= 0)
-      return res.status(404).json("User is no longer available!");
+      throw new SystemError(404, "User is no longer available!");
     await db.query("UPDATE user SET password = ? WHERE id = ?", [
       password,
       searchUser[0].id,
     ]);
     res.status(200).json("oke");
   } catch (error) {
-    res.status(500).json("SERVER ERROR");
-    throw error;
+    next(error);
   }
 };
 
-exports.googleAuth = async (req, res) => {
+exports.googleAuth = async (req, res, next) => {
   const { code } = req.body;
   const db = Db.db;
   try {
@@ -387,12 +381,11 @@ exports.googleAuth = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
-    res.status(401).json("invalid credentials");
+    next(new SystemError(401, "Invalid credentials"));
   }
 };
 
-exports.getConnectChildUrl = async (req, res) => {
+exports.getConnectChildUrl = async (req, res, next) => {
   const userId = req.decodedToken.userId;
   const token = jwt.sign(
     {
@@ -406,7 +399,7 @@ exports.getConnectChildUrl = async (req, res) => {
   });
 };
 
-exports.connectChild = async (req, res) => {
+exports.connectChild = async (req, res, next) => {
   const userId = req.decodedToken.userId;
   const { connectToken } = req.body;
   const db = Db.db;
@@ -421,26 +414,34 @@ exports.connectChild = async (req, res) => {
     console.log(parentId, userId);
     res.status(200).json("You and your parent are connected");
   } catch (error) {
-    console.log(error);
     if (error.errno === 1062) {
-      return res
-        .status(409)
-        .json("Two people are already connected, no need to reconnect!");
+      return next(
+        new SystemError(
+          409,
+          "Two people are already connected, no need to reconnect!"
+        )
+      );
     }
-    res.status(404).json("The url is incorrect or has been modified");
+    return next(
+      new SystemError(404, "The url is incorrect or has been modified")
+    );
   }
 };
 
-exports.getUserInfo = async (req, res) => {
+exports.getUserInfo = async (req, res, next) => {
   const { userId } = req.query;
   console.log(req.query);
   const db = Db.db;
-  const [userInfo] = await db.query(
-    "SELECT * FROM user_info WHERE id = ?",
-    userId
-  );
-  if (userInfo.length <= 0) {
-    return res.status(404).json("User not found!");
+  try {
+    const [userInfo] = await db.query(
+      "SELECT * FROM user_info WHERE id = ?",
+      userId
+    );
+    if (userInfo.length <= 0) {
+      throw new SystemError(404, "User not found!");
+    }
+    return res.status(200).json(userInfo[0]);
+  } catch (error) {
+    next(error);
   }
-  return res.status(200).json(userInfo[0]);
 };

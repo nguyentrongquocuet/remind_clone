@@ -35,9 +35,14 @@ const sidebarActions = [
     image: "classes.svg",
   },
   {
-    name: "Reports Manage",
-    path: "reports",
-    image: "reports.svg",
+    name: "Support Manage",
+    path: "support",
+    image: "supports.svg",
+  },
+  {
+    name: "Traffic Manage",
+    path: "traffic",
+    image: "traffic.svg",
   },
   {
     name: "System Preferences",

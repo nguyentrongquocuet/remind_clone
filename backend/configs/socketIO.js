@@ -1,3 +1,4 @@
+const AnalysisDb = require("../Database/AnalysisDb");
 const DB = require("../Database/db");
 const { ROLE } = require("../Utils/ROLE");
 class SocketIO {
@@ -8,7 +9,9 @@ class SocketIO {
     this.io.set("origins", "http://localhost:3000");
     app.set("io", this.io);
     this.io.use(async (socket, next) => {
-      await DB.db.query("UPDATE analysis SET amount = amount+1 WHERE id=2");
+      await AnalysisDb.db.query(
+        "UPDATE analysis SET amount = amount+1 WHERE id=2"
+      );
       next();
     });
     this.io.on("connection", async (socket) => {

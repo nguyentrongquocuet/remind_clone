@@ -9,5 +9,8 @@
   &-main {
     display: grid;
     grid-template-columns: auto 1fr;
+    &__workspace {
+      padding: 1rem;
+    }
   }
 }
