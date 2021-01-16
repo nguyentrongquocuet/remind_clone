@@ -6,7 +6,7 @@
   justify-content: center;
   padding: 1rem;
   border-radius: 4px;
-  position: absolute;
+  position: fixed;
   z-index: 999999;
   top: 3rem;
 
@@ -22,7 +22,7 @@
     background-color: #1976d2;
   }
   &.warn {
-    background-color: #e15461;
+    background-color: var(--warning);
   }
   &.confirm {
     display: flex;

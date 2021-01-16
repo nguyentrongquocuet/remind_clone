@@ -1,5 +1,5 @@
-import { TextField } from "@material-ui/core";
 import React, { useState } from "react";
+import TextField from "../../shared/Elements/TextField";
 import Button from "../../shared/Elements/Button";
 import { useForm } from "react-hook-form";
 import UserService from "../../services/UserService";
@@ -176,11 +176,12 @@ const NewPassword = ({ onSuccess, onClose }) => {
         inputRef={register({
           ...VALIDATOR.PASSWORD,
         })}
+        error={Boolean(errors.password)}
         helperText={errors.password ? errors.password.message : null}
       />
       <TextField
         type="password"
-        label="RePassword"
+        label="Retype password"
         fullWidth
         variant="outlined"
         style={{ marginBottom: "1rem" }}
@@ -191,6 +192,7 @@ const NewPassword = ({ onSuccess, onClose }) => {
           validate: (value) =>
             value === watch("password") || "2 passwords must be the same",
         })}
+        error={Boolean(errors.repassword)}
         helperText={errors.repassword ? errors.repassword.message : null}
       />
       <Button

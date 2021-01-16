@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, Suspense } from "react";
 import ClassService from "../../../services/ClassService";
+import { useHistory, useParams } from "react-router-dom";
 import { Context } from "../../Util/context";
 import Button from "../../Elements/Button";
 import HeaderNav from "../../Elements/HeaderNav";
@@ -13,11 +14,10 @@ import FaceIcon from "@material-ui/icons/Face";
 import CreateClass from "../../../pages/Class/Modal/CreateClass";
 import PopupSubject from "../../Util/PopupSubject";
 import ModalSubject from "../../Util/ModalSubject";
-import "./MessagePanel.scss";
 import ConnectChild from "../../../pages/Class/Modal/ConnectChild";
-import { useHistory, useParams } from "react-router-dom";
 import ROLE from "../../Util/ROLE";
 import MessageService from "../../../services/MessageService";
+import "./MessagePanel.scss";
 const JoinClass = React.lazy(() =>
   import("../../../pages/Class/Modal/JoinClass")
 );
@@ -35,6 +35,7 @@ const MessagePanel = ({ loading }) => {
   const [privateData, setPrivateData] = useState(null);
   const [conSearch, setConSearch] = useState("");
   const role = ROLE[globalState.userData.role];
+  console.log("CHECK_ROLE", role);
   const history = useHistory();
   const { userData } = globalState;
   const { classId } = useParams();
@@ -92,8 +93,9 @@ const MessagePanel = ({ loading }) => {
           toggleModal("connect-child");
       }
     });
-    if (role === "parent") getChildrenClasses();
+    if (role === "Parent") getChildrenClasses();
   }, [role]);
+
   useEffect(() => {
     if (!loading && searchQuery.length > 0) {
       const time = setTimeout(async () => {

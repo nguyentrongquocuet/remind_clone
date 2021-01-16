@@ -90,7 +90,7 @@ const JoinClass = ({ onClose }) => {
                 {searchResult.map((r) => (
                   <MessItem
                     avatar={r.avatar}
-                    path={r.classId}
+                    // path={r.classId}
                     key={r.classId}
                     name={r.name}
                     onClick={(e) => {

@@ -7,6 +7,7 @@ import { Avatar } from "@material-ui/core";
 import moment from "moment";
 import { Context } from "../../../shared/Util/context";
 import "./PreviewFile.scss";
+import ModalSubject from "shared/Util/ModalSubject";
 
 const PreviewFile = ({ file }) => {
   const [fileDetails, setFileDetails] = useState();
@@ -35,6 +36,14 @@ const PreviewFile = ({ file }) => {
         fileUrl={fileDetails.file}
         visible={true}
         supportVideo={true}
+        onClick={(e) =>
+          ModalSubject.next({
+            type: "PREVIEW_IMAGE",
+            data: {
+              path: fileDetails.file || "/logo.png",
+            },
+          })
+        }
       />
       <div className="info">
         <p className="info-head">Message</p>

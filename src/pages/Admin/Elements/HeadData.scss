@@ -1,0 +1,19 @@
+.row-data__head {
+  cursor: pointer;
+
+  user-select: none;
+  &.sorting {
+    &::after {
+      content: "^";
+      position: absolute;
+      display: inline-block;
+      transform: rotate(180deg);
+    }
+    &.desc {
+      &::after {
+        // display: inline-block;
+        transform: rotate(0deg);
+      }
+    }
+  }
+}

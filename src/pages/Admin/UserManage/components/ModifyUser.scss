@@ -1,0 +1,36 @@
+.user-modify__wrapper {
+  // position: relative;
+  // margin: 0 1rem;
+  // height: fit-content;
+  position: sticky;
+  top: calc(48px + 1rem);
+  // .signup.MuiCard-root {
+  //   position: absolute;
+  //   top: 0;
+  // }
+  // .MuiButtonBase-root.MuiButton-root.modify-undo {
+  //   width: fit-content;
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  // }
+}
+
+@media screen and (max-width: 1000px) {
+  .user-modify__wrapper {
+    // position: relative;
+    // height: fit-content;
+    position: relative;
+    // top: calc(48px + 1rem);
+    // .signup.MuiCard-root {
+    //   position: absolute;
+    //   top: 0;
+    // }
+    // .MuiButtonBase-root.MuiButton-root.modify-undo {
+    //   width: fit-content;
+    //   position: absolute;
+    //   top: 0;
+    //   right: 0;
+    // }
+  }
+}

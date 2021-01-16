@@ -1,9 +1,39 @@
-.pickicon__preview {
-  overflow: hidden;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.pickicon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 0.5rem;
+  .pickicon__preview {
+    height: 80px;
+    width: 80px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.5rem;
+    // overflow: hidden;
+    position: relative;
+    span:first-child {
+      position: absolute;
+      z-index: 1;
+      right: 0;
+      top: 0;
+      transition: all 0.25s;
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
+    .MuiAvatar-root {
+      width: 100%;
+      height: 100%;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  span {
+    color: #fea04f;
+    cursor: pointer;
+    font-weight: bold;
   }
 }

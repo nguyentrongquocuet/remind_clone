@@ -24,22 +24,14 @@ const getLocalData = () => {
 };
 export class UserService {
   static login = (data) => {
+    console.log("login");
     return BaseService.post("auth/login", data);
   };
   static signup = (data) => {
     return BaseService.post("auth/signup", data);
   };
   static setRole = (roleId) => {
-    const token = JSON.parse(localStorage.getItem("token"));
-    return BaseService.put(
-      "auth/role",
-      { roleId: roleId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    return BaseService.put("auth/role", { roleId: roleId });
   };
   static auth = async () => {
     const data = getLocalData();
@@ -87,35 +79,44 @@ export class UserService {
     });
   };
   static googleAuth = (code) => {
-    console.log("FROM SERVICE", code);
     return BaseService.post("auth/withGoogle", {
       code: code,
     });
   };
   static getConnectChildUrl = () => {
-    const token = JSON.parse(localStorage.getItem("token"));
-    return BaseService.get("auth/connectUrl", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    return BaseService.get("auth/connectUrl");
   };
   static connectChild = (connectToken) => {
-    const token = JSON.parse(localStorage.getItem("token"));
-    return BaseService.post(
-      "auth/connectChild",
-      {
-        connectToken: connectToken,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+    return BaseService.post("auth/connectChild", {
+      connectToken: connectToken,
+    });
   };
   static getUserInfo = (userId) => {
-    const token = JSON.parse(localStorage.getItem("token"));
     return BaseService.get("auth/info", {
-      headers: { Authorization: `Bearer ${token}` },
       params: {
         userId: userId,
+      },
+    });
+  };
+  static getMyFullInfo = (userId) => {
+    return BaseService.get("auth/myInfo");
+  };
+
+  static changePasswordWithLogin = ({ newpass, retypepass }) => {
+    return BaseService.post("auth/changePasswordWithLogin", {
+      newpass,
+      retypepass,
+    });
+  };
+
+  static changeUserInfo = (data) => {
+    return BaseService.post("auth/changeInfo", data);
+  };
+
+  static removeRelationship = (secondId) => {
+    return BaseService.delete("auth/relationship", {
+      params: {
+        secondId,
       },
     });
   };

@@ -1,3 +1,54 @@
+@import "./styles/_Output";
+// variabl
+:root {
+  --bg-primary: #fff;
+  --bg-secondary: #0268c8;
+  --bg-warning: #ffc107;
+  --bg-danger: #dc3545;
+  --navlink-active-bg: #f5f5f5;
+  //with state
+  --block-hover-bg: #f5f5f5;
+  //messages and announcements
+  --announcement-body-bg: #0274de;
+  --announcement-header-bg: #fff;
+  --announcement-header-border: 1px solid #abc4d6;
+  --message-bg: #abc4d6;
+  --text-message: #000;
+  --announcement-link-color: #200772;
+  --message-max-width: 280px;
+  //text
+  --text-primary: #000;
+  --text-secondary: #6b6e72;
+  --text-link: #01539f;
+  --text-class-header: #0e626f;
+  --text-info: #007bff;
+  //font-size
+  --text-s: 0.7rem;
+  --text-sm: 13px;
+  --text-m: 14px;
+  --text-ml: 16px;
+  --text-l: 18px;
+  //header-text
+  --header-h1: 40px;
+  --header-h4: 28px;
+  //box-shadow
+  --box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.02);
+  --box-shadow-right: 2px 0px 2px rgba(0, 0, 0, 0.05);
+  //border-radius
+  --message-border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
+  --message-owner-border-radius: 0.7rem 0.7rem 0.2rem 0.7rem;
+  --announcement-header-border-radius: 0.7rem 0.7rem 0 0;
+  --message-link-color: #200772;
+  --block-border-radius: 4px;
+  //measure 🔰
+  --header-height: 48px;
+  //sidebar
+  --sidebar-minwidth: 350px;
+  --sidebar-maxwidth: 30vw;
+  //main
+  --main-background: var(--background-primary);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
@@ -9,7 +60,6 @@ button,
 p {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif !important;
-  font-weight: 400;
 }
 
 a {
@@ -39,18 +89,38 @@ div.divbutton {
   justify-content: center;
   border-radius: 50%;
 }
+.MuiAvatar-root {
+  display: inline-flex;
+}
+
+.tiny,
+.MuiAvatar-root.tiny {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+}
 .small,
 .MuiAvatar-root.small {
   width: 24px;
   height: 24px;
+  display: inline-flex;
 }
 
 .medium,
 .MuiAvatar-root.medium {
+  display: inline-flex;
   width: 40px;
   height: 40px;
 }
-
+.big,
+.MuiAvatar-root.big {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+}
+.MuiButtonBase-root.MuiButton-root {
+  text-transform: capitalize;
+}
 .action {
   color: var(--primary);
   cursor: pointer;
@@ -87,5 +157,6 @@ div.divbutton {
   color: black;
 }
 .shadow--left {
-  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.05);
+  // box-shadow: -4px 0 10px rgba(0, 0, 0, 0.05);
+  border-left: 1px solid #f5f5f5;
 }

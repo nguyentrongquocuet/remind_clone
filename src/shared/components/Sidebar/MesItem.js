@@ -1,6 +1,8 @@
 import { Avatar } from "@material-ui/core";
+// import { Button } from "bootstrap";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import Button from "shared/Elements/Button";
 import "./MesItem.scss";
 const MessItem = ({
   avatar,
@@ -16,7 +18,7 @@ const MessItem = ({
   return (
     <NavLink
       to={path ? `/classes/${path}` : "#"}
-      onClick={onClick}
+      // onClick={onClick}
       className={`sidebar__part__e classitem ${unread && "unread"}`}
       activeClassName={"item--active"}
     >
@@ -25,7 +27,14 @@ const MessItem = ({
         <span className="break-word-ellipsis">{name}</span>
         <span className="break-word-ellipsis">{message}</span>
       </div>
-      {owner && <img className="class-owner-icon small" src="/crown.svg" />}
+      {owner && (
+        <img className="class-owner-icon tiny" src="/Assets/crown.svg" />
+      )}
+      {onClick && (
+        <Button className="join-button" size="small" onClick={onClick}>
+          Join
+        </Button>
+      )}
     </NavLink>
   );
 };

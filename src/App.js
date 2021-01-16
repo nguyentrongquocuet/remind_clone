@@ -16,7 +16,7 @@ import GoogleAuthPage from "./shared/components/GoogleAuthPage";
 import RedirectPage from "./shared/components/RedirectPage/RedirectPage";
 import JoinClassPage from "./shared/components/JoinClassPage/JoinClassPage";
 import ConnectChildPage from "./shared/components/ConnectChildPage/ConnectChildPage";
-import Admin from "./pages/Admin";
+const Admin = React.lazy(() => import("./pages/Admin"));
 const Login = React.lazy(() => import("./pages/Login"));
 const Home = React.lazy(() => import("./pages/Home"));
 const Class = React.lazy(async () => {
@@ -45,10 +45,10 @@ function App() {
       routes = (
         <Suspense fallback={<Authpreloader />}>
           <Switch>
-            <Route path="/admin/:mode">
+            <Route path="/admin/:mode/:action">
               <Admin />
             </Route>
-            <Route path="/admin/:mode/action">
+            <Route path="/admin/:mode">
               <Admin />
             </Route>
             <Redirect to="/admin/overall"></Redirect>
@@ -111,7 +111,6 @@ function App() {
       </Suspense>
     );
   }
-
   return <Router>{routes}</Router>;
 }
 

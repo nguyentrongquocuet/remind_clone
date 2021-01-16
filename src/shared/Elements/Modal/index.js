@@ -1,35 +1,51 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import MUiModal from "@material-ui/core/Modal";
 import "./Modal.scss";
 import { Card } from "@material-ui/core";
-const Modal = (props) => {
+const Modal = ({
+  classNames = { wrapper: "", content: "" },
+  disableAutoFocus,
+  disableEnforceFocus,
+  header,
+  closeButton = true,
+  onClose = () => {},
+  open = false,
+  children,
+  transparent,
+  ogSize = true,
+  ...props
+}) => {
+  const heightRef = useRef();
+  useEffect(() => {
+    console.log("check-ref", console.log(heightRef));
+  }, [children]);
   const content = (
     <MUiModal
-      open={props.open || false}
+      open={open || false}
       onClose={(e) => {
-        props.onClose ? props.onClose(e) : e.preventDefault();
+        onClose ? onClose(e) : e.preventDefault();
       }}
       container={document.getElementById("modal-hook")}
-      className={props.classNames.wrapper || ""}
-      disableAutoFocus={props.disableAutoFocus || true}
-      disableEnforceFocus={props.disableEnforceFocus || true}
+      className={classNames.wrapper}
+      disableAutoFocus={disableAutoFocus || true}
+      disableEnforceFocus={disableEnforceFocus || true}
     >
       <Card
-        style={
-          props.transparent && { background: "transparent", boxShadow: "none" }
-        }
+        id="modal-content"
+        className="custom-modal"
+        style={transparent && { background: "transparent", boxShadow: "none" }}
       >
-        <div className={`${props.classNames.content}`}>
+        <div className={`${classNames.content}`}>
           <div className="modal__header">
-            {props.header}
-            {props.closeButton && (
-              <span onClick={props.onClose} className="modal__close">
+            {header}
+            {closeButton && (
+              <span onClick={onClose} className="modal__close">
                 X
               </span>
             )}
           </div>
 
-          {props.children}
+          {children}
         </div>
       </Card>
     </MUiModal>

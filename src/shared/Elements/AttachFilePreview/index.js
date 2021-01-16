@@ -3,17 +3,17 @@ import isImage from "../../Util/ImageDetect";
 import useLazy from "../../Util/lazy-hook";
 import "./AttachFilePreview.scss";
 const fileImages = {
-  image: "/imgplaceholder.png",
-  archive: "/archive.png",
-  code: "/code.png",
-  markup: "/markup.png",
-  video: "/video.png",
-  audio: "/audio.png",
-  doc: "/msword.png",
-  powerpoint: "/mspowerpoint.png",
-  excel: "/msexcel.png",
-  plaintext: "/plaintext.png",
-  unknown: "/unknown.png",
+  image: "/Assets/imgplaceholder.png",
+  archive: "/Assets/archive.png",
+  code: "/Assets/code.png",
+  markup: "/Assets/markup.png",
+  video: "/Assets/video.png",
+  audio: "/Assets/audio.png",
+  doc: "/Assets/msword.png",
+  powerpoint: "/Assets/mspowerpoint.png",
+  excel: "/Assets/msexcel.png",
+  plaintext: "/Assets/plaintext.png",
+  unknown: "/Assets/unknown.png",
 };
 const getFileType = (url) => {
   const ext = url.match(/(?:[^.]+$)/gi)[0].toLowerCase();
@@ -142,8 +142,8 @@ const AttachFilePreview = ({
           style={{
             backgroundImage: visible
               ? `url("${
-                  preview.url || "/imgplaceholder.png"
-                }"),url("/imgplaceholder.png")`
+                  preview.url || "/Assets/imgplaceholder.png"
+                }"),url("/Assets/imgplaceholder.png")`
               : "",
           }}
           id={visible ? "" : "image__wrapper"}
@@ -183,7 +183,7 @@ const AttachFilePreview = ({
           src={preview.url && fileImages[preview.type]}
         />
         {preview.url && (
-          <img className="file-type-preview-image" src="/download.png" />
+          <img className="file-type-preview-image" src="/Assets/download.png" />
         )}
       </a>
       {showName && <span className="file-name">{preview.name}</span>}

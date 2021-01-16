@@ -6,6 +6,7 @@ import Sidebar from "../../../shared/components/Sidebar";
 import Popper from "../../../shared/Elements/Popper";
 import { Context } from "../../../shared/Util/context";
 import Avatar from "@material-ui/core/Avatar";
+import ModalSubject from "shared/Util/ModalSubject";
 const MessagePanel = React.lazy(() =>
   import("../../../shared/components/MessagePanel")
 );
@@ -18,6 +19,13 @@ const ClassSidebar = ({ loading }) => {
   const image = undefined;
   const handleClick = (event) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const onSetting = () => {
+    ModalSubject.next({
+      type: "USER_SETTING",
+    });
+    setAnchorEl(null);
   };
   const header = (
     <>
@@ -61,6 +69,10 @@ const ClassSidebar = ({ loading }) => {
         >
           <ExitToAppIcon />
           LogOut
+        </div>
+        <div onClick={onSetting} className="popper__element">
+          <ExitToAppIcon />
+          Setting
         </div>
       </Popper>
     </>

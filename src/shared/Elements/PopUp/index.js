@@ -9,10 +9,11 @@ import Modal from "../Modal";
 import "./PopUp.scss";
 const PopUp = ({ onClick, onClose, className, content }) => {
   useEffect(() => {
+    let timeOut;
     if (content.showTime) {
-      const timeOut = setTimeout(() => onClose(), content.showTime * 1000);
+      timeOut = setTimeout(() => onClose(), content.showTime * 1000);
     }
-    // return () => clearTimeout(timeOut);
+    return () => clearTimeout(timeOut);
   }, [content]);
   let body;
   switch (content.type) {
@@ -44,6 +45,7 @@ const PopUp = ({ onClick, onClose, className, content }) => {
       body = (
         <>
           <Modal
+            closeButton={false}
             disableAutoFocus={false}
             disableEnforceFocus={false}
             classNames={{
@@ -59,7 +61,11 @@ const PopUp = ({ onClick, onClose, className, content }) => {
             <div className="confirm-choice">
               {content.choices && content.choices.length > 0 ? (
                 content.choices.map((choice, k) => (
-                  <Button key={k} onClick={choice.action} color="primary">
+                  <Button
+                    key={choice.text + k}
+                    onClick={choice.action}
+                    color="primary"
+                  >
                     {choice.text}
                   </Button>
                 ))
@@ -77,9 +83,7 @@ const PopUp = ({ onClick, onClose, className, content }) => {
                     Confirm
                   </Button>
                   <Button
-                    onClick={
-                      content.onCancel ? content.onCancel : (e) => onClose()
-                    }
+                    onClick={content.onCancel ? content.onCancel : onClose}
                     color="primary"
                   >
                     Cancel

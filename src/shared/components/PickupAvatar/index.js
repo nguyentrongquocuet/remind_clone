@@ -1,9 +1,18 @@
+import { Avatar } from "@material-ui/core";
 import React, { useRef, useState } from "react";
 import MimeTypeDetect from "../../Util/MimeTypeDetect";
 import PopupSubject from "../../Util/PopupSubject";
 import "./PickupAvatar.scss";
-const PickupAvatar = ({ text, onChange }) => {
-  const [src, setScr] = useState(null);
+const PickupAvatar = ({
+  text,
+  onChange,
+  defaultSrc,
+  required = true,
+  onRemove = () => {},
+  onUndo = () => {},
+  disabled,
+}) => {
+  const [src, setScr] = useState(() => defaultSrc);
   const [file, setFile] = useState(null);
   const ref = useRef();
   const onPickup = async (e) => {
@@ -47,17 +56,37 @@ const PickupAvatar = ({ text, onChange }) => {
       e.value = null;
     }
   };
+
+  const onClean = (e) => {
+    if (src !== defaultSrc || required) {
+      setFile(defaultSrc);
+      // onChange(defaultSrc);
+      setScr(defaultSrc);
+      onUndo();
+    } else {
+      onRemove();
+      setFile(null);
+      // onChange(null);
+      setScr(null);
+    }
+  };
+
   return (
     <div className="pickicon">
       <div className="pickicon__preview">
-        <img src={src || ""} alt="" />
+        {required && !disabled && <span onClick={onClean}>x</span>}
+        <Avatar src={src} alt="" />
       </div>
-      <span onClick={(e) => ref.current.click()}>{text || "Edit Icon"}</span>
+      {!disabled && (
+        <span onClick={(e) => ref.current.click()}>{text || "Edit Icon"}</span>
+      )}
+      {/* <span onClick={(e) => }>Reset</span> */}
       <input
         ref={ref}
         onChange={onPickup}
         type="file"
         style={{ display: "none" }}
+        disabled={disabled}
       />
     </div>
   );

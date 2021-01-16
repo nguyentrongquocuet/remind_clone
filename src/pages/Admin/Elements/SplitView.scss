@@ -1,0 +1,16 @@
+.split-view {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  position: relative;
+  gap: 1rem;
+}
+@media screen and (max-width: 1000px) {
+  .split-view {
+    display: flex;
+    // grid-template-columns: 1fr;
+    // padding: 1rem 1rem 1rem 0;
+    // grid-template-rows: 1fr 1fr;
+    justify-content: center;
+    flex-direction: column-reverse;
+  }
+}

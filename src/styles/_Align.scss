@@ -1,0 +1,55 @@
+//self vertical and horizontal :f: flex h:horizontal v:vertical c: center b:bottom t:top l:left r:right
+.self {
+  &-f {
+    &-v {
+      &-t {
+        align-self: flex-start;
+      }
+
+      &-b {
+        align-self: flex-end;
+      }
+
+      &-c {
+        @include flex-vertical-center;
+      }
+    }
+    &-h {
+      &-l {
+        justify-self: flex-start;
+      }
+
+      &-c {
+        @include flex-horizontal-center;
+      }
+
+      &-r {
+        justify-self: flex-end;
+      }
+    }
+  }
+
+  &-v-t {
+    margin-bottom: auto;
+  }
+
+  &-v-c {
+    transform: translate(50%, 50%);
+    left: -50%;
+    top: -50%;
+  }
+
+  &-v-b {
+    margin-top: auto;
+  }
+
+  &-h-l {
+    margin-right: auto;
+  }
+  &-h-c {
+    margin: 0 auto;
+  }
+  &-h-r {
+    margin-left: auto;
+  }
+}

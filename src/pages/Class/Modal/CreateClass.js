@@ -24,11 +24,11 @@ const CreateClass = ({ onClose }) => {
       const classData = await ClassService.createClass(newClass);
       dispatch({ type: "ADD_CLASS", payload: classData.data });
       onClose();
-      PopupSubject.next({
-        type: "SUCCESS",
-        message: `You've created ${classInfo.classname}`,
-        showTime: 5,
-      });
+      // PopupSubject.next({
+      //   type: "SUCCESS",
+      //   message: `You've created ${classInfo.classname}`,
+      //   showTime: 5,
+      // });
       history.push(`/classes/${classData.data.classId}`);
     } catch (error) {
       PopupSubject.next({

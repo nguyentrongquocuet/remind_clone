@@ -1,17 +1,19 @@
 import { Avatar, Button } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import MessageService from "../../../services/MessageService";
 import UserService from "../../../services/UserService";
 import Loading from "../../../shared/components/Loading";
 import PopupSubject from "../../../shared/Util/PopupSubject";
 import ROLE from "../../../shared/Util/ROLE";
+import useClickOutside from "../../../shared/Util/useClickOutside";
 import "./PeopleInfo.scss";
-
 //display name, role, family,
 const PeopleInfo = ({ id, onClose }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [initializing, setInitializing] = useState(false);
+  const ref = useRef();
+  useClickOutside(ref, () => onClose());
   const history = useHistory();
   const { classId } = useParams();
   useEffect(() => {
@@ -38,6 +40,7 @@ const PeopleInfo = ({ id, onClose }) => {
       history.push(`/classes/${classId}/private/${id}`);
       console.log(privateRoomData);
     } catch (error) {
+      console.log("check---", error);
       if (error.response) {
         PopupSubject.next({
           type: "WARN",
@@ -51,7 +54,7 @@ const PeopleInfo = ({ id, onClose }) => {
     }
   };
   return userInfo ? (
-    <div className="people-info">
+    <div ref={ref} className="people-info">
       <span className="close" onClick={onClose}>
         Close
       </span>

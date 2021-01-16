@@ -1,0 +1,59 @@
+.admin-view-user {
+  // justify-content: center;
+  position: relative;
+  height: fit-content;
+  position: sticky;
+  padding: 1rem;
+  top: calc(48px + 1rem);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  .MuiPaper-root {
+    // background-color: transparent;
+  }
+  > div {
+    width: 100%;
+  }
+  svg:not(.MuiSvgIcon-root) {
+    fill: var(--info);
+  }
+  .overview,
+  .spec-info {
+    span,
+    p {
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  }
+
+  .overview {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .name_role {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      & > p {
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        span {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+  }
+  .spec-info {
+    & > p {
+      display: flex;
+      // vertical-align: center;
+      align-items: center;
+      line-height: 1.6rem;
+      span {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+}

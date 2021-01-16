@@ -1,0 +1,28 @@
+.table-data {
+  background-color: var(--admin-secondary-background);
+  border-radius: 4px;
+  box-shadow: var(--admin-box-shadow);
+  border-collapse: unset;
+  width: 100%;
+  // border: 1px solid var(--secondary);
+  tr {
+    th,
+    td {
+      text-align: center;
+      width: fit-content;
+      vertical-align: middle;
+      display: table-cell;
+      &.row-data__cell {
+        padding: 0.25rem 0;
+        // span {
+        //   color: var(--admin-typo-secondary);
+        // }
+      }
+    }
+    th {
+      color: var(--primary);
+      text-transform: capitalize;
+      font-size: 0.9rem;
+    }
+  }
+}

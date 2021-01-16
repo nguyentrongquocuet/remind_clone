@@ -3,33 +3,55 @@ const schedule = require("node-schedule");
 const transporter = require("../Mailer/Mailer.js");
 const Db = require("../Database/db");
 const { ROLE } = require("../Utils/ROLE");
-const Redis = require("../configs/Redis");
+// const Redis = require("../configs/Redis");
 const SystemError = require("../models/Error");
+const sanitizeHtml = require("sanitize-html");
+
+// sanitizeHtml.defaults.allowedAttributes = {
+//   ...sanitizeHtml.defaults.allowedAttributes,
+//   a: [...sanitizeHtml.defaults.allowedAttributes.a, "target"],
+// };
+
+const getDataFromRoomId = async (roomId) => {
+  return Db.db.query("");
+};
 
 const sendAnnouncement = async (values, sendAnnouncementQuery, userSocket) => {
   const [send] = await Db.db.query(sendAnnouncementQuery, [values]);
+  // const [
+  //   getBack,
+  // ] = await Db.db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
+  //   send.insertId,
+  //   send.insertId + send.insertId + send.affectedRows,
+  // ]);
   const [
     getBack,
-  ] = await Db.db.query(`SELECT * FROM messages WHERE id BETWEEN ? AND ?`, [
-    send.insertId,
-    send.insertId + send.insertId + send.affectedRows,
-  ]);
+  ] = await Db.db.query(
+    "select classId, name,mg.* from (select * from messages WHERE id BETWEEN ? AND ?) mg INNER join (select cl.*, mr.roomId roomId FROM message_room mr INNER JOIN class cl ON cl.classId = mr.classId) mr ON mg.roomId = mr.roomId",
+    [send.insertId, send.insertId + send.insertId + send.affectedRows]
+  );
 
   userSocket.emit("schedule", {
     type: "SCHEDULE_DONE",
   });
+  // let roomList = [];
   let classList = [];
   for (let back of getBack) {
-    classList.push({
-      ...JSON.parse(await Redis.getAsync(`class-room-${back.roomId}`)),
-      target: back.target,
-    });
+    // classList.push({
+    //   ...JSON.parse(await Redis.getAsync(`class-room-${back.roomId}`)),
+    //   target: back.target,
+    // });
+    const { classId, name, target } = back;
+    classList.push({ classId, name, target });
+    // roomList.push({
+    //   roomId: back.roomId,
+    //   target: back.target,
+    // });
     userSocket.emit("messages", { ...back });
     userSocket
       .to(`class-${back.roomId}-${back.target}`)
       .emit("messages", { ...back });
   }
-  console.log(classList);
   // send emails to members
   classList.forEach(async (classData) => {
     const promiseList = [];
@@ -38,7 +60,7 @@ const sendAnnouncement = async (values, sendAnnouncementQuery, userSocket) => {
         `SELECT * FROM (SELECT * FROM user_info WHERE id IN (SELECT userId FROM class_member WHERE classId = ?) AND role <> 0 ${
           classData.target !== "all" ? "AND role =?" : ""
         }) ui INNER JOIN user u ON ui.id = u.id`,
-        [classData.classId, ROLE[classData.target]]
+        [classData.classId, ROLE[classData.target.toLowerCase()]]
       )
     );
     const targetList = (await Promise.all(promiseList)).map(
@@ -48,17 +70,19 @@ const sendAnnouncement = async (values, sendAnnouncementQuery, userSocket) => {
     const mailList = targetList.map((person) => {
       return person.email;
     });
-    console.log(mailList);
-    const mail = {
-      to: mailList,
-      subject: `You have 1 new announcement from your class:${classData.name}`, // Tiêu đề mail
-      text: `You have 1 new announcement from your class:${classData.name}`, // Nội dung mail dạng text
-      html: `<div style="text-align:left;padding-left:2rem;">
-          <h2>Your class:<span style="color:#546A8C"> ${classData.name}</span> has 1 new announcement, Click on the link below to check😉</h2>
-          <a target="_blank" href="${process.env.CLIENT_URL}/classes/${classData.classId}">${classData.name}</a>
-          </div>`, // Nội dung mail dạng html
-    };
-    transporter.sendMail(mail);
+    console.log("maillist", mailList);
+    if (mailList.length > 0) {
+      const mail = {
+        to: mailList,
+        subject: `You have 1 new announcement from your class:${classData.name}`, // Tiêu đề mail
+        text: `You have 1 new announcement from your class:${classData.name}`, // Nội dung mail dạng text
+        html: `<div style="text-align:left;padding-left:2rem;">
+            <h2>Your class:<span style="color:#546A8C"> ${classData.name}</span> has 1 new announcement, Click on the link below to check😉</h2>
+            <a target="_blank" href="${process.env.CLIENT_URL}/classes/${classData.classId}">${classData.name}</a>
+            </div>`, // Nội dung mail dạng html
+      };
+      transporter.sendMail(mail);
+    }
     //send to parents
     Db.db
       .query(
@@ -67,25 +91,31 @@ const sendAnnouncement = async (values, sendAnnouncementQuery, userSocket) => {
       )
       .then((data) => {
         const parentMailList = data[0].map((parent) => parent.email);
-        transporter.sendMail({
-          to: parentMailList,
-          subject: `Your children have 1 new announcement from your class:${classData.name}`, // Tiêu đề mail
-          text: `Your children have 1 new announcement from your class:${classData.name}`, // Nội dung mail dạng text
-          html: `<div style="text-align:left;padding-left:2rem;">
-                <h2>Your children's class:<span style="color:#546A8C"> ${classData.name}</span> has 1 new announcement, Click on the link below to check😉</h2>
-                <a target="_blank" href="${process.env.CLIENT_URL}/classes/${classData.classId}">${classData.name}</a>
-                </div>`, // Nội dung mail dạng html
-        });
+        if (parentMailList.length > 0) {
+          transporter.sendMail({
+            to: parentMailList,
+            subject: `Your children have 1 new announcement from your class:${classData.name}`, // Tiêu đề mail
+            text: `Your children have 1 new announcement from your class:${classData.name}`, // Nội dung mail dạng text
+            html: `<div style="text-align:left;padding-left:2rem;">
+                  <h2>Your children's class:<span style="color:#546A8C"> ${classData.name}</span> has 1 new announcement, Click on the link below to check😉</h2>
+                  <a target="_blank" href="${process.env.CLIENT_URL}/classes/${classData.classId}">${classData.name}</a>
+                  </div>`, // Nội dung mail dạng html
+          });
+        }
       });
   });
 };
 
 exports.sendMessage = async (req, res, next) => {
   const userId = req.decodedToken.userId;
+  // console.log("send", userId);
+  // console.log(socketIO.socketId, userId, socketIO.io.sockets.connected);
   const roomId = req.query.roomId;
   const file = req.file;
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
-  const { content } = req.body;
+  let { content } = req.body;
+  content = sanitizeHtml(content);
+  console.log("CONTENT", content);
   const db = Db.db;
   let filePath = null;
   if (file) {
@@ -113,7 +143,12 @@ exports.sendMessage = async (req, res, next) => {
 };
 exports.sendAnnouncement = async (req, res, next) => {
   const userId = req.decodedToken.userId;
-  const { roomIds, content, scheduleTime } = req.body;
+  let { roomIds, content, scheduleTime } = req.body;
+  content = sanitizeHtml(content, {
+    transformTags: {
+      a: sanitizeHtml.simpleTransform("a", { target: "_blank" }),
+    },
+  });
   const userSocket =
     socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   const rooms = Object.fromEntries(
@@ -200,6 +235,7 @@ exports.sendAnnouncement = async (req, res, next) => {
           rooms,
           userId,
           filePath,
+          message: "You've created a scheduled announcement",
         });
       }
     }
@@ -215,6 +251,7 @@ exports.sendAnnouncement = async (req, res, next) => {
       rooms,
       userId,
       filePath,
+      message: "You've created a announcement",
     });
   } catch (error) {
     next(error);
@@ -351,7 +388,7 @@ exports.editSchedule = async (req, res, next) => {
         });
       }
     );
-    res.status(200).json("Oke");
+    return res.status(200).json({ message: "You've edited your announcement" });
   } catch (error) {
     next(error);
   }
@@ -381,16 +418,25 @@ exports.deleteSchedule = async (req, res, next) => {
   }
 };
 exports.getMessages = async (req, res, next) => {
-  const userId = req.decodedToken.userId;
+  const { userId } = req.decodedToken;
   const { roomId } = req.query;
   const db = Db.db;
   console.log("Get message");
-  const role = req.userData.role;
+  // const role = req.userData.role;
   try {
+    const [getRole] = await db.query(
+      "SELECT * FROM user_info WHERE id=?",
+      userId
+    );
+    if (getRole.length === 0)
+      return res.status(404).json({ message: "User doesn't exist" });
+    const role = getRole[0].role;
     const [
       messages,
     ] = await db.query(
-      `SELECT * FROM messages WHERE roomId= ? AND (target='all' OR target=?) ORDER BY createAt`,
+      `SELECT * FROM messages WHERE roomId= ?  ${
+        ROLE[role] === "teacher" ? "" : "AND (target='all' OR target=?)"
+      }  ORDER BY createAt`,
       [roomId, ROLE[role]]
     );
     const [

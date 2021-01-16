@@ -6,9 +6,10 @@ import "./Login.scss";
 import Header from "../../shared/components/Header";
 import Button from "../../shared/Elements/Button";
 import PopupSubject from "../../shared/Util/PopupSubject";
-import { TextField } from "@material-ui/core";
+// import { TextField } from "@material-ui/core";
 import NewPassword from "./NewPassword";
 import { useHistory } from "react-router-dom";
+import TextField from "../../shared/Elements/TextField";
 //1:login,2:enter email for reset, 3: enter code, 4r:
 const Login = () => {
   const { dispatch, globalState } = useContext(Context);
@@ -30,35 +31,42 @@ const Login = () => {
         };
       });
       const authData = await UserService.login(data);
-      dispatch({
-        1: {
-          type: "SET_TOKEN",
-          payload: authData.data.token,
-        },
-        2: {
-          type: "SET_USER_DATA",
-          payload: authData.data.userData,
-        },
-        3: {
-          type: "LOGIN_SUCCESS",
-        },
-      });
-      setLoading(false);
+      if (authData.status === 201) {
+        setMode(3);
+      } else {
+        console.log(authData.data.token);
+        dispatch({
+          1: {
+            type: "SET_TOKEN",
+            payload: authData.data.token,
+          },
+          2: {
+            type: "SET_USER_DATA",
+            payload: authData.data.userData,
+          },
+          3: {
+            type: "LOGIN_SUCCESS",
+          },
+        });
+        // setLoading(false);
+      }
       // history.push("/classes/1");
     } catch (error) {
+      // setLoading(false);
+      // if (error.response) {
+      //   if (error.response.status === 403) {
+      //     setMode(3);
+      //   } else
+      //     PopupSubject.next({
+      //       type: "WARN",
+      //       message: error.response
+      //         ? error.response.data
+      //         : "Some errors occurred",
+      //       showTime: 5,
+      //     });
+      // }
+    } finally {
       setLoading(false);
-      if (error.response) {
-        if (error.response.status === 401) {
-          setMode(3);
-        } else
-          PopupSubject.next({
-            type: "WARN",
-            message: error.response
-              ? error.response.data
-              : "Some errors occurred",
-            showTime: 5,
-          });
-      }
     }
   };
   const verifyCode = async () => {

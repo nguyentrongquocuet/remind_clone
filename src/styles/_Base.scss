@@ -1,0 +1,128 @@
+%flex {
+  display: flex;
+  flex-direction: row;
+}
+
+%column {
+  flex-direction: column;
+}
+%row {
+  flex-direction: row;
+}
+%flex-nowrap {
+  flex-wrap: nowrap;
+}
+%text-break {
+  white-space: nowrap;
+}
+
+%grid {
+  display: grid;
+}
+
+@mixin grid-c-l($x: 1fr, $y: 1fr) {
+  grid-template-columns: $x $y;
+}
+
+@mixin grid-r-l($x: auto, $y: 1fr) {
+  grid-template-rows: $x $y;
+}
+
+@mixin border($width: 1px, $color: transparent) {
+  border: $width solid $color;
+}
+
+@mixin box-shadow($x: 0, $y: 0, $b: 0, $color: rgba(0, 0, 0, 0.005)) {
+  box-shadow: $x $y $b $color;
+}
+
+@mixin circle($width) {
+  width: $width;
+  height: $width;
+  border-radius: 50%;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-vertical-center {
+  align-items: center;
+}
+
+@mixin flex-horizontal-center {
+  justify-content: center;
+}
+
+@mixin self-vertical-bottom {
+  margin-top: auto;
+}
+
+@mixin self-flex-vertical-bottom {
+  align-items: flex-end;
+}
+
+@mixin self-vertical-left {
+  margin-right: auto;
+}
+
+@mixin self-vertical-right {
+  margin-left: auto;
+}
+
+@mixin grid-multi-columns($columns, $width: 1fr) {
+  display: grid;
+  grid-template-columns: repeat($column, $width);
+}
+
+@mixin grid-multi-rows($rows, $height: auto) {
+  display: grid;
+  grid-template-rows: repeat($rows, $height);
+}
+
+@mixin uppercase {
+  text-transform: uppercase;
+}
+
+@mixin capitalize {
+  text-transform: capitalize;
+}
+
+@mixin fullwidth {
+  width: 100%;
+}
+
+@mixin grid-width($amount, $max: false, $min: false) {
+  @if $max {
+    @for $p from 1 to $amount {
+      .w-mx-#{$p} {
+        max-width: $p / $amount * 100%;
+      }
+    }
+  } @else if $min {
+    @for $p from 1 to $amount {
+      .w-mn-#{$p} {
+        min-width: $p / $amount * 100%;
+      }
+    }
+  } @else {
+    @for $p from 1 to $amount {
+      .w-#{$p} {
+        width: $p / $amount * 100%;
+      }
+    }
+  }
+}
+
+@mixin make-grid-column-list($amount) {
+  @for $i from 1 through $amount {
+    .grid.grid-#{$i}-c {
+      grid-template-columns: repeat($i, 1fr);
+    }
+    .grid.grid-#{$i}-c-p {
+      grid-template-columns: repeat($i, 100% / $i);
+    }
+  }
+}

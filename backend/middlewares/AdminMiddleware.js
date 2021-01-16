@@ -18,7 +18,7 @@ const adminMiddleware = async (req, res, next) => {
     if (user.length < 0) next(new SystemError(401, "Invalid token!"));
     // return res.status(401).json("Invalid token");
     req.decodedToken = decodedToken;
-    req.userData = user[0];
+    // req.userData = user[0];
     next();
   } catch (error) {
     next(new SystemError(401, "Invalid token!"));

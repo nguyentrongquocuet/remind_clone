@@ -1,4 +1,13 @@
-import React, { useContext, useMemo, useReducer, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
+import moment from "moment";
 import { Context } from "../../../shared/Util/context";
 import TextField from "../../../shared/Elements/TextField";
 import { Avatar } from "@material-ui/core";
@@ -12,10 +21,325 @@ import Button from "../../../shared/Elements/Button";
 import AttachFilePreview from "../../../shared/Elements/AttachFilePreview";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import "./CreateAnnouncement.scss";
 import MessageService from "../../../services/MessageService";
 import DateTimePicker from "../../../shared/Elements/DateTimePicker";
 import PopupSubject from "../../../shared/Util/PopupSubject";
+import { ResourceService } from "services/ResourceService";
+import Loading from "shared/components/Loading";
+import useLoadWhenScroll from "shared/Util/useLoadWhenScroll";
+import "./CreateAnnouncement.scss";
+
+const dataReducer = (data, action) => {
+  switch (action.type) {
+    case "SET_DRIVE_DATA":
+      return {
+        ...data,
+        drive: {
+          ...action.payload,
+          files: [...data.drive.files, ...action.payload.files],
+        },
+        fetching: false,
+        current: "drive",
+      };
+    case "SET_CLASSROOM_DATA":
+      return {
+        ...data,
+        classroom: {
+          ...action.payload,
+          courses: [...data.classroom.courses, ...action.payload.courses],
+        },
+        fetching: false,
+        current: "classroom",
+      };
+    case "SET_FETCHING":
+      return { ...data, fetching: true };
+    case "CLEAR_DATA_ONLY":
+      return {
+        ...data,
+        drive: { files: [] },
+        classroom: { courses: [] },
+        fetching: true,
+      };
+    case "CLEAR_DATA":
+      return {
+        drive: { files: [] },
+        classroom: { courses: [] },
+        fetching: true,
+      };
+  }
+};
+
+const OtherResource = ({ onAppend = () => {}, props }) => {
+  const triggerRef = useRef();
+  // const scrollRef = useRef();
+  const [resourceData, setResourceData] = useReducer(dataReducer, {
+    drive: { files: [] },
+    classroom: { courses: [] },
+    fetching: true,
+  });
+  const loadMoreResource = useCallback(() => {
+    if (!resourceData.fetching && resourceData.current) {
+      if (resourceData[resourceData.current].nextPageToken) {
+        console.log("loadagain");
+        console.log("loading resource", resourceData);
+        setResourceData({
+          type: "SET_FETCHING",
+        });
+        getResources[resourceData.current](
+          resourceData[resourceData.current].nextPageToken
+        );
+      }
+    }
+  }, [resourceData]);
+  const scrollRef = useLoadWhenScroll(loadMoreResource, 1);
+
+  const toggleSlideLeft = (e) => {
+    e.preventDefault();
+    if (triggerRef.current) {
+      triggerRef.current.classList.toggle("slide-left");
+      if (triggerRef.current.classList.contains("slide-left")) {
+        getResources[e.currentTarget.dataset.resource] &&
+          getResources[e.currentTarget.dataset.resource]();
+      } else {
+        setResourceData({
+          type: "CLEAR_DATA",
+        });
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   if (!resourceData.fetching && scrollRef.current) {
+  //     scrollRef.current.addEventListener("scroll", checkOnScroll);
+  //   }
+  //   return () => {
+  //     scrollRef.current &&
+  //       scrollRef.current.removeEventListener("scroll", checkOnScroll);
+  //   };
+  // }, [resourceData]);
+
+  // const checkOnScroll = (e) => {
+  //   if (
+  //     e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+  //     e.currentTarget.clientHeight
+  //   )
+  //     loadMoreResource();
+  //   // console.dir(e.currentTarget);
+  // };
+  const getResources = {
+    drive: async (nextPageToken, query, resetData = false) => {
+      try {
+        resetData &&
+          setResourceData({
+            type: "CLEAR_DATA_ONLY",
+          });
+        const { data } = await ResourceService.getDriveFiles(
+          20,
+          nextPageToken,
+          query
+        );
+        console.log(data);
+        setResourceData({ type: "SET_DRIVE_DATA", payload: data });
+      } catch (error) {
+        setResourceData({
+          type: "CLEAR_DATA",
+        });
+      }
+    },
+    classroom: async (nextPageToken) => {
+      try {
+        const { data } = await ResourceService.getClassroomCourses(
+          20,
+          nextPageToken
+        );
+        console.log(data);
+        setResourceData({ type: "SET_CLASSROOM_DATA", payload: data });
+      } catch (error) {
+        setResourceData({
+          type: "CLEAR_DATA",
+        });
+      }
+    },
+  };
+
+  const submitSearchResource = (e) => {
+    e.preventDefault();
+    const query = e.currentTarget.elements.query.value;
+    getResources[resourceData.current](null, query, true);
+  };
+
+  const resourceView = (
+    <>
+      <div className="fetched-resources">
+        <header>
+          <form
+            onSubmit={submitSearchResource}
+            className="flex f-row self-f-v-c"
+          >
+            <TextField name="query" />
+            <button style={{ all: "unset" }} type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-search"
+                viewBox="0 0 16 16"
+              >
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+              </svg>
+            </button>
+          </form>
+        </header>
+        <main ref={scrollRef}>
+          {resourceData.drive &&
+            resourceData.drive.files &&
+            resourceData.drive.files.map((file) => {
+              return (
+                <div key={file.id} className="fetched-resource">
+                  <img
+                    className={file.hasThumbnail ? "small" : "tiny"}
+                    src={file.hasThumbnail ? file.thumbnailLink : file.iconLink}
+                    alt={file.name}
+                    data-image={
+                      file.hasThumbnail ? file.thumbnailLink : file.iconLink
+                    }
+                  />
+                  <div
+                    onClick={() => onAppend(file.webViewLink)}
+                    className="resource-info"
+                  >
+                    <p>{file.name}</p>
+                    <p>
+                      {moment(file.modifiedTime).format("HH:MM YYYY/MM/DD")}
+                    </p>
+                  </div>
+                  <a
+                    href={file.webViewLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-arrow-up-right-square"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707l-4.096 4.096z"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              );
+            })}
+          {resourceData.classroom &&
+            resourceData.classroom.courses &&
+            resourceData.classroom.courses.map((course) => {
+              return (
+                <div
+                  title={
+                    course.section || course.descriptionHeading || course.name
+                  }
+                  key={course.id}
+                  className="fetched-resource"
+                >
+                  <img
+                    className={course.hasThumbnail ? "small" : "tiny"}
+                    src={"https://ssl.gstatic.com/classroom/favicon.png"}
+                    alt={course.name}
+                    data-image={"https://ssl.gstatic.com/classroom/favicon.png"}
+                  />
+                  <div
+                    onClick={() => onAppend(course.inviteLink)}
+                    className="resource-info"
+                  >
+                    <p>{course.name}</p>
+                    <p>
+                      {moment(course.modifiedTime).format("HH:MM YYYY/MM/DD")}
+                    </p>
+                  </div>
+                  <a
+                    href={course.inviteLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-arrow-up-right-square"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.854 8.803a.5.5 0 1 1-.708-.707L9.243 6H6.475a.5.5 0 1 1 0-1h3.975a.5.5 0 0 1 .5.5v3.975a.5.5 0 1 1-1 0V6.707l-4.096 4.096z"
+                      />
+                    </svg>
+                  </a>
+                </div>
+              );
+            })}
+          {/* <Loading className="small" /> */}
+        </main>
+        <div className="flex f-row self-f-v-c">
+          <svg
+            onClick={toggleSlideLeft}
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-arrow-left-short"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fillRule="evenodd"
+              d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"
+            />
+          </svg>
+          {resourceData.fetching && <Loading className="small" />}
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="orther-resource">
+      <header>
+        <h3>Other Resource</h3>
+      </header>
+      <main ref={triggerRef}>
+        <div className="available-resource">
+          <div
+            onClick={toggleSlideLeft}
+            data-resource="drive"
+            className="from-drive"
+          >
+            <img className="small" src="/Assets/google-drive.svg" alt="Drive" />
+            <span>Drive</span>
+          </div>
+          <div
+            onClick={toggleSlideLeft}
+            data-resource="classroom"
+            className="from-classroom"
+          >
+            <img
+              className="small"
+              src="/Assets/google-classroom.svg"
+              alt="Classroom"
+            />
+            <span>Classrom</span>
+          </div>
+        </div>
+        {resourceView}
+      </main>
+    </div>
+  );
+};
 
 const preventDefaults = (e) => {
   e.preventDefault();
@@ -67,6 +391,13 @@ const reducer = (state, action) => {
       break;
     case "SET_CONTENT":
       out = { ...state, content: action.payload.text, dirty: true };
+      break;
+    case "APPEND_CONTENT":
+      out = {
+        ...state,
+        content: state.content + action.payload.text,
+        dirty: true,
+      };
       break;
     case "SET_FILE":
       out = { ...state, file: action.payload.file, dirty: true };
@@ -174,7 +505,16 @@ const CreateAnnouncement = ({
       e.target.value = null;
     }
   };
-  console.log(selectedClass);
+
+  const appendResource = (content) => {
+    dispatch({
+      type: "APPEND_CONTENT",
+      payload: {
+        text: `<a href="${content}" target="_blank">${content}</a>`,
+      },
+    });
+  };
+
   const commitAnnouncement = async () => {
     const roomIds = Object.entries(selectedClass.classes)
       .map((c) => {
@@ -209,13 +549,12 @@ const CreateAnnouncement = ({
               initialValues.scheduleId,
               announcementData
             );
-      onDone(
-        response.data.message || mode === "create"
-          ? `You've created a ${
-              selectedClass.schedule ? "scheduled" : ""
-            } announcement`
-          : "Edit successfully"
-      );
+      onDone();
+      // response.data.message || mode === "create"
+      //   ? `You've created a ${
+      //       selectedClass.schedule ? "scheduled" : ""
+      //     } announcement`
+      //   : "Edit successfully"
     } catch (error) {
       PopupSubject.next({
         type: "WARN",
@@ -346,11 +685,11 @@ const CreateAnnouncement = ({
           <h3>Selected Classes</h3>
           {Object.entries(selectedClass.classes)
             .filter((entry) => entry[1])
-            .map((classEntry) => {
+            .map((classEntry, index) => {
               const [classId, type] = classEntry;
               return (
                 <div
-                  key={classId}
+                  key={"class" + classId + "i" + index}
                   className="announcement-target-class selected"
                 >
                   <Avatar
@@ -393,6 +732,9 @@ const CreateAnnouncement = ({
     );
   } else {
     // SEND Stage HERE
+    const readyToSend =
+      Object.keys(selectedClass.classes).length <= 0 ||
+      (!selectedClass.content && !selectedClass.file);
     main = (
       <>
         <div className="announcement-edit-content">
@@ -478,7 +820,7 @@ const CreateAnnouncement = ({
                 >
                   <img
                     className="medium"
-                    src="/uploadfile.png"
+                    src="/Assets/uploadfile.png"
                     alt="Upload File"
                   />
                   <span>Upload A File</span>
@@ -565,15 +907,14 @@ const CreateAnnouncement = ({
 
             <Button
               className="send"
-              disabled={
-                selectedClass.content.length <= 0 && !selectedClass.file
-              }
+              disabled={readyToSend}
               onClick={(e) => commitAnnouncement()}
             >
               Send
             </Button>
           </div>
         </div>
+        <OtherResource onAppend={appendResource} />
       </>
     );
   }

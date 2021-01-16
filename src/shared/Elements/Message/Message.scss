@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: row;
   margin-bottom: 0.25rem;
-  border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
+  border-radius: var(--message-border-radius);
   .small {
     align-self: flex-end;
     margin: 0 1px;
@@ -15,7 +15,7 @@
       display: none;
     }
     .message {
-      border-radius: 0.7rem 0.7rem 0.2rem 0.7rem;
+      border-radius: var(--message-owner-border-radius);
     }
   }
 }
@@ -28,8 +28,8 @@
   overflow: hidden;
   margin-top: auto;
   // background-color: var(--secondary);
-  border-radius: 0.7rem 0.7rem 0.7rem 0.2rem;
-  background-color: #abc4d6;
+  border-radius: var(--message-border-radius);
+  background-color: var(--message-bg);
   text-align: left;
   font-size: 0.9rem;
   a {
@@ -95,7 +95,7 @@
   // @extend .message;
   align-self: flex-end;
   background-color: var(--primary);
-  border-radius: 0.7rem 0.7rem 0.2rem 0.7rem;
+  border-radius: var(--message-owner-border-radius);
   margin-left: 0.25rem;
 }
 .message.popper__element {
@@ -108,20 +108,20 @@
   padding: 0;
   position: relative;
   &__header {
-    cursor: pointer;
     display: flex;
-    border-radius: 0.7rem 0.7rem 0 0;
+    cursor: pointer;
+    border-radius: var(--announcement-header-border-radius);
     padding: 0.5rem;
     flex-direction: row;
     justify-content: left;
     align-items: center;
     width: 100%;
-    background-color: #ffffff;
-    border: 1px solid #abc4d6;
+    background-color: var(--announcement-header-bg);
+    border: var(--announcement-header-border);
     .announcement-info {
       display: flex;
-      flex-direction: column;
       align-items: flex-start;
+      flex-direction: column;
       span.announcement-target {
         // font-weight: normal;
         font-size: 0.7em;
@@ -142,7 +142,7 @@
     }
 
     width: 100%;
-    border-radius: 0 0 0.7rem 0.7rem;
+    border-radius: var(--announcement-header-border-radius);
     // width: fit-content;
     overflow: hidden;
     .content {
@@ -154,7 +154,7 @@
       }
       // padding-right: 1rem;
       a {
-        color: #200772;
+        color: var(--announcement-link-color);
       }
     }
     img {
@@ -174,7 +174,7 @@
     }
   }
   &.owner header {
-    background-color: #ffffff;
+    background-color: var(--announcement-header-bg);
   }
   .image {
     margin-left: 0rem;

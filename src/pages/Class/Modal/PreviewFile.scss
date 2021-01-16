@@ -3,6 +3,21 @@
   max-width: 600px;
   padding-bottom: 1rem;
   overflow-y: auto;
+  .message {
+    padding: 0.25rem;
+    p,
+    a {
+      max-width: calc(var(--message-max-width) - 0.5rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    a {
+      // filter: brightness(150%);
+      text-decoration: underline;
+      color: var(--announcement-link-color);
+    }
+  }
   .info {
     display: flex;
     flex-direction: column;
@@ -15,12 +30,6 @@
     }
     .message-preview {
       width: 100%;
-      .message {
-        a {
-          filter: brightness(150%);
-          text-decoration: underline;
-        }
-      }
     }
 
     .info-avatar {

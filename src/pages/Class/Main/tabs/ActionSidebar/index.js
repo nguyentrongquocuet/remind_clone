@@ -178,11 +178,13 @@ const ActionSidebar = (props) => {
       {state.action === "people" && (
         <Members
           expanded={props.expanded}
-          classId={classId}
+          classId={props.classId || classId}
           people={state.people}
         />
       )}
-      {state.action === "settings" && <Settings />}
+      {state.action === "settings" && (
+        <Settings classId={props.classId || classId} />
+      )}
     </div>
   );
 };

@@ -74,8 +74,137 @@
       }
     }
     ////////MODE 2: EDIT ANNOUNCEMENT
+    .orther-resource {
+      & > header {
+        margin-bottom: 1rem;
+      }
+      & > main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 1rem;
+        overflow-y: hidden;
+        width: 200%;
+        transition: 0.5s;
+
+        & > div {
+          transition: 0.5s;
+          order: 1;
+        }
+        &.slide-left {
+          .available-resource {
+            position: absolute;
+            transform: translateX(-100%);
+            opacity: 0;
+            transform: scale(0);
+            div {
+              border: none;
+            }
+            // display: none;
+          }
+          .fetched-resources {
+            display: flex;
+          }
+        }
+        .available-resource {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          div {
+            // box-sizing: content-box;
+            text-align: left;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--info);
+            padding: 0.25rem;
+            width: 100%;
+            cursor: pointer;
+            &:hover {
+              border-color: var(--primary);
+            }
+            span {
+              margin-left: 0.5rem;
+            }
+          }
+        }
+        .fetched-resources {
+          // display: none;
+          display: none;
+          flex-direction: column;
+          font-size: 0.7rem;
+          header {
+            margin-bottom: 1rem;
+            form {
+              .bi-search {
+                margin-left: 0.5rem;
+                width: 1.1rem;
+                cursor: pointer;
+                &:hover {
+                  color: var(--info);
+                }
+              }
+            }
+          }
+          main {
+            overflow-x: auto;
+            height: 200px;
+            max-height: 200px;
+          }
+          div.fetched-resource {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            border-radius: 4px;
+            border: 1px solid var(--info);
+            padding: 0 0.5rem;
+            background-color: #fafafa;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            // justify-content: center;
+            img {
+              margin-right: 0.5rem;
+            }
+            .resource-info {
+              display: flex;
+              flex-direction: column;
+              &:hover {
+                color: var(--info);
+              }
+            }
+            a {
+              margin-left: auto;
+              .bi-arrow-up-right-square {
+                color: var(--secondary);
+                &:hover {
+                  fill: var(--primary);
+                }
+                // margin-right: 0.5rem;
+              }
+            }
+          }
+          .bi-arrow-left-short {
+            cursor: pointer;
+            margin-top: auto;
+            width: 24px;
+            height: 24px;
+            fill: var(--warning);
+            &:hover {
+              transform: scale(1.1);
+            }
+            & + .small {
+              margin-left: auto;
+              svg {
+                width: 24px;
+                height: 24px;
+              }
+            }
+          }
+        }
+      }
+    }
     .announcement-edit-content {
-      grid-column: 1/3;
+      // grid-column: 1/3;
       .announcement-receivers {
         width: 100%;
         padding: 0.5rem;
@@ -199,7 +328,7 @@
       &__actions {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: baseline;
         justify-content: flex-start;
         margin-top: 1rem;
         .schedule-picker {

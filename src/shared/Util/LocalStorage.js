@@ -14,5 +14,6 @@ export function getFromLocalStorage(...key) {
   for (const k of key) {
     out[k] = JSON.parse(localStorage.getItem(k));
   }
+  console.log(out);
   return out;
 }

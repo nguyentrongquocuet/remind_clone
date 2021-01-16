@@ -125,7 +125,7 @@ const InviteToClass = ({ classId, onDone, onClose }) => {
               {people.length > 0 &&
                 people.map((person, i) => {
                   return (
-                    <div key={i} className="invite-people">
+                    <div key={person.email + i} className="invite-people">
                       <TextField
                         name={`name[${i}]`}
                         placeholder="Name"
@@ -164,7 +164,7 @@ const InviteToClass = ({ classId, onDone, onClose }) => {
               {arrayFromNumber(rows - people.length).map((k) => {
                 const key = k + people.length;
                 return (
-                  <div key={key} className="invite-people">
+                  <div key={"additionalField" + key} className="invite-people">
                     <TextField
                       name={`name[${key}]`}
                       placeholder="Name"

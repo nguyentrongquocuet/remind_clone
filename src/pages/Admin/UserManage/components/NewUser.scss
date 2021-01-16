@@ -1,0 +1,47 @@
+.MuiPaper-root.signup {
+  width: 100%;
+  // margin-top: 5rem;
+  // margin-bottom: 5rem;
+  padding: 1rem;
+  max-width: 600px;
+  pointer-events: all;
+  margin: 0 auto;
+  background-color: var(--admin-secondary-background);
+  label {
+    color: var(--admin-block-active);
+  }
+}
+input:-internal-autofill-selected {
+  background: transparent !important;
+}
+button.signupform__button {
+  &.MuiButtonBase-root {
+    width: fit-content;
+  }
+}
+.MuiFormControl-root {
+  .MuiFormLabel-root {
+    color: wheat;
+  }
+  .MuiInputBase-root {
+    background-color: var(--admin-input-background);
+    // width: fit-content;
+    // filter: brightness(120%);
+  }
+
+  &.no-pad {
+    margin-bottom: 1rem;
+  }
+}
+.MuiButton-root.signupform__button {
+  width: 100%;
+}
+.MuiCardActions-root.no-pad {
+  padding: 0;
+}
+.email-verify {
+  color: var(--primary);
+}
+.MuiSelect-root.MuiSelect-select {
+  color: var(--admin-typo);
+}

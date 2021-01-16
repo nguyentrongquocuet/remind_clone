@@ -3,13 +3,18 @@
   width: fit-content;
   height: fit-content;
   border-radius: 4px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--admin-box-shadow);
   padding: 0.5rem 1rem;
   margin-right: 1rem;
   margin-bottom: 1rem;
-  background-color: #fafafa;
+  background-color: var(--admin-secondary-background);
   &:hover {
-    background-color: var(--blockhover);
+    background-color: var(--admin-block-active);
+    p,
+    a,
+    span {
+      color: wheat;
+    }
   }
   hr {
     border: none;

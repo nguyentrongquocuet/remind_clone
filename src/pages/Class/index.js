@@ -13,15 +13,18 @@ import Loading from "../../shared/components/Loading";
 import Skeleton from "@material-ui/lab/Skeleton";
 import LoadingPage from "../../shared/components/loadingpage/LoadingPage";
 import ModalSubject from "../../shared/Util/ModalSubject";
-import "./Class.scss";
 import ImagePreview from "./Modal/ImagePreview";
-import CreateAnnouncement from "./Modal/CreateAnnouncement";
 import Modal from "../../shared/Elements/Modal";
 import popupSubject from "../../shared/Util/PopupSubject";
-import SchedulePreview from "./Modal/SchedulePreview";
-import InviteToClass from "./Modal/InviteToClass";
 import { Popper } from "@material-ui/core";
 import PeopleInfo from "./Modal/PeopleInfo";
+import SchedulePreview from "./Modal/SchedulePreview";
+import "./Class.scss";
+const UserSetting = React.lazy(() => import("shared/components/UserSetting"));
+const CreateAnnouncement = React.lazy(() =>
+  import("./Modal/CreateAnnouncement")
+);
+const InviteToClass = React.lazy(() => import("./Modal/InviteToClass"));
 const ClassSidebar = React.lazy(() => import("./Sidebar"));
 const ClassMain = React.lazy(() => import("./Main"));
 const reducer = (state, action) => {
@@ -41,6 +44,8 @@ const reducer = (state, action) => {
       return { ...state, inviteMode: action.payload };
     case "TOGGLE_CONNECT_CHILD":
       return { ...state, connectChildMode: action.payload };
+    case "TOGGLE_USER_SETTING":
+      return { ...state, settingMode: action.payload };
     default:
       return state;
   }
@@ -55,14 +60,16 @@ const Class = () => {
     previewSchedule: false,
     inviteMode: false,
     connectChildMode: false,
+    settingMode: false,
   });
-  console.log("CHECK_MODAL", modalState);
   const {
     previewImage,
     createAnnouncementMode,
     previewSchedule,
     inviteMode,
+    settingMode,
   } = modalState;
+  console.log("CHECK_MODAL", settingMode);
   const { classId } = useParams();
   const history = useHistory();
   useEffect(() => {
@@ -100,6 +107,12 @@ const Class = () => {
         case "CONNECT_CHILD":
           modalDispatch({
             type: "TOGGLE_CONNECT_CHILD",
+            payload: true,
+          });
+          break;
+        case "USER_SETTING":
+          modalDispatch({
+            type: "TOGGLE_USER_SETTING",
             payload: true,
           });
           break;
@@ -178,6 +191,25 @@ const Class = () => {
             >
               <ClassSidebar loading={loading} />
             </Suspense>
+
+            {settingMode && (
+              <Suspense fallback={<Loading />}>
+                <Modal
+                  open={settingMode}
+                  classNames={{
+                    wrapper: "center",
+                    content: "form__modal invite",
+                  }}
+                  onClose={(e) => {
+                    modalDispatch({
+                      type: "TOGGLE_USER_SETTING",
+                    });
+                  }}
+                >
+                  <UserSetting />
+                </Modal>
+              </Suspense>
+            )}
             {classId ? (
               <Suspense
                 fallback={
@@ -198,6 +230,7 @@ const Class = () => {
                     previewObject={previewImage}
                   />
                 )}
+
                 {createAnnouncementMode && !loading && (
                   <Modal
                     open={Boolean(createAnnouncementMode)}
@@ -217,11 +250,11 @@ const Class = () => {
                   >
                     <CreateAnnouncement
                       onDone={(message) => {
-                        popupSubject.next({
-                          showTime: 5,
-                          message: message || "You've created a schedule",
-                          type: "SUCCESS",
-                        });
+                        // popupSubject.next({
+                        //   showTime: 5,
+                        //   message: message || "You've created a schedule",
+                        //   type: "SUCCESS",
+                        // });
                         modalDispatch({
                           type: "TOGGLE_CREATE_ANNOUNCEMENT",
                         });
@@ -238,6 +271,7 @@ const Class = () => {
                         type: "TOGGLE_INVITE",
                       })
                     }
+                    closeButton={false}
                     classNames={{
                       wrapper: "center",
                       content: "form__modal invite",

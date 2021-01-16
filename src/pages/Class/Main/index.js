@@ -10,7 +10,6 @@ import Main from "../../../shared/components/Main";
 import { Context } from "../../../shared/Util/context";
 import ActionSidebar from "./tabs/ActionSidebar";
 import Avatar from "@material-ui/core/Avatar";
-import "./Main.scss";
 import Skeleton from "@material-ui/lab/Skeleton";
 import ClassService from "../../../services/ClassService";
 import popUpSubject from "../../../shared/Util/PopupSubject";
@@ -18,6 +17,7 @@ import ModalSubject from "../../../shared/Util/ModalSubject";
 import UserService from "../../../services/UserService";
 import MessageService from "../../../services/MessageService";
 import Loading from "../../../shared/components/Loading";
+import "./Main.scss";
 const Messages = React.lazy(() => import("./tabs/Messages"));
 const toggleInvite = () => {
   ModalSubject.next({

@@ -1,0 +1,21 @@
+.modify-class {
+  padding: 1rem;
+  height: fit-content;
+  height: fit-content;
+  position: sticky;
+  top: calc(48px + 1rem);
+  overflow: hidden;
+
+  form {
+    .pickicon {
+      .pickicon__preview {
+        width: 64px;
+        height: 64px;
+      }
+    }
+    .flex {
+      justify-content: space-around;
+      margin-top: 1rem;
+    }
+  }
+}

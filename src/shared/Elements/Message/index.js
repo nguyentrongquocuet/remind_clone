@@ -13,7 +13,7 @@ const Message = ({ message, senderData, onPreview, classAvatar }) => {
       ref.current.src = ref.current.getAttribute("data-src");
     },
     {
-      root: document.getElementsByClassName("allmessages")[0],
+      root: document.getElementsByClassName("fix")[0],
       rootMargin: "0px 0px 100px 0px",
     }
   );
@@ -49,7 +49,7 @@ const Message = ({ message, senderData, onPreview, classAvatar }) => {
           .trim()
           .split(/[\n]+/)
           .map((w, index) => (
-            <span key={index}>
+            <span key={w + index}>
               {w} <br />
             </span>
           ))

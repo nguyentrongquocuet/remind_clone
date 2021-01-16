@@ -1,0 +1,17 @@
+.grid {
+  @extend %grid;
+  &.grid-c-a-1 {
+    grid-template-columns: auto 1fr;
+  }
+  &.grid-r-a-1 {
+    grid-template-rows: auto 1fr;
+  }
+  &.grid-c-1-1 {
+    grid-template-columns: 1fr 1fr;
+  }
+  &.grid-r-1-1 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@include make-grid-column-list(12);

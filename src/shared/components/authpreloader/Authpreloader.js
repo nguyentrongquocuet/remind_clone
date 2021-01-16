@@ -3,7 +3,7 @@ import "./Authpreloader.scss";
 const Authpreloader = () => {
   return (
     <div className="svg__wrapper--auth">
-      <img src="/authenticating.svg" alt="Authenticating" />
+      <img src="/Assets/authenticating.svg" alt="Authenticating" />
     </div>
   );
 };

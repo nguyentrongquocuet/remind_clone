@@ -189,11 +189,6 @@ const Members = (props) => {
                 </span>
               </div>
             </div>
-            <div className="pending-requests">
-              <p>
-                Pending requests <span>1</span>
-              </p>
-            </div>
           </div>
           {Object.values(state.people).filter(filter(state.filterRole)).length >
           0 ? (

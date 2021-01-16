@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { CardActions, CardContent, TextField } from "@material-ui/core";
+import { CardActions, CardContent } from "@material-ui/core";
 import UserService from "../../../services/UserService";
 import Button from "../../Elements/Button";
 import Card from "../../Elements/Card";
@@ -11,6 +11,7 @@ import DateTimePicker from "../../Elements/DateTimePicker";
 import MenuItem from "@material-ui/core/MenuItem";
 import moment from "moment";
 import VALIDATOR from "../../Util/Validator";
+import TextField from "../../Elements/TextField";
 const SignUpForm = ({ initialMode = 1, ...props }) => {
   const {
     register,
@@ -25,6 +26,8 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
       email: "",
       password: "",
       repassword: "",
+      firstname: "",
+      lastname: "",
     },
     reValidateMode: "onChange",
   });
@@ -104,7 +107,8 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
                 ...VALIDATOR.EMAIL.REQUIRED,
                 ...VALIDATOR.EMAIL.PARTTERN,
               })}
-              error={errors.email ? errors.email.message : null}
+              helperText={errors.email ? errors.email.message : null}
+              error={Boolean(errors.email)}
             />
             <TextField
               label="First Name"
@@ -118,7 +122,8 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
                 ...VALIDATOR.NAME.REQUIRED.FIRST,
                 ...VALIDATOR.NAME.MINLENGTH,
               })}
-              error={errors.firstname ? errors.firstname.message : null}
+              helperText={errors.firstname ? errors.firstname.message : null}
+              error={Boolean(errors.firstname)}
             />
             <TextField
               label="Last Name"
@@ -132,7 +137,8 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
                 ...VALIDATOR.NAME.REQUIRED.LAST,
                 ...VALIDATOR.NAME.MINLENGTH,
               })}
-              error={errors.lastname ? errors.lastname.message : null}
+              helperText={errors.lastname ? errors.lastname.message : null}
+              error={Boolean(errors.lastname)}
             />
             <DateTimePicker
               label="Birthday"
@@ -194,11 +200,12 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
               inputRef={register({
                 ...VALIDATOR.PASSWORD,
               })}
-              error={errors.password ? errors.password.message : null}
+              helperText={errors.password ? errors.password.message : null}
+              error={Boolean(errors.password)}
             />
             <TextField
               type="password"
-              label="RePassword"
+              label="Retype password"
               fullWidth
               variant="outlined"
               style={{ marginBottom: "1rem" }}
@@ -210,7 +217,8 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
                 validate: (value) =>
                   value === watch("password") || "2 passwords must be the same",
               })}
-              error={errors.repassword ? errors.repassword.message : null}
+              helperText={errors.repassword ? errors.repassword.message : null}
+              error={Boolean(errors.repassword)}
             />
           </CardContent>
 
@@ -240,6 +248,7 @@ const SignUpForm = ({ initialMode = 1, ...props }) => {
           <span className="email-verify">{code.email}</span>! Enter code to box
           below
         </h3>
+        <br />
         <TextField
           onChange={(e) => {
             console.log(e.target.value);

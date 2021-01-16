@@ -5,6 +5,7 @@ exports.request = async (req, res, next) => {
     await AnalysisDb.db.query(
       "UPDATE analysis SET amount = amount+1 WHERE id=1"
     );
+  console.log(req.path);
   next();
 };
 

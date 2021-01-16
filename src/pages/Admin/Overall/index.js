@@ -95,7 +95,7 @@ const AdminOverall = () => {
           overallState ? (
             <InfoCard
               data={overallState[element.field]}
-              key={key}
+              key={"info" + key}
               // amount={10000}
               {...element}
               unavailable={element.unavailable}

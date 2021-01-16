@@ -87,7 +87,7 @@ const Home = () => {
         <Banner
           style={{
             banner: {
-              backgroundImage: `url(${window.location.origin}/banner.jpg)`,
+              backgroundImage: `url(${window.location.origin}/Assets/banner.jpg)`,
               backgroundOrigin: "border-box",
               backgroundPosition: "center bottom",
               backgroundSize: "cover",

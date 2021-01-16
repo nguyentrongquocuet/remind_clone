@@ -5,7 +5,6 @@ import * as local from "./shared/Util/LocalStorage";
 import RealTimeService from "./services/RealTimeService";
 import PopUp from "./shared/Elements/PopUp";
 import popupSubject from "./shared/Util/PopupSubject";
-import io from "socket.io-client";
 const { Context } = require("./shared/Util/context");
 
 const reducer = (context, actions) => {
@@ -126,22 +125,25 @@ const Store = () => {
   const [globalState, dispatch] = useReducer(reducer, initialState);
   const [auth, setAuth] = useState(false);
   const [popup, setPopup] = useState(null);
-  const [IO, setIO] = useState(null);
-  useEffect(() => {
-    const IO = io.connect("http://localhost:5000");
-    setIO(IO);
-  }, []);
+  // const [IO, setIO] = useState(null);
+  // useEffect(() => {
+  //   const IO = io.connect("http://localhost:5000");
+  //   setIO(IO);
+  // }, []);
   useEffect(() => {
     const sub = popupSubject.asObservable().subscribe((popupContent) => {
-      setPopup(popupContent);
-      if (popupContent.type === "ERROR") {
-        dispatch({ type: "LOGOUT" });
+      if (["ERROR", "CONFIRM", "SUCCESS"].includes(popupContent.type)) {
+        setPopup(popupContent);
+        if (popupContent.type === "ERROR") dispatch({ type: "LOGOUT" });
+      } else if (popupContent.accepted) {
+        setPopup(popupContent);
       }
     });
+    // return sub.unsubscribe();
   }, []);
   useEffect(() => {
     if (globalState.isLoggedIn && !globalState.settingUpIsDone) {
-      RealTimeService.init(IO, { globalState, dispatch });
+      RealTimeService.init({ globalState, dispatch });
     }
   }, [globalState.isLoggedIn]);
   return (

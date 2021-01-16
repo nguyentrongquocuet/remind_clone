@@ -22,4 +22,13 @@
 ✔ nhắn private:đang trục trặc @done(20-12-05 19:28)
 ✔ invite class sử dụng token @done(20-12-04 17:24)
 ✔ connect children @done(20-12-04 17:24)
-☐ Lam trang admin
+✔ Lam trang admin @done(21-01-04 13:49)
+✔ Làm nút escape cho modal @done(21-01-11 19:31)
+✔ reset pass @done(21-01-11 19:31)
+✔ modify @done(21-01-04 13:49)
+✔ sua giao dien admin @done(21-01-11 19:31)
+✔ axios intercepter for error handling @done(21-01-11 19:30)
+✔ classrom api @done(21-01-11 19:30)
+✔ drive api @done(21-01-11 19:30)
+☐ apply css classes and variable
+☐ recovery the deletio:

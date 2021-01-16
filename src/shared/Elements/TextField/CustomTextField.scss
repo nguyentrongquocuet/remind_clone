@@ -6,6 +6,9 @@
   }
 }
 .default {
+  .MuiInputLabel-formControl {
+    font-size: 1rem;
+  }
   .MuiOutlinedInput-multiline {
     padding: 0 0.5rem;
     height: fit-content;

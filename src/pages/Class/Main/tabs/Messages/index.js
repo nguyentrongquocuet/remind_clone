@@ -49,10 +49,16 @@ const Messages = (props) => {
   const { globalState, dispatch } = useContext(Context);
   const history = useHistory();
   const classId = useParams().classId;
-  let roomId = privateChat
-    ? privateRoomData.roomId
-    : globalState.classData[classId].roomId;
-  if (!roomId) history.push("/classes");
+  let roomId;
+
+  try {
+    roomId = privateChat
+      ? privateRoomData.roomId
+      : globalState.classData[classId].roomId;
+    if (!roomId) history.push("/classes");
+  } catch (error) {
+    history.push("/classes");
+  }
 
   let messagesRef = useRef(null);
   const isOwner = useMemo(
@@ -63,10 +69,13 @@ const Messages = (props) => {
     classId,
   ]);
   const backToClass = (e) => history.push(`/classes/${classId}`);
-  const sendMessage = () => {
-    if (message.content.trim().length > 0 || message.file) {
+  const sendMessage = (e) => {
+    e.preventDefault();
+    const content = e.currentTarget.elements.message.value.trim();
+    e.currentTarget.elements.message.value = "";
+    if (content.length > 0 || message.file) {
       const messageData = new FormData();
-      messageData.append("content", message.content);
+      messageData.append("content", content);
       messageData.append("schedule", message.schedule);
       if (message.file) {
         messageData.append("file", message.file, message.file.name);
@@ -83,6 +92,7 @@ const Messages = (props) => {
           setMessagesState((prev) => {
             return { ...prev, messages: [...prev.messages, data.data] };
           });
+
           setMessage({ schedule: null, content: "", file: null });
         })
         .catch((error) =>
@@ -339,7 +349,8 @@ const Messages = (props) => {
             </div>
           )}
 
-          <div className="message__input">
+          {/* <div className="message__input"> */}
+          <form className="message__input" onSubmit={sendMessage}>
             <TextField
               type="textarea"
               onDrop={(e) => {
@@ -350,15 +361,16 @@ const Messages = (props) => {
                 }
               }}
               placeholder="You can drop file here!"
-              onChange={(e) =>
-                setMessage((prev) => {
-                  return { ...prev, content: e.target.value };
-                })
-              }
-              value={message.content}
-              onKeyUp={(e) =>
-                e.key === "Enter" ? e.preventDefault() : e.preventDefault()
-              }
+              // onChange={(e) =>
+              //   setMessage((prev) => {
+              //     return { ...prev, content: e.target.value };
+              //   })
+              // }
+              // value={message.content}
+              name="message"
+              // onKeyUp={(e) =>
+              //   e.key === "Enter" ? e.preventDefault() : e.preventDefault()
+              // }
             />
             <input
               style={{ display: "none" }}
@@ -380,7 +392,7 @@ const Messages = (props) => {
                   })
                 }
               >
-                <img src="/announcement.png" alt="" />
+                <img src="/Assets/announcement.png" alt="" />
               </div>
             )}
 
@@ -390,15 +402,18 @@ const Messages = (props) => {
               className="message__input__action"
               titleAccess="Attach File"
             />
-            <SendIcon
-              onClick={(e) => {
-                sendMessage();
-              }}
-              className="message__input__action"
-              color="primary"
-              titleAccess="Send Message"
-            />
-          </div>
+            <button style={{ all: "unset" }} type="submit">
+              <SendIcon
+                // onClick={(e) => {
+                //   sendMessage();
+                // }}
+                className="message__input__action"
+                color="primary"
+                titleAccess="Send Message"
+              />
+            </button>
+          </form>
+          {/* </div> */}
         </div>
       </div>
     </>

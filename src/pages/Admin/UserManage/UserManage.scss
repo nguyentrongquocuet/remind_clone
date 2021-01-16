@@ -1,0 +1,77 @@
+.user-manage {
+  .user-manage-user-list {
+    display: grid;
+    // grid-template-rows: 1fr auto;
+    // overflow-y: auto;
+    // max-width: 80%;
+    div.list {
+      position: relative;
+      z-index: 0;
+    }
+    justify-content: center;
+    grid-template-rows: min-content 1fr;
+    grid-template-columns: 1fr;
+    // min-height: 500px;
+    // margin: 0 auto;
+    padding: 1rem 0;
+    // margin: 0 1rem;
+    background-color: var(--admin-secondary-background);
+    // box-shadow: 0px 0px 8px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    transition: 0.25s;
+    .no-user-notice {
+      margin: 1rem auto;
+      color: #7d0c0c;
+      font-size: 1rem;
+    }
+    table {
+      tr {
+        td,
+        th {
+          &.row-data__head {
+            position: sticky;
+            top: calc(3rem + 48px);
+            z-index: 1;
+          }
+
+          padding: 0.25rem 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .user-manage {
+    // display: inline-block;
+    // min-width: fit-content;
+    .user-manage-user-list {
+      order: -1;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .user-modify__wrapper {
+      display: flex;
+      // position: absolute;
+      // width: fit-content;
+      height: 100%;
+      top: 0;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      .signup {
+        max-width: unset;
+      }
+    }
+  }
+  .admin-page-main__workspace {
+    overflow-y: auto;
+  }
+  .side {
+    display: block;
+    position: relative;
+    top: unset;
+    left: unset;
+    width: 100%;
+  }
+}

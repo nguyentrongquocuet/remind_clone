@@ -16,6 +16,7 @@ Router.put(
   multerMiddleWare.single("file"),
   controller.editSchedule
 );
+
 Router.delete("/schedule", roleCheck("teacher"), controller.deleteSchedule);
 Router.get("/", controller.getMessages);
 Router.get("/schedule", roleCheck("teacher"), controller.getScheduleDetails);
@@ -26,4 +27,5 @@ Router.get(
   controller.getPrivateConversationData
 );
 Router.get("/schedules", roleCheck("teacher"), controller.getSchedules);
+
 module.exports = Router;

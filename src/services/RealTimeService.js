@@ -1,7 +1,9 @@
 import { Subject, Observable } from "rxjs";
+import io from "socket.io-client";
 class RealtimeService {
-  init(io, { dispatch, globalState }) {
-    this.io = io;
+  init({ dispatch, globalState }) {
+    this.io = io.connect("http://localhost:5000");
+    console.log("check socket");
     this.io.on("auth", () => {
       dispatch({
         1: {
@@ -31,6 +33,7 @@ class RealtimeService {
     });
     this.IOSubject = new Observable((observer) => {
       this.io.on("messages", (data) => {
+        console.log("messagess", data);
         observer.next({ type: "MESSAGES", payload: data });
       });
       this.io.on("schedule", (data) => {

@@ -33,6 +33,7 @@
     cursor: pointer;
     user-select: none;
   }
+
   .filter {
     margin-left: 0.5rem;
     position: relative;
@@ -45,6 +46,7 @@
     padding: 0.5rem 2rem;
     border: 1px solid var(--primary);
     color: var(--primary);
+
     #check-filter:checked ~ .filter-roles {
       display: flex;
       opacity: 1;

@@ -1,0 +1,76 @@
+form.filter-form {
+  position: sticky;
+  top: calc(1rem + 48px);
+  z-index: 1;
+  .actions {
+    padding: 0.15rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+    .MuiTextField-root.input__wrapper {
+      width: 50%;
+    }
+    span,
+    p {
+      cursor: pointer;
+      user-select: none;
+    }
+    .filter {
+      margin-left: 0.5rem;
+      position: relative;
+      display: flex;
+      width: fit-content;
+      cursor: pointer;
+      word-wrap: none;
+      border-radius: 4px;
+      // background-color: #4da8da;
+      padding: 0.25rem 2rem;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      p:first-child {
+        min-width: 3rem;
+        white-space: nowrap;
+        color: wheat;
+      }
+      #check-filter:checked ~ .filter-roles {
+        display: flex;
+        opacity: 1;
+      }
+      .filter-roles {
+        display: none;
+        width: 100%;
+        position: absolute;
+        z-index: 2;
+        opacity: 0;
+        flex-direction: column;
+        padding: 0.5rem 0;
+        left: 0;
+        top: 2.5rem;
+        background-color: var(--admin-block-active);
+        text-align: center;
+        border-radius: 4px;
+        transition: 0.5s;
+        box-shadow: var(--admin-box-shadow);
+        span {
+          padding: 0.5rem;
+          color: wheat;
+          &:hover {
+            background-color: #4da8da;
+          }
+        }
+      }
+    }
+    .filter-form--submit {
+      margin-left: 1rem;
+    }
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .filter-form {
+    position: static !important;
+    top: auto;
+  }
+}

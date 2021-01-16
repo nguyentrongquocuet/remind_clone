@@ -1,49 +1,49 @@
 const socketIO = require("../configs/socketIO");
 const Db = require("../Database/db");
 const transporter = require("../Mailer/Mailer.js");
-const Redis = require("../configs/Redis");
+// const Redis = require("../configs/Redis");
 const SystemError = require("../models/Error");
 
-const cacheClasses = async (classesData) => {
-  if (classesData.classId) {
-    const cachedData = await Redis.getAsync(`class-${classesData.classId}`);
-    if (!cachedData) {
-      await Redis.setAsync(
-        `class-${classesData.classId}`,
-        JSON.stringify(classesData)
-      );
-      await Redis.setAsync(
-        `class-room-${classesData.roomId}`,
-        JSON.stringify(classesData)
-      );
-    }
-  } else {
-    for (const classData of Object.values(classesData)) {
-      const cachedData = await Redis.getAsync(`class-${classData.classId}`);
-      if (!cachedData)
-        await Redis.setAsync(
-          `class-${classData.classId}`,
-          JSON.stringify(classData)
-        );
-      await Redis.setAsync(
-        `class-room-${classData.roomId}`,
-        JSON.stringify(classData)
-      );
-    }
-  }
-};
+// const cacheClasses = async (classesData) => {
+//   // if (classesData.classId) {
+//   //   const cachedData = await Redis.getAsync(`class-${classesData.classId}`);
+//   //   if (!cachedData) {
+//   //     await Redis.setAsync(
+//   //       `class-${classesData.classId}`,
+//   //       JSON.stringify(classesData)
+//   //     );
+//   //     await Redis.setAsync(
+//   //       `class-room-${classesData.roomId}`,
+//   //       JSON.stringify(classesData)
+//   //     );
+//   //   }
+//   // } else {
+//   //   for (const classData of Object.values(classesData)) {
+//   //     const cachedData = await Redis.getAsync(`class-${classData.classId}`);
+//   //     if (!cachedData)
+//   //       await Redis.setAsync(
+//   //         `class-${classData.classId}`,
+//   //         JSON.stringify(classData)
+//   //       );
+//   //     await Redis.setAsync(
+//   //       `class-room-${classData.roomId}`,
+//   //       JSON.stringify(classData)
+//   //     );
+//   //   }
+//   // }
+// };
 
-const cacheUsers = (membersData) => {
-  for (const member of Object.values(membersData)) {
-    if (member.id)
-      Redis.cache.get(`user-${member.id}`, (err, rep) => {
-        console.log(err, rep);
-        if (!err && !rep) {
-          Redis.cache.set(`user-${member.id}`, JSON.stringify(member));
-        }
-      });
-  }
-};
+// const cacheUsers = (membersData) => {
+//   for (const member of Object.values(membersData)) {
+//     if (member.id)
+//       Redis.cache.get(`user-${member.id}`, (err, rep) => {
+//         console.log(err, rep);
+//         if (!err && !rep) {
+//           Redis.cache.set(`user-${member.id}`, JSON.stringify(member));
+//         }
+//       });
+//   }
+// };
 
 exports.createClass = async (req, res, next) => {
   const { className } = req.body;
@@ -84,8 +84,8 @@ exports.createClass = async (req, res, next) => {
       socket.join(room);
     }
 
-    res.send(data[0]);
-    cacheClasses(data[0]);
+    res.send({ ...data[0], message: "You've created  new class" });
+    // cacheClasses(data[0]);
   } catch (error) {
     next(error);
   }
@@ -114,7 +114,7 @@ exports.getClass = async (req, res, next) => {
     }
     res.status(200).json(finalClasses);
     //cache to redis
-    cacheClasses(finalClasses);
+    // cacheClasses(finalClasses);
   } catch (error) {
     next(error);
   }
@@ -130,17 +130,22 @@ exports.getChildrenClasses = async (req, res, next) => {
       userId
     );
     const child = childList.map((c) => c.childId);
-    const [
-      classes,
-    ] = await db.query(
-      "SELECT * FROM class_member cm INNER JOIN class c ON cm.userId IN (?) AND c.classId = cm.classId",
-      [child]
-    );
-    const finalClasses = classes.reduce((prev, cur) => {
-      prev[cur.classId] = cur;
-      return prev;
-    }, {});
-    cacheClasses(finalClasses);
+    console.log(child);
+    let finalClasses = [];
+    if (child.length > 0) {
+      const [
+        classes,
+      ] = await db.query(
+        "SELECT * FROM class_member cm INNER JOIN class c ON cm.userId IN (?) AND c.classId = cm.classId",
+        [child]
+      );
+      finalClasses = classes.reduce((prev, cur) => {
+        prev[cur.classId] = cur;
+        return prev;
+      }, {});
+    }
+    // cacheClasses(finalClasses);
+    console.log("HHHHH", finalClasses);
     res.status(200).json(finalClasses);
   } catch (error) {
     next(error);
@@ -210,7 +215,7 @@ exports.getMembers = async (req, res, next) => {
     setTimeout(() => {
       res.status(200).json(finalMembers);
     }, 500);
-    cacheUsers(finalMembers);
+    // cacheUsers(finalMembers);
   } catch (error) {
     next(error);
   }
@@ -229,6 +234,7 @@ exports.joinClass = async (req, res, next) => {
   const socket = socketIO.io.sockets.connected[socketIO.socketId.get(userId)];
   if (classId) {
     try {
+      console.log(classId, userId);
       await db.query(`INSERT INTO class_member (classId, userId) VALUES(?,?)`, [
         classId,
         userId,
@@ -279,7 +285,101 @@ exports.sendInvitation = async (req, res, next) => {
       <a target="_blank" href="${process.env.CLIENT_URL}/join?classId=${classId}">Join</a>
       </div>`, // Nội dung mail dạng html
     });
-    return res.status(200).json("Success");
+    return res
+      .status(201)
+      .json({ message: "The invitation emails has been sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getClassSettings = async (req, res, next) => {
+  try {
+    const { userId } = req.decodedToken;
+    let { classId } = req.query;
+    console.log(classId);
+    const db = Db.db;
+    const [classData] = await db.query(
+      "SELECT * FROM class WHERE classId = ?",
+      classId
+    );
+    if (classData.length === 0)
+      return res.status(404).json({ message: "Could not find class" });
+    const [ownerData] = await db.query(
+      "SELECT id,name, avatar FROM user_info WHERE id= ?",
+      classData[0].owner
+    );
+    const [
+      searchMember,
+    ] = await db.query(
+      "SELECT * FROM class_member WHERE classId = ? AND userId = ?",
+      [classId, userId]
+    );
+    if (searchMember.length === 0)
+      return res.status(404).json({ message: "Could not find class" });
+    const { name, classId: cId, avatar } = classData[0];
+    if (classData[0].owner === userId) {
+      return res.status(200).json({
+        permissions: {
+          modify: true,
+          leave: false,
+        },
+        data: {
+          name,
+          classId: cId,
+          avatar,
+        },
+        ownerData: {
+          ...ownerData[0],
+        },
+      });
+    } else {
+      return res.status(200).json({
+        permissions: {
+          leave: true,
+          modify: false,
+        },
+        data: {
+          name,
+          classId: cId,
+          avatar,
+        },
+        ownerData: {
+          ...ownerData[0],
+        },
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.modifyClass = async (req, res, next) => {
+  try {
+    const db = Db.db;
+    const { classId, name } = req.body;
+    if (!classId || !name) {
+      return res.status(404).json({
+        message: "Cannot edit with those info",
+      });
+    }
+    let file = req.file;
+    let avatar = null;
+    if (file) {
+      avatar =
+        req.protocol + "://" + req.get("host") + "/images/" + req.file.filename;
+    }
+    let depArr = [name, avatar, classId];
+    if (!avatar) depArr = [name, classId];
+    await db.query(
+      `UPDATE class SET name=? ${
+        avatar ? `, avatar = ?` : ""
+      } WHERE classId = ?`,
+      depArr
+    );
+    return res.status(201).json({
+      message: "Successfully edit class",
+    });
   } catch (error) {
     next(error);
   }

@@ -1,0 +1,66 @@
+.flex {
+  @extend %flex;
+  &.f-row {
+    @extend %row;
+    &.f-reverse {
+      flex-direction: row-reverse;
+    }
+  }
+
+  &.f-column {
+    @extend %column;
+    &.f-reverse {
+      flex-direction: column-reverse;
+    }
+  }
+
+  &.f-h-c {
+    justify-content: center;
+  }
+
+  &.f-h-s {
+    justify-content: flex-start;
+  }
+
+  &.f-h-e {
+    justify-content: flex-end;
+  }
+
+  &.f-h-sa {
+    justify-content: space-around;
+  }
+
+  &.f-h-sb {
+    justify-content: space-between;
+  }
+
+  &.f-h-se {
+    justify-content: space-evenly;
+  }
+
+  &.f-h-str {
+    justify-content: stretch;
+  }
+
+  &.f-center {
+    @include flex-center;
+  }
+
+  &.f-v-c {
+    align-items: center;
+  }
+  &.f-v-str {
+    align-items: stretch;
+  }
+  &.f-v-s {
+    align-items: flex-start;
+  }
+
+  &.f-v-e {
+    align-items: flex-end;
+  }
+
+  &.f-nowrap {
+    @extend %flex-nowrap;
+  }
+}

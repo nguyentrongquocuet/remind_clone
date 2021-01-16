@@ -17,6 +17,7 @@ class SocketIO {
     this.io.on("connection", async (socket) => {
       console.log("CONNECT TO", socket.id);
       socket.on("auth", async (userId) => {
+        console.log("socket auth", new Date(), userId);
         if (userId) {
           const [
             classData,
@@ -34,7 +35,7 @@ class SocketIO {
           );
           privateRoom.map((r) => socket.join(`class-${r.roomId}-all`));
           this.socketId.set(userId, socket.id);
-          console.log("oke");
+          console.log("oke", userId);
           socket.emit("auth", { socketId: socket.id });
         } else {
           socket.auth = false;

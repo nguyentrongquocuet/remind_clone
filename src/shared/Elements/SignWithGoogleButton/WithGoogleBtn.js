@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { SettingService } from "services/SettingService";
 import Button from "../Button";
 import "./WithGoogleBtn.scss";
 const WithGoogleBtn = ({ className }) => {
+  const [url, setUrl] = useState(null);
+  useEffect(() => {
+    const getUrl = async () => {
+      const { data } = await SettingService.getGoogleLoginUrl();
+      const u = data.google_login_url;
+      setUrl(u);
+    };
+    getUrl();
+  }, []);
   return (
     <Button
       className={`with-google ${className}`}
       onClick={(e) => {
-        window.location.href = process.env.REACT_APP_CLIENT_GOOGLE_AUTH_URL;
+        if (url) window.location.href = url;
       }}
     >
       <img

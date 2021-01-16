@@ -25,7 +25,7 @@ const roleCheck = (...role) => {
     else
       return next(
         new SystemError(
-          401,
+          403,
           `You must be a ${role.join(" or ")} to perform this action!`
         )
       );

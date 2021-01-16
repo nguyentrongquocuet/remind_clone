@@ -1,0 +1,94 @@
+//make padding: 1rem let say
+// @import "_FuncVar";
+@import "_Flex";
+@import "_Grid";
+
+@each $i in $pad-mar-size {
+  .pad-#{$i}-rem {
+    padding: $i / 100 * 1rem;
+  }
+  .mar-#{$i}-rem {
+    margin: $i / 100 * 1rem;
+  }
+}
+
+//make margin-top:1rem let say
+@each $i in $placement-margin {
+  .mar-b-#{$i}-rem {
+    margin-bottom: $i / 100 * 1rem;
+  }
+  .mar-t-#{$i}-rem {
+    margin-top: $i / 100 * 1rem;
+  }
+  .mar-l-#{$i}-rem {
+    margin-left: $i / 100 * 1rem;
+  }
+  .mar-r-#{$i}-rem {
+    margin-right: $i / 100 * 1rem;
+  }
+}
+
+@for $p from 1 to 20 {
+  .w-mx-#{$p*5}p {
+    max-width: $p * 5%;
+  }
+  .w-mn-#{$p*5}p {
+    min-width: $p * 5%;
+  }
+  .w-#{$p*10}p {
+    width: $p * 5%;
+  }
+}
+
+//w-2: width:100/6%, w-mn-2 q:minwidth, w-mx-2,  maxwitdh:
+@include grid-width(12);
+@include grid-width(12, true, false);
+@include grid-width(12, false, true);
+
+.full-vp-h {
+  height: 100vh;
+}
+
+.full-vp-w {
+  height: 100vw;
+}
+
+.fullwidth {
+  width: 100%;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+.w-fit {
+  width: fit-content;
+}
+
+.block {
+  display: block;
+}
+
+.i-block {
+  display: inline-block;
+}
+
+.over-x-hide {
+  overflow-x: hidden;
+}
+
+.over-y-hide {
+  overflow-y: hidden;
+}
+
+.over-hide {
+  overflow: hidden;
+}
+
+.over-x-auto {
+  overflow-x: auto;
+}
+
+.over-y-auto {
+  overflow-y: auto;
+}

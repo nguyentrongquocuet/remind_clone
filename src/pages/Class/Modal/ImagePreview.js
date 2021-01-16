@@ -6,6 +6,7 @@ const ImagePreview = ({ open, onClose, previewObject }) => {
   return (
     <Suspense fallback={<Loading />}>
       <Modal
+        closeButton={false}
         open={Boolean(previewObject)}
         classNames={{ wrapper: "center", content: "imagePreview" }}
         onClose={onClose}
