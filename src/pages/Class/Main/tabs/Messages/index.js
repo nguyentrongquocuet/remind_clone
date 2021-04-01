@@ -7,25 +7,23 @@ import React, {
   useMemo,
 } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { Context } from "../../../../../shared/Util/context";
-import RealTimeService from "../../../../../services/RealTimeService";
-import MessageService from "../../../../../services/MessageService";
+import { Context } from "shared/Util/context";
+import RealTimeService from "services/RealTimeService";
+import MessageService from "services/MessageService";
 import { Avatar, Button, Card } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 import CancelIcon from "@material-ui/icons/Cancel";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import ScheduleIcon from "@material-ui/icons/Schedule";
-import TextField from "../../../../../shared/Elements/TextField";
-import Loading from "../../../../../shared/components/Loading";
-import ModalSubject from "../../../../../shared/Util/ModalSubject";
+import TextField from "shared/Elements/TextField";
+import Loading from "shared/components/Loading";
+import ModalSubject from "shared/Util/ModalSubject";
+import AttachFilePreview from "shared/Elements/AttachFilePreview";
+import popupSubject from "shared/Util/PopupSubject";
+import FileSubject from "shared/Util/FileSubject";
+import ROLE from "shared/Util/ROLE";
 import "./Messages.scss";
-import AttachFilePreview from "../../../../../shared/Elements/AttachFilePreview";
-import popupSubject from "../../../../../shared/Util/PopupSubject";
-import FileSubject from "../../../../../shared/Util/FileSubject";
-import ROLE from "../../../../../shared/Util/ROLE";
-const Message = React.lazy(() =>
-  import("../../../../../shared/Elements/Message")
-);
+const Message = React.lazy(() => import("shared/Elements/Message"));
 //TOTO: CACHE MESSAGES DATA
 const Messages = (props) => {
   const {
@@ -276,7 +274,6 @@ const Messages = (props) => {
                 )}
               </div>
             )}
-
             <div className="fix">
               <div className="allmessages" ref={messagesRef}>
                 {messagesState.messages.map((m) => {
@@ -361,16 +358,7 @@ const Messages = (props) => {
                 }
               }}
               placeholder="You can drop file here!"
-              // onChange={(e) =>
-              //   setMessage((prev) => {
-              //     return { ...prev, content: e.target.value };
-              //   })
-              // }
-              // value={message.content}
               name="message"
-              // onKeyUp={(e) =>
-              //   e.key === "Enter" ? e.preventDefault() : e.preventDefault()
-              // }
             />
             <input
               style={{ display: "none" }}
@@ -395,7 +383,6 @@ const Messages = (props) => {
                 <img src="/Assets/announcement.png" alt="" />
               </div>
             )}
-
             <AttachFileIcon
               onClick={(e) => document.getElementById("file").click()}
               color="primary"
@@ -404,9 +391,6 @@ const Messages = (props) => {
             />
             <button style={{ all: "unset" }} type="submit">
               <SendIcon
-                // onClick={(e) => {
-                //   sendMessage();
-                // }}
                 className="message__input__action"
                 color="primary"
                 titleAccess="Send Message"

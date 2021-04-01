@@ -6,7 +6,6 @@ import {
   Route,
 } from "react-router-dom";
 // import Class from "./pages/Class";
-import io from "socket.io-client";
 
 import { Context } from "./shared/Util/context";
 import { Suspense } from "react";
@@ -27,7 +26,6 @@ function App() {
   const { globalState, dispatch } = useContext(Context);
   const { isLoggedIn, userData } = globalState;
   let routes;
-  console.log("yrk", globalState.redirectUrl);
 
   if (isLoggedIn) {
     if (userData.role === null)

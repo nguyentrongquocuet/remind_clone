@@ -249,7 +249,7 @@ const Class = () => {
                     classNames={{ wrapper: "center", content: "form__modal" }}
                   >
                     <CreateAnnouncement
-                      onDone={(message) => {
+                      onDone={() => {
                         // popupSubject.next({
                         //   showTime: 5,
                         //   message: message || "You've created a schedule",

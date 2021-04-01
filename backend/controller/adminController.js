@@ -415,13 +415,6 @@ exports.getClasses = async (req, res, next) => {
       }`,
       fieldCon
     );
-    console.log(
-      `select * from (SELECT class.*, cm.count members from (select * from class ${
-        nameQuery && `WHERE match(name) AGAINST(?)`
-      } limit ? offset ?) class INNER JOIN (select classId, count(*) count from class_member GROUP by classId) cm ON class.classId = cm.classId) result ${
-        sortBy ? "ORDER BY " + sortBy : ""
-      }`
-    );
     const [classes] = await db.query(
       `select * from (SELECT class.*, cm.count members from (select * from class ${
         nameQuery && `WHERE match(name) AGAINST(?)`
@@ -582,7 +575,7 @@ exports.createClass = async (req, res, next) => {
       addClass.insertId,
     ]);
     const [
-      data,
+      ,
     ] = await db.query(
       `SELECT * FROM class c INNER JOIN message_room mr ON  c.classId=? AND c.classId=mr.classId`,
       [addClass.insertId]
